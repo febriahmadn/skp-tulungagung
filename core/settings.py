@@ -27,13 +27,14 @@ SECRET_KEY = os.environ.get(
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True if os.environ.get("DEBUG") in ["true", "True"] else False
-
+# DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 
 # Application definition
 
 AUTH_USER_MODEL = "usom.Account"
+AUTHENTICATION_BACKENDS = ['usom.auth_backends.AuthBackend']
 
 INSTALLED_APPS = [
     'metronic',
@@ -146,7 +147,16 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'metronic/static')
+
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+EMAIL_HOST = 'smtp.mailtrap.io'
+EMAIL_HOST_USER = '240a45a9af96cf'
+EMAIL_ADMIN = 'admin@trethon.com'
+EMAIL_HOST_PASSWORD = 'dab10f1fa13878'
+EMAIL_PORT = '2525'

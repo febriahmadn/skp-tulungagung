@@ -1,0 +1,392 @@
+input.select-dropdown.dropdown-trigger{
+	display: none;
+}
+
+fieldset{
+	border: 0;
+}
+
+.submit-row{
+	border-radius: 5px;
+    margin: 5px 0;
+    overflow: hidden;
+    padding: 5px 7px;
+    text-align: right;
+}
+
+.related-widget-wrapper{
+	display: flex;
+	width: 100%
+}
+
+@media only screen and (min-width: 768px) {
+	.related-widget-wrapper{
+		width: 80%
+	}
+}
+
+.related-widget-wrapper > .select-wrapper{
+	width: 80%;
+}
+
+.related-widget-wrapper .selector-filter input{
+	height: 30px;
+	border-radius: 5px;
+}
+
+.select-wrapper input.select-dropdown{
+	border: 1px solid #ddd;
+	border-radius: 5px;
+}
+
+.form-row{
+	padding: 10px;
+	border-bottom: 1px solid #ddd;
+}
+
+.form-row > div > input{
+	border: 1px solid #ddd !important;
+	padding-left: 10px !important;
+	border-radius: 5px !important;
+}
+
+label {
+    color: #666;
+    font-size: 13px;
+    font-weight: normal !important;
+}
+
+label.required{
+	font-weight: bold;
+}
+
+/* tambahan */
+
+.selector-available h2, .selector-chosen h2{
+	border: none;
+}
+
+.selector .selector-filter{
+	border: none;	
+}
+
+.selector-available, .selector-chosen{
+	border: 1px solid #e3e3e3;
+	border-radius: 5px;
+}
+
+.selector-available > select, .selector-chosen > select{
+	display: block;
+}
+
+.form-row {
+    border-bottom: 1px solid #eee;
+    padding: 8px 12px;
+    min-height: 43px;
+    width: 100%;
+    display: inline-block;
+}
+
+.field-box{
+	margin-right: 10px;
+}
+
+.help, p.help {
+    color: #999;
+    font-size: 11px !important;
+}
+
+form .aligned p.help {
+    display: inline-block;
+    margin-bottom: 0;
+    margin-left: 0;
+    margin-top: 2px;
+    padding-left: 5px;
+    padding-top: 0px;
+}
+input, textarea, select, .form-row p {
+    font-family: "Lucida Grande",Verdana,Arial,sans-serif;
+    font-weight: normal;
+    vertical-align: middle;
+}
+.add-another {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.module p, .module ul, .module h3, .module h4, .module dl, .module pre {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.aligned label {
+    display: block;
+    float: left;
+    padding: 3px 10px 0 0;
+    width: 8em;
+    word-wrap: break-word;
+}
+.inline-group .aligned label, .aligned label {
+    width: 13em;
+}
+.required label, label.required {
+    color: #656d78 !important;
+    font-weight: 600 !important;
+}
+
+
+.form-row textarea {
+    height: 100px;
+    width: 100%;
+}
+
+input[type="text"], input[type="password"], input[type="email"], input[type="url"], input[type="number"], textarea, select, .vTextField, fieldset .field-box input {
+    max-width: 500px;
+}
+.form-row img, .form-row input {
+    vertical-align: middle;
+}
+
+.form-row li{
+    display: inline-block;
+}
+.dropdown-menu li{
+    display: block;
+}
+input[type="text"], input[type="password"], input[type="email"], input[type="url"], input[type="number"], textarea, select, .vTextField, fieldset .field-box input {
+    border: 1px solid #ccc;
+}
+input[type="number"], .vTimeField{
+  	width: 20em;
+  	height: 37px;
+}
+
+.vTextField, fieldset .field-box input, input[type="password"], input[type="number"] {
+    /*width: 320px;*/
+    width: 100%;
+    height: 37px;
+    padding-left: 5px;
+}
+
+@media only screen and (min-width: 768px) {
+	.vTextField, fieldset .field-box input, input[type="password"], input[type="number"] {
+		width: 500px;
+	}
+}
+
+.errors {
+    background: none repeat scroll 0 0 #ffc;
+}
+ul.errorlist {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+.errorlist li {
+    background: url("/static/images/icon_alert.gif") no-repeat scroll 5px 0.3em red;
+    border: 1px solid red;
+    color: white;
+    display: block;
+    font-size: 12px !important;
+    margin: 0 0 3px;
+    padding: 4px 5px 4px 25px;
+}
+.errors input, .errors select, .errors textarea {
+    border: 1px solid red;
+}
+
+.module h2, .module caption, .inline-group h2 {
+    background-color: #006f0f;
+    color: white;
+    font-size: 11px;
+    font-weight: bold;
+    margin: 0;
+    padding: 8px 12px;
+    text-align: left;
+}
+
+.submit-row {
+    text-align: left;
+}
+
+.submit-row {
+    margin: 5px 0;
+    overflow: hidden;
+    padding: 5px 7px;
+    text-align: right;
+}
+
+.submit-row input {
+    margin: 0 0 0 5px;
+}
+
+button, html input[type="button"], input[type="reset"], input[type="submit"] {
+    cursor: pointer;
+}
+.submit-row p.deletelink-box {
+    float: left;
+}
+.submit-row p {
+    margin: 0.3em;
+}
+p {
+    line-height: 140%;
+    padding: 0;
+}
+a.deletelink:link, a.deletelink:visited {
+    color: #cc3434;
+}
+
+.submit-row .deletelink {
+    background: url("/static/images/icon_deletelink.gif") no-repeat scroll 0 50% rgba(0, 0, 0, 0);
+    padding-left: 14px;
+}
+
+.errornote {
+    font-size: 12px !important;
+    display: block;
+    padding: 4px 5px 4px 25px;
+    margin: 0 0 3px 0;
+    border: 1px solid red;
+    color: red;
+    background: #ffc url(/static/images/icon_error.gif) 5px .3em no-repeat;
+}
+
+.file-upload input[type="file"] {
+    display: inline-block !important;
+}
+
+form .aligned .datetime {
+    float: left;
+    margin-left: 0;
+    padding-left: 0;
+}
+
+.datetime br{
+    display: none;
+}
+.datetime .datetimeshortcuts{
+    padding-right: 10px;
+}
+
+.empty-form, tr.empty-form {
+    display: none;
+}
+
+.defaultSimpleSkin, .mceEditor {
+	display: inline-block;
+	width: 100%;
+}
+
+.bootstrap-select:not([class*="span"]):not([class*="col-"]):not([class*="form-control"]):not(.input-group-btn) {
+    width: 395px;
+}
+.bootstrap-select .filter-option {
+    padding-left: 10px;
+}
+
+fieldset .field-box {
+    display: inline-block;
+    padding-bottom: 10px;
+    padding-top: 10px;
+}
+
+div.field-box > label.inline{
+    width: auto;
+}
+
+.form-row.field-jadwal > div{
+	display: inline-flex;
+}
+
+p.datetime{
+	width: 80%;
+	display: inline-flex;
+	line-height: 40px;
+	font-size: 13px;
+}
+
+p.datetime > input{
+	border: 1px solid #ddd !important;
+	border-radius: 5px !important;
+	padding-left: 10px !important;
+}
+
+.calendar caption{
+	text-align: center;
+}
+
+span.delete{
+    right: 0;
+	position: absolute;
+}
+
+.vCheckboxLabel.inline{
+	margin-right: 10px;
+}
+
+.select2.select2-container.select2-container--default{
+	width: 20em;
+}
+
+.select2-container .select2-selection--single {
+	height: 40px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+	height: 35px;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice{
+	background-color: #2196F3;
+}
+
+button, input, optgroup, select, textarea {
+	font-size: 13px;
+}
+
+.inline-deletelink {
+	float: unset;
+	position: absolute;
+	top: 16px;
+	right: 16px;
+}
+
+.form-row .vDateField{
+	width: 75%;
+    height: 40px;
+    font-size: 15px;
+}
+
+@media only screen and (min-width: 768px) {
+	.form-row .vDateField{
+		width: 320px;
+	}
+}
+
+.form-row input[readonly] {
+	background: #eee;
+}
+
+.form-row textarea{
+	border-radius: 5px;
+}
+
+.inline-group {
+	margin-top: 10px;
+}
+
+.add-row > a{
+	background: #FFEB3B;
+	padding: -5px;
+	color: black;
+	padding: 5px;
+	border-radius: 5px;
+	box-shadow: 0 4px 5px 0 rgba(0, 0, 0, .14), 0 1px 10px 0 rgba(0, 0, 0, .12), 0 2px 4px -1px rgba(0, 0, 0, .3)
+}
+
+.select-mobile{
+    width: 100%;
+    height: 40px;
+    border-radius: 5px;
+    background-color: white;
+}

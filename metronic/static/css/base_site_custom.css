@@ -1,0 +1,159 @@
+.aside-menu .menu-nav>.menu-item.menu-item-active>.menu-heading,
+.aside-menu .menu-nav>.menu-item.menu-item-active>.menu-link {
+    background-color: #e8ffca !important;
+}
+
+.aside-menu .menu-nav>.menu-item.menu-item-active>.menu-heading .menu-text,
+.aside-menu .menu-nav>.menu-item.menu-item-active>.menu-link .menu-text {
+    color: #2b663a !important;
+}
+
+.aside-menu .menu-nav>.menu-item.menu-item-active>.menu-heading .menu-text,
+.aside-menu .menu-nav>.menu-item.menu-item-active>.menu-link .fa {
+    color: #2b663a !important;
+}
+
+.aside-menu .menu-nav>.menu-item>.menu-heading .menu-text,
+.aside-menu .menu-nav>.menu-item>.menu-link .fa {
+    color: #3f4254;
+}
+
+.aside-menu .menu-nav>.menu-item:not(.menu-item-parent):not(.menu-item-open):not(.menu-item-here):not(.menu-item-active):hover>.menu-heading .menu-text,
+.aside-menu .menu-nav>.menu-item:not(.menu-item-parent):not(.menu-item-open):not(.menu-item-here):not(.menu-item-active):hover>.menu-link {
+    background-color: #e8ffca !important;
+}
+
+.aside-menu .menu-nav>.menu-item:not(.menu-item-parent):not(.menu-item-open):not(.menu-item-here):not(.menu-item-active):hover>.menu-heading .menu-text,
+.aside-menu .menu-nav>.menu-item:not(.menu-item-parent):not(.menu-item-open):not(.menu-item-here):not(.menu-item-active):hover>.menu-link .menu-text {
+    color: #2b663a !important;
+}
+
+.aside-menu .menu-nav>.menu-item:not(.menu-item-parent):not(.menu-item-open):not(.menu-item-here):not(.menu-item-active):hover>.menu-heading .menu-text,
+.aside-menu .menu-nav>.menu-item:not(.menu-item-parent):not(.menu-item-open):not(.menu-item-here):not(.menu-item-active):hover>.menu-link .fa {
+    color: #2b663a !important;
+}
+
+.aside-menu .menu-nav>.menu-item:not(.menu-item-parent):not(.menu-item-open):not(.menu-item-here):not(.menu-item-active):hover>.menu-heading .menu-text,
+.aside-menu .menu-nav>.menu-item:not(.menu-item-parent):not(.menu-item-open):not(.menu-item-here):not(.menu-item-active):hover>.menu-link .menu-arrow {
+    color: #2b663a !important;
+}
+
+.aside-menu .menu-nav>.menu-item .menu-submenu .menu-item:hover>.menu-heading .menu-text,
+.aside-menu .menu-nav>.menu-item .menu-submenu .menu-item:hover>.menu-link {
+    background-color: #e8ffca !important;
+}
+
+.aside-menu .menu-nav>.menu-item .menu-submenu .menu-item:hover>.menu-heading .menu-text,
+.aside-menu .menu-nav>.menu-item .menu-submenu .menu-item:hover>.menu-link .menu-text {
+    color: #2b663a !important;
+}
+
+.aside-menu .menu-nav>.menu-item .menu-submenu .menu-item:hover>.menu-heading fa,
+.aside-menu .menu-nav>.menu-item .menu-submenu .menu-item:hover>.menu-link .fa {
+    color: #2b663a !important;
+}
+
+.aside-menu .menu-nav>.menu-item .menu-submenu .menu-item>.menu-heading .fa,
+.aside-menu .menu-nav>.menu-item .menu-submenu .menu-item>.menu-link .fa {
+    color: #3f4254;
+}
+
+.aside-menu .menu-nav>.menu-item.menu-item-open>.menu-heading .menu-text,
+.aside-menu .menu-nav>.menu-item.menu-item-open>.menu-link .menu-text {
+    color: #2b663a !important;
+}
+
+.aside-menu .menu-nav>.menu-item.menu-item-open>.menu-heading .fa,
+.aside-menu .menu-nav>.menu-item.menu-item-open>.menu-link .fa {
+    color: #2b663a !important;
+}
+
+.aside-menu .menu-nav>.menu-item.menu-item-open>.menu-heading .menu-arrow,
+.aside-menu .menu-nav>.menu-item.menu-item-open>.menu-link .menu-arrow {
+    color: #2b663a !important;
+}
+
+.aside-menu .menu-nav>.menu-item.menu-item-open>.menu-heading,
+.aside-menu .menu-nav>.menu-item.menu-item-open>.menu-link {
+    background-color: #e8ffca !important;
+}
+
+.aside-menu .menu-nav>.menu-item .menu-submenu .menu-item.menu-item-open>.menu-heading .menu-text,
+.aside-menu .menu-nav>.menu-item .menu-submenu .menu-item.menu-item-open>.menu-link .menu-text {
+    color: #2b663a !important;
+}
+
+.aside-menu .menu-nav>.menu-item .menu-submenu .menu-item.menu-item-open>.menu-heading .fa,
+.aside-menu .menu-nav>.menu-item .menu-submenu .menu-item.menu-item-open>.menu-link .fa {
+    color: #2b663a !important;
+}
+
+.aside-menu .menu-nav>.menu-item .menu-submenu .menu-item.menu-item-open>.menu-heading,
+.aside-menu .menu-nav>.menu-item .menu-submenu .menu-item.menu-item-open>.menu-link {
+    background-color: #e8ffca !important;
+}
+
+.aside-menu .menu-nav>.menu-item.menu-item-here>.menu-heading .menu-arrow,
+.aside-menu .menu-nav>.menu-item.menu-item-here>.menu-link .menu-arrow {
+    color: #2b663a !important;
+}
+
+.aside-menu .menu-nav>.menu-item.menu-item-here>.menu-heading .menu-text,
+.aside-menu .menu-nav>.menu-item.menu-item-here>.menu-link .menu-text {
+    color: #2b663a !important;
+}
+
+.aside-menu .menu-nav>.menu-item.menu-item-here>.menu-heading .fa,
+.aside-menu .menu-nav>.menu-item.menu-item-here>.menu-link .fa {
+    color: #2b663a !important;
+}
+
+.aside-menu .menu-nav>.menu-item.menu-item-here>.menu-heading,
+.aside-menu .menu-nav>.menu-item.menu-item-here>.menu-link {
+    background-color: #e8ffca !important;
+}
+
+.aside-menu .menu-nav>.menu-item .menu-submenu .menu-item.menu-item-active>.menu-heading .menu-text,
+.aside-menu .menu-nav>.menu-item .menu-submenu .menu-item.menu-item-active>.menu-link .menu-text {
+    color: #2b663a !important;
+}
+
+.aside-menu .menu-nav>.menu-item .menu-submenu .menu-item.menu-item-active>.menu-heading .fa,
+.aside-menu .menu-nav>.menu-item .menu-submenu .menu-item.menu-item-active>.menu-link .fa {
+    color: #2b663a !important;
+}
+
+.aside-menu .menu-nav>.menu-item .menu-submenu .menu-item.menu-item-active>.menu-heading,
+.aside-menu .menu-nav>.menu-item .menu-submenu .menu-item.menu-item-active>.menu-link {
+    background-color: #e8ffca !important;
+}
+
+.aside-menu .menu-nav>.menu-item .menu-submenu .menu-item.menu-item-open>.menu-heading .menu-arrow,
+.aside-menu .menu-nav>.menu-item .menu-submenu .menu-item.menu-item-open>.menu-link .menu-arrow {
+    color: #2b663a !important;
+}
+
+.aside-menu .menu-nav>.menu-item .menu-submenu .menu-item.menu-item-here>.menu-heading,
+.aside-menu .menu-nav>.menu-item .menu-submenu .menu-item.menu-item-here>.menu-link {
+    background-color: #e8ffca !important;
+}
+
+.aside-menu .menu-nav>.menu-item .menu-submenu .menu-item.menu-item-here>.menu-heading .menu-arrow,
+.aside-menu .menu-nav>.menu-item .menu-submenu .menu-item.menu-item-here>.menu-link .menu-arrow {
+    color: #2b663a !important;
+}
+
+.aside-menu .menu-nav>.menu-item .menu-submenu .menu-item:not(.menu-item-parent):not(.menu-item-open):not(.menu-item-here):not(.menu-item-active):hover>.menu-heading .menu-arrow,
+.aside-menu .menu-nav>.menu-item .menu-submenu .menu-item:not(.menu-item-parent):not(.menu-item-open):not(.menu-item-here):not(.menu-item-active):hover>.menu-link .menu-arrow {
+    color: #2b663a !important;
+}
+
+.aside-menu .menu-nav>.menu-item .menu-submenu .menu-item.menu-item-here>.menu-heading .menu-text,
+.aside-menu .menu-nav>.menu-item .menu-submenu .menu-item.menu-item-here>.menu-link .menu-text {
+    color: #2b663a !important;
+}
+
+.aside-menu .menu-nav>.menu-item .menu-submenu .menu-item.menu-item-here>.menu-heading .fa,
+.aside-menu .menu-nav>.menu-item .menu-submenu .menu-item.menu-item-here>.menu-link .fa {
+    color: #2b663a !important;
+}

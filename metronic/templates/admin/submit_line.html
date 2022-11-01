@@ -1,0 +1,28 @@
+{% load i18n admin_urls %}
+<div class="submit-row">
+	{% if request.GET.popupprofile %}
+		<button class="btn btn-primary">SIMPAN POP UP</button>
+		<button class="btn btn-secondary">{% trans 'Kembali' %}</button>
+	{% else %}
+		{% url opts|admin_urlname:'changelist' as back_url %}
+		{% if show_save %}
+		{% if original and not akses_spesial and original.created_by and original.status %}
+		{% if original.created_by != request.user or original.status == 1 and original.created_by == request.user %}
+		{% else %}
+		<button type="submit" class="btn btn-primary" name="_save"><i class="fa fa-save"></i> {% trans 'Save' %}</button>
+		{% if show_save_and_add_another %}<button type="submit" class="btn btn-success waves-effect"
+			name="_addanother">{% trans 'Save and add another' %}</button>{% endif %}
+		{% endif %}
+		{% else %}
+		<button type="submit" class="btn btn-primary" name="_save"><i class="fa fa-save"></i> {% trans 'Save' %}</button>
+		{% if show_save_and_add_another %}<button type="submit" class="btn btn-success" name="_addanother"><i class="fa fa-paper-plane"></i> {% trans 'Save and add another' %}</button>{% endif %}
+		{% endif %}
+		{% endif %}
+		{% if show_delete_link %}
+		{% url opts|admin_urlname:'delete' original.pk|admin_urlquote as delete_url %}
+		<a href="{% add_preserved_filters delete_url %}"><button type="button" class="btn btn-danger"><i
+					class="fa fa-trash"></i> {% trans "Delete" %}</button></a>
+		{% endif %}
+		<button type="button" onclick="location.href='{% add_preserved_filters back_url %}'" class="btn btn-secondary" name="_back"><i class="fa fa-arrow-left"></i> {% trans 'Kembali' %}</button>
+	{% endif %}	
+</div>

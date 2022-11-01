@@ -1,0 +1,6 @@
+{% load i18n admin_urls %}
+<a class="dropdown-item header-item" href="#">{% blocktrans with filter_title=title %} By {{ filter_title }} {% endblocktrans %}</a>
+<div class="dropdown-divider"></div>
+{% for choice in choices %}
+	<a class="dropdown-item {% if choice.selected %}active-item{% endif %}" href="{{ choice.query_string|iriencode }}" onclick="window.location.href = window.location.pathname+'{{ choice.query_string|iriencode }}'">{{ choice.display }}</a>
+{% endfor %}
