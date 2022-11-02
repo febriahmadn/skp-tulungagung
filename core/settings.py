@@ -36,6 +36,8 @@ AUTH_USER_MODEL = "usom.Account"
 AUTHENTICATION_BACKENDS = ['usom.auth_backends.AuthBackend']
 
 INSTALLED_APPS = [
+    'usom.apps.UsomConfig',
+    'skp.apps.SkpConfig',
     'metronic',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -44,7 +46,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'suit',
-    'usom',
 ]
 
 MIDDLEWARE = [

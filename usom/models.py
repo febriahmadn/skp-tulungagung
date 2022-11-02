@@ -1,6 +1,15 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager, Group
 
+
+class UnitKerja(models.Model):
+    unitkerja = models.CharField(max_length=200, null=True, verbose_name="Nama Unit Kerja")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Unit Kerja"
+        verbose_name_plural = "Unit Kerja"
+
 class AccountManager(BaseUserManager):
     def create_user(self, username, nama_lengkap, password=None):
         """
@@ -27,14 +36,80 @@ class AccountManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+
 class Account(AbstractUser):
-    nama_lengkap = models.CharField("Nama Lengkap", max_length=150)
+    JENIS_PEGAWAI_CHOICES = [
+        ('PI', 'Pimpinan'),
+        ('PA', 'Atasan'),
+        ('PE', 'Pegawai')
+    ]
+    GOLONGAN = [
+        ('I/A', 'I/A'),
+        ('I/B', 'I/B'),
+        ('I/C', 'I/C'),
+        ('I/D', 'I/D'),
+        ('II/A', 'II/A'),
+        ('II/B', 'II/B'),
+        ('II/C', 'II/C'),
+        ('II/D', 'II/D'),
+        ('III/A', 'III/A'),
+        ('III/B', 'III/B'),
+        ('III/C', 'III/C'),
+        ('III/D', 'III/D'),
+        ('IV/A', 'IV/A'),
+        ('IV/B', 'IV/B'),
+        ('IV/C', 'IV/C'),
+        ('IV/D', 'IV/D'),
+        ('IV/E', 'IV/E'),
+    ]
+    ESELON = [
+        # (1, 'I-A'),
+        # (2, 'I-B'),
+        ('II-A', 'II-A'),
+        ('II-B', 'II-B'),
+        ('III-A', 'III-A'),
+        ('III-B', 'III-B'),
+        ('IV-A', 'IV-A'),
+        ('IV-B', 'IV-B'),
+        ('V-C', 'V-C'),
+    ]
+    nama_lengkap = models.CharField(
+        "Nama Lengkap", max_length=150)
     gelar_depan = models.CharField(
-        max_length=50, null=True, blank=True, verbose_name="Gelar Depan"
+        max_length=50, null=True, blank=True,
+        verbose_name="Gelar Depan"
     )
     gelar_belakang = models.CharField(
-        max_length=50, null=True, blank=True, verbose_name="Gelar Belakang"
+        max_length=50, null=True, blank=True,
+        verbose_name="Gelar Belakang"
     )
+    jabatan = models.CharField(
+        max_length=250, null=True, blank=True,
+        verbose_name="Jabatan"
+    )
+    unitkerja = models.ForeignKey(
+        UnitKerja,
+        null=True, blank=True,
+        on_delete=models.SET_NULL)
+    golongan = models.CharField(
+        choices=GOLONGAN,
+        max_length=6,
+        verbose_name="Golongan",
+        null=True, blank=True
+    )
+    eselon = models.CharField(
+        choices=ESELON,
+        max_length=6,
+        verbose_name="Eselon",
+        null=True, blank=True
+    )
+    jenis_pegawai = models.CharField(
+        choices=JENIS_PEGAWAI_CHOICES,
+        default='PE',
+        max_length=2,
+        verbose_name="Jenis Pegawai",
+        null=True, blank=True)
+
     objects = AccountManager()
     USERNAME_FIELD = "username"
     REQUIRED_FIELDS = ["nama_lengkap"]
