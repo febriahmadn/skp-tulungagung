@@ -184,6 +184,7 @@ class Lampiran(models.Model):
         ACTIVE = 1, "Aktif"
         NONACTIVE = 2, "Non Aktif"
 
+    lampiran = models.CharField("Lampiran", max_length=200)
     status = models.IntegerField(choices=Status.choices, null=True, default=1)
     created = models.DateTimeField(auto_now_add=True)
 
