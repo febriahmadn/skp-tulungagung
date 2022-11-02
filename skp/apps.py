@@ -2,5 +2,5 @@ from django.apps import AppConfig
 
 
 class SkpConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'skp'
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "skp"

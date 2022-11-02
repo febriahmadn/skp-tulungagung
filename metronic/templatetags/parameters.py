@@ -1,12 +1,13 @@
 import calendar
 from django import template
+
 # from datetime import date
 from urllib.parse import parse_qs
 
 register = template.Library()
 
 
-@register.filter(name='parseqs')
+@register.filter(name="parseqs")
 def parseqs(qs, key_):
     key_value = parse_qs(qs)
     if key_ in key_value:
@@ -15,11 +16,12 @@ def parseqs(qs, key_):
         return ""
 
 
-@register.filter(name='month')
+@register.filter(name="month")
 def month(i_):
     if i_:
         month = calendar.month_abbr[i_]
         return month
+
 
 # @register.filter(name='parameter_url')
 # def parameter_url(query_dict):
@@ -27,7 +29,7 @@ def month(i_):
 # 	return parameter.urlencode()
 
 
-@register.filter(name='parameter_set')
+@register.filter(name="parameter_set")
 def parameter_set(query_dict, key_value):
     parameter = query_dict.copy()
     key, value = key_value.split(":")
@@ -35,7 +37,7 @@ def parameter_set(query_dict, key_value):
     return parameter.urlencode()
 
 
-@register.filter(name='set_parameter')
+@register.filter(name="set_parameter")
 def set_parameter(query_dict, key_value):
     parameter = query_dict.copy()
     key, value = key_value.split(":")
@@ -43,15 +45,15 @@ def set_parameter(query_dict, key_value):
     return parameter
 
 
-@register.filter(name='pop_parameter')
+@register.filter(name="pop_parameter")
 def pop_parameter(query_dict_, key_):
     parameter = query_dict_.copy()
-    parameter.__setitem__(key_, '0')
+    parameter.__setitem__(key_, "0")
     parameter.pop(key_)
     return parameter
 
 
-@register.filter(name='parameter_pop')
+@register.filter(name="parameter_pop")
 def parameter_pop(query_dict, key):
     parameter = query_dict.copy()
     parameter = pop_parameter(parameter, key)
