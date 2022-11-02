@@ -14,11 +14,11 @@
     <div class="pagination-info" style="margin-top: 10px; margin-bottom: 10px">
         <label class="">Total {{ cl.result_count }}</label>
         <label class="">
-            {% ifequal cl.result_count 1 %}
+            {% if cl.result_count == 1 %}
             {{ cl.opts.verbose_name }}
             {% else %}
             {{ cl.opts.verbose_name_plural }}
-            {% endifequal %}
+            {% endif %}
         </label>
         {% if show_all_url %}
             &nbsp;&nbsp;

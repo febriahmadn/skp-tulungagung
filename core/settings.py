@@ -27,7 +27,6 @@ SECRET_KEY = os.environ.get(
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True if os.environ.get("DEBUG") in ["true", "True"] else False
-# DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 
@@ -44,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'suit',
     'usom',
 ]
 
