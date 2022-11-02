@@ -1,0 +1,449 @@
+{% extends "admin/base.html" %}
+{% load i18n static %}
+
+{% block title %}
+	{{ title }} | {{ site_title|default:_('SiMITA') }}
+{% endblock %}
+
+{% block main-sidebar %}
+{% if not is_popup %}
+{% endif %}
+{% endblock %}
+
+{% block extrastyle %}
+{{block.super}}
+<link rel="stylesheet" type="text/css" href="{% static 'css/base_site_custom.css' %}">
+{% endblock %}
+
+{% block custom_style %}
+{{block.super}}
+<style>
+    .aside{
+        -webkit-box-shadow: 0 0 10px 0 rgb(82 63 105 / 8%);
+        box-shadow: 0 0 10px 0 rgb(82 63 105 / 8%);
+    }
+</style>
+{% endblock %}
+
+{% block custom_js %}
+<!-- <script type="text/javascript" src="{% static 'scripts/page/base_site.js' %}?version=0.0.1"></script> -->
+{{ block.super }}
+<script type="text/javascript">
+    function getCookie(cname) {
+        var name = cname + "=";
+        var decodedCookie = decodeURIComponent(document.cookie);
+        var ca = decodedCookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    }
+
+    const renderMenus = (selector, data) => {
+        menu_content = ''
+        var menu_down_selected
+        $.map(data, function (item) {
+            // console.log(item)
+            let is_selected = false;
+            let url_ = '#';
+            //item objek manggil rey 0,1
+
+            if (typeof item.url != 'undefined') {
+                url_ = item.url;
+                if (url_ === window.location.pathname) {
+                    is_selected = true;
+                }
+            }
+
+            let is__active = '';
+            if (is_selected) {
+                is__active = 'active';
+            }
+
+            let id_item_menu = ""
+            if (item.id) {
+                id_item_menu = item.id;
+            }
+
+            if (item.css_classes) {
+                menu_content +=
+                    `<li class="menu-section">
+                        <h4 class="menu-text">${item.title}</h4>
+                        <i class="menu-icon ki ki-bold-more-hor icon-md"></i>
+                    </li>`
+
+            } else {
+
+                if (item.children) {
+
+                    $.map(item.children, function (child) {
+                        is_selected = false
+                        url_ = '#'
+
+                        if (typeof child.url != 'undefined') {
+                            url_ = child.url;
+                            if (url_ === window.location.pathname) {
+                                is_selected = true;
+                            }
+
+                            // console.log('is_selected : ', is_selected)
+                            if (is_selected) {
+                                is__active = "menu-item-open menu-item-here"
+                            }
+
+
+                        }
+                        if (child.subchildren) {
+                            $.map(child.subchildren, function (subchildren) {
+                                if (typeof subchildren.url != 'undefined') {
+                                    url_ = subchildren.url;
+                                    if (url_ === window.location.pathname) {
+                                        is_selected = true;
+                                    }
+
+                                    if (is_selected) {
+                                        is__active = "menu-item-open menu-item-here"
+                                    }
+                                }
+                            })
+                        }
+
+                    })
+
+                    menu_content += `
+                            <li class="menu-item menu-item-submenu ${is__active}" aria-haspopup="true" data-menu-toggle="hover">
+                                <a href="javascript:;" class="menu-link menu-toggle">
+                                    <span class="menu-icon">
+                                        <i class="${item.icon}"> </i>
+                                    </span>
+                                    <span class="menu-text">${item.title}</span>
+                                    <i class="menu-arrow"></i>
+                                </a>
+                                <div class="menu-submenu">
+                                    <i class="menu-arrow"></i>
+                                    <ul class="menu-subnav">
+                                    <li class="menu-item menu-item-parent" aria-haspopup="true">
+                                        <span class="menu-link">
+                                            <span class="menu-text">${item.title}</span>
+                                        </span>
+                                    </li>
+                        `;
+
+
+
+                    $.map(item.children, function (child) {
+
+
+                        if (child.subchildren) {
+
+                            is_selected = false
+
+                            $.map(child.subchildren, function (subchildren) {
+
+                                url_ = '#'
+
+                                if (typeof subchildren.url != 'undefined') {
+                                    url_ = subchildren.url
+                                    if (url_ == window.location.pathname) {
+                                        is_selected = true
+                                    }
+                                }
+
+
+                            });
+
+                            if (is_selected) {
+                                is__active = 'menu-item-open menu-item-here'
+                            } else {
+                                is__active = ''
+                            }
+
+                            menu_content += `
+                                <li class="menu-item menu-item-submenu ${is__active}" aria-haspopup="true" data-menu-toggle="hover">
+                                    <a href="javascript:;" class="menu-link menu-toggle">
+                                        <span class="menu-icon">
+                                            <i class="${child.icon}"> </i>
+                                        </span>
+                                        <span class="menu-text">${child.title}</span>
+                                        <i class="menu-arrow"></i>
+                                    </a>
+                                    <div class="menu-submenu">
+                                        <i class="menu-arrow"></i>
+                                        <ul class="menu-subnav">
+                            `;
+
+
+
+                            $.map(child.subchildren, function (subchildren) {
+
+                                is_selected = false
+                                url_ = '#'
+
+                                if (typeof subchildren.url != 'undefined') {
+                                    url_ = subchildren.url
+                                    if (url_ == window.location.pathname) {
+                                        is_selected = true
+                                    }
+                                }
+
+                                is__active = ''
+
+                                if (is_selected) {
+                                    is__active = 'menu-item-active'
+                                }
+
+                                menu_content += `
+                                <li class="menu-item ${is__active}" aria-haspopup="true">
+                                    <a href="${subchildren.url}" class="menu-link">
+                                        <span class="menu-icon">
+                                            <i class="${subchildren.icon}"> </i>
+                                        </span>
+                                        <span class="menu-text">${subchildren.title}</span>
+                                    </a>
+                                </li>
+                                
+                            `;
+
+                            });
+
+
+                        } else {
+                            is_selected = false
+                            url_ = '#'
+
+                            if (typeof child.url != 'undefined') {
+                                url_ = child.url
+                                if (url_ == window.location.pathname) {
+                                    is_selected = true
+                                }
+                            }
+
+                            is__active = ''
+                            if (is_selected) {
+                                is__active = 'menu-item-active'
+                            }
+
+                            menu_content += `
+                            <li class="menu-item ${is__active}" data-menu-toggle="hover" aria-haspopup="true">
+                                <a href="${child.url}" class="menu-link">
+                                    <span class="menu-icon">
+                                        <i class="${child.icon}"> </i>
+                                    </span>
+                                    <span class="menu-text">${child.title}</span>
+                                </a>
+                            </li>
+                        `;
+                        }
+
+
+                    });
+
+                    menu_content += `
+                            </ul>
+                        </div>
+                    </li>
+                `;
+                } else {
+
+                    if (is_selected) {
+                        is__active = "menu-item-active"
+                    }
+
+                    menu_content += `
+                    <li  class="menu-item ${is__active}" data-menu-toggle="click" aria-haspopup="true">
+                        <a href="${item.url}" class="menu-link">
+                            <span class="menu-icon">
+                                <i class="${item.icon}"> </i>
+                            </span>
+                            <span class="menu-text">${item.title}</span>
+                        </a>
+                    </li>   
+                `;
+                }
+            }
+
+            selector.html(menu_content);
+        });
+    }
+
+    function ajax_load_item_menu() {
+        $.ajax({
+            type: 'GET',
+            //yg dipanggil menu pengguna 
+            url: '{% url 'menu_pengguna' %}',
+            success: function (response) {
+                // console.log(response)
+                // data = $.parseJSON(response)
+                renderMenus($('#kt_aside_menu > .menu-nav'), response);
+            },
+            error: function (jqXHR, exception) {
+                if (jqXHR.status === 0) {
+                    alert('Not connect.\n Verify Network.');
+                } else if (jqXHR.status == 404) {
+                    alert('Requested page not found. [404]');
+                } else if (jqXHR.status == 500) {
+                    alert('Internal Server Error [500].');
+                } else if (exception === 'parsererror') {
+                    alert('Requested JSON parse failed.');
+                } else if (exception === 'timeout') {
+                    alert('Time out error.');
+                } else if (exception === 'abort') {
+                    alert('Ajax request aborted.');
+                } else {
+                    alert('Uncaught Error.\n' + jqXHR.responseText);
+                }
+                if (!jqXHR.status == 500) {
+                    ajax_load_item_menu();
+                }
+            }
+        })
+    }
+    function load_notification(){
+        $('.notifikasi').html('')
+        $.ajax({
+            url: "#",
+            type: "GET",
+            success: function(respon){
+                if(respon.success){
+                    data = respon.data.map(item => {
+                        console.log(item)
+                        if(item.subjek.includes("terverifikasi")){
+                            icon = `
+                                <div class="symbol symbol-40 symbol-light-success mr-5">
+                                    <span class="symbol-label" title="Terverifikasi">
+                                        <span class="fas fa-check"></span>
+                                    </span>
+                                </div>
+                            `
+                        }else{
+                            icon = `
+                                <div class="symbol symbol-40 symbol-light-danger mr-5">
+                                    <span class="symbol-label" title="Ditolak">
+                                        <span class="fas fa-subscript"></span>
+                                    </span>
+                                </div>
+                            `
+                        }
+                        
+                        html_notifikasi = 
+                        `<div class="d-flex align-items-center mb-6">`
+                        + icon +
+                        `
+                            <div class="d-flex flex-column font-weight-bold">
+                                <a href="#" class="text-dark text-hover-primary mb-1 font-size-lg">${item.subjek}</a>
+                                <span class="text-muted">${item.isi}</span>
+                            </div>
+                            </div>
+                        `
+                        $('.notifikasi').append(html_notifikasi)
+                    })
+                }else{
+                    html_notifikasi = '<center>Tidak ada notifikasi</center>'
+                    $('.notifikasi').html(html_notifikasi)
+                }
+                
+            },
+            error: function(e){
+                console.log(e)
+            }
+        })
+    }
+    
+
+    $(function () {
+        ajax_load_item_menu()
+        // load_notification()
+    })
+</script>
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-app.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+<script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-analytics.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-messaging.js"></script>
+
+{% comment %} <script>
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  var firebaseConfig = {
+    apiKey: "AIzaSyDAOh-QeOQy8GTZ_QdDrry4KZc5VhiUqCg",
+    authDomain: "simita-kab-tuban.firebaseapp.com",
+    projectId: "simita-kab-tuban",
+    storageBucket: "simita-kab-tuban.appspot.com",
+    messagingSenderId: "99118747370",
+    appId: "1:99118747370:web:ae5c43cdf98dd58f479193",
+    measurementId: "G-QXQTSQ4ZL4"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  firebase.analytics();
+
+  const messaging = firebase.messaging();
+
+  messaging
+        .requestPermission()
+        .then(function () {
+            // MsgElem.innerHTML = "Notification permission granted." 
+            console.log("Notification permission granted.");
+            // get the token in the form of promise
+            return messaging.getToken()
+        })
+
+        .then(function(token) {
+            $.ajax({
+                url: "#",
+                type: "POST",
+                data: {
+                    csrfmiddlewaretoken: '{{csrf_token}}',
+                    token: token
+                },
+                success: function(respon){
+                    console.log(respon)
+                },
+                error: function(e){
+                    console.log(e)
+                }
+            })
+
+
+        })
+        .catch(function (err) {
+            // ErrElem.innerHTML =  ErrElem.innerHTML + "; " + err
+            console.log("Unable to get permission to notify.", err);
+        });
+
+  let enableForegroundNotification = true;
+  messaging.onMessage(function(payload) {
+        console.log("Message received. ", payload);
+        // console.log("masuk Notification")
+        
+        let pathname_ = window.location.pathname;
+        // if(pathname_ === "/pengajuan/izin/approval/" || pathname_ === "/pengajuan/cuti/approval/"){
+        //  window.location.reload()
+        // }else{
+        //  ajax_load_item_menu();
+        // }
+
+        // NotisElem.innerHTML = NotisElem.innerHTML + JSON.stringify(payload);
+
+        load_notification()
+
+        if(enableForegroundNotification) {
+            // console.log(payload)
+            // const {title, ...options} = JSON.parse(payload.notification);
+            const {title, ...options} = payload.notification;
+            navigator.serviceWorker.getRegistrations().then(registration => {
+                registration[0].showNotification(title, options);
+            });
+        }
+    });
+
+</script> {% endcomment %}
+{% endblock %}

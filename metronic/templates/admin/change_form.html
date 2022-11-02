@@ -1,0 +1,334 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static admin_modify suit_tags admin_urls custom_submit_row %}
+
+{% block title %}{{ opts.verbose_name }}{% endblock %}
+
+{% block content_title %}
+{% if add %} {% trans 'Add' %} {% else %} {% trans 'Edit' %} {% endif %} {{ opts.verbose_name }}
+{% endblock %}
+
+{% block breadcrumbs %}
+<ul class="breadcrumb breadcrumb-transparent breadcrumb-dot font-weight-bold p-0 my-2 font-size-sm">
+    <li class="breadcrumb-item">
+        <a href="{% url 'admin:index' %}" class="text-muted">{% trans 'Home' %}</a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="{% url 'admin:app_list' app_label=opts.app_label %}" class="text-muted">{{ opts.app_config.verbose_name }}</a>
+    </li>
+    <li class="breadcrumb-item">
+        {% if has_change_permission %}
+    	<a href="{% url opts|admin_urlname:'changelist' %}" class="text-muted">{{ opts.verbose_name_plural|capfirst }}</a>
+    	{% else %}
+    	<a href="#" class="text-muted">{{ opts.verbose_name_plural|capfirst }}</a>
+        {% endif %}
+    </li>
+    <li class="breadcrumb-item">
+        <a href="#" class="text-muted active">{% if add %}{% trans 'Add' %} {{ opts.verbose_name }}{% else %} {{ original|truncatewords:"18" }}{% endif %}</a>
+    </li>
+</ul>
+{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" type="text/css" href="{% static 'admin/css/widgets.css' %}" />
+<!-- <link href="{% static 'vendors/select2/select2.min.css' %}" rel="stylesheet" /> -->
+<!-- <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.css"> -->
+<link rel="stylesheet" type="text/css" href="{% static 'css/change_form.css' %}?v=2.2">
+{% endblock %}
+
+{% block extrahead %}{{ block.super }}
+{% url 'admin:jsi18n' as jsi18nurl %}
+<script type="text/javascript" src="{{ jsi18nurl|default:'../../../jsi18n/' }}"></script>
+{{ media }}
+{% endblock %}
+
+{% block extrascript %}
+{{ block.super }}
+<script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script>
+<script type="text/javascript">
+	django.formats.DATE_INPUT_FORMATS = ["%d-%m-%Y", "%d/%m/%Y", "%d-%m-%Y", "%d/%m/%Y", "%d %b %Y", "%d %B %Y",
+		"%Y-%m-%d"
+	]
+</script>
+{{ media }}
+{% endblock %}
+
+{% block custom_js %}
+{{ block.super }}
+<script type="text/javascript">
+	$(function () {
+		// if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+		// 	$('select.chosen-select').addClass('select-mobile')
+		// } else {
+		// 	$('select.chosen-select').select2();
+		// }
+		// $('select').selectize();
+		let inline_btn_add = $('div.add-row a')
+		if (inline_btn_add.length > 0) {
+			for (i = 0; i < inline_btn_add.length; i++) {
+				let elem_btn = inline_btn_add.eq(i)
+				// console.log(elem_btn.text())
+				elem_btn.html('<i style="color: black;" class="fa fa-plus"></i> ' + elem_btn.text())
+			}
+		}
+		$("input[id*='tanggal'] , input[id*='tmt']" ).each(function() {
+			$(this).datepicker({
+				autoclose:true,
+				format: 'dd-mm-yyyy',
+				uiLibrary: 'bootstrap4'
+			});
+		});
+	});
+</script>
+{% endblock %}
+
+{% block custom_style %}
+{{ block.super }}
+<style type="text/css">
+	.form-columns{
+		min-height: 60px;
+		width: 100%;
+		/*margin-bottom: 10px;*/
+		padding-top: 10px;
+		padding-left: 30px;
+		padding-right: 30px;
+		display: inline-block;
+	}
+
+	/*.form-columns .related-widget-wrapper{
+		display: flex;
+	}*/
+
+	.form-columns label.required{
+		font-weight: bold;
+	}
+
+	.form-columns. .related-widget-wrapper .related-widget-wrapper-link{
+		margin-left: 5px;
+	}
+
+	.related-widget-wrapper-link{
+		margin-top: 5px;
+	}
+
+	.related-widget-wrapper-link img{
+		width: 15px;
+		margin-left: 5px;
+	}
+
+	.blockquote-success{
+		margin-bottom: 0px;
+	}
+
+	/*fieldset.module{
+		padding: 30px;
+	}*/
+
+	fieldset.module .legend{
+		background-color: #006f0f;
+	    font-size: 11px;
+	    padding-left: 10px;
+	    font-weight: bold;
+	    margin-top: 30px;
+	    margin-bottom: 30px;
+		color: white;
+	}
+
+	/*.vCheckboxLabel{
+		margin-left: 10px;
+	}*/
+
+	div.add-row{
+		margin-top: 10px;
+    	margin-bottom: 15px;
+	}
+
+	div.add-row a{
+		margin-left: 10px;
+	}
+
+	@media (max-width: 800px){
+		.header-mobile-fixed .wrapper {
+			padding-top: 0px;
+		}
+	}
+
+	.selector-available .selector-filter input{
+		height: 35px;
+		padding-left: 5px;
+	}
+	.field-hidden {
+		display: none;
+	}
+</style>
+{% endblock %}
+
+{% block coltype %}colM{% endblock %}
+
+{% block bodyclass %}
+{{ block.super }} {{ opts.app_label }}-{{ opts.object_name.lower }} change-form
+{% endblock %}
+
+{% block content %}
+<div class="row">
+	<div class="col-md-12">
+		{% block form_top %}{% endblock %}
+		{% if not has_delete_permission and not has_change_permission and add %}
+		<div class="alert alert-danger">
+			Pastikan yang Anda inputkan benar, karena Anda <strong>HANYA</strong> dapat menambahkan data ini dan
+			<strong>TIDAK</strong> dapat mengubah ataupun menghapus data yang telah Anda tambahkan.
+		</div>
+		{% elif not has_delete_permission and has_add_permission and add %}
+		<div class="alert alert-danger">
+			Pastikan yang Anda inputkan benar, karena <strong>TIDAK</strong> dapat menghapus data ini.
+		</div>
+		{% endif %}
+		{% if errors %}
+		<div class="alert alert-danger">
+			{% blocktrans count counter=errors|length %}Harap perbaiki kesalahan di bawah.{% plural %}Mohon perbaiki
+			kesalahan di bawah.{% endblocktrans %}
+			{{ adminform.form.non_field_errors }}
+		</div>
+		{% endif %}
+
+		<div class="card mt-2">
+			<div class="card-body p-5">
+				<blockquote class="blockquote-success" style="color: #676767 !important;">
+					{% blocktrans %}Inputan dengan label yang memakai huruf <strong>tebal</strong> wajib diisi.
+					{% endblocktrans %}<br>
+					Tekan tanda <img width="10" height="10" src="{% static "admin/img/icon-addlink.svg" %}"
+						alt="Tambah"> untuk menambahkan item lainnya yang tidak tersedia dalam list pilihan.<br>
+					Tekan tanda <img width="10" height="10" src="{% static "admin/img/icon-changelink.svg" %}"
+						alt="Ubah"> untuk mengubah item dalam list pilihan.
+				</blockquote>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-12">
+		<form {% if has_file_field %}enctype="multipart/form-data" {% endif %}action="{{ form_url }}" method="post"
+			id="{{ opts.model_name }}_form"
+			style="display: inline-block; width: 100%; padding-bottom: 20px; overflow: auto;">{% csrf_token %}
+			<div class="card card-custom mt-5">
+				<div class="card-header">
+					<div class="card-title">
+						<h3 class="card-label">Form {{ title }}</h3>
+					</div>
+					<div class="card-toolbar">
+						{% comment %} <a href="#" class="btn btn-icon btn-sm btn-hover-light-primary mr-1" data-card-tool="toggle"
+							data-toggle="tooltip" data-placement="top" title="Toggle Card">
+							<i class="ki ki-arrow-down icon-nm"></i>
+						</a>
+						<a href="#" class="btn btn-icon btn-sm btn-hover-light-primary mr-1" data-card-tool="reload"
+							data-toggle="tooltip" data-placement="top" title="Reload Card">
+							<i class="ki ki-reload icon-nm"></i>
+						</a>
+						<a href="#" class="btn btn-icon btn-sm btn-hover-light-primary" data-card-tool="remove"
+							data-toggle="tooltip" data-placement="top" title="Remove Card">
+							<i class="ki ki-close icon-nm"></i>
+						</a> {% endcomment %}
+					</div>
+				</div>
+				
+				<div class="card-body p-0">
+					{% if is_popup %}<input type="hidden" name="_popup" value="1" />{% endif %}
+					{% block field_sets %}
+					{% for fieldset in adminform %}
+					{% include "admin/includes/fieldset.html" %}
+					{% endfor %}
+					<br />
+					{% endblock %}
+					{% block after_field_sets %}{% endblock %}
+					{% block inline_field_sets %}
+					{% for inline_admin_formset in inline_admin_formsets %}
+					{% include inline_admin_formset.opts.template %}
+					{% endfor %}
+					{% endblock %}
+					{% block after_related_objects %}{% endblock %}
+				</div>
+
+				<div class="card-footer">
+					{% block submit_buttons_bottom %}{% custom_submit_row %}{% endblock %}
+					{% if adminform.first_field and add %}
+					<script type="text/javascript">
+						if ($("#{{ adminform.first_field.id_for_label }}").length > 0) {
+							document.getElementById("{{ adminform.first_field.id_for_label }}").focus();
+						}
+					</script>
+					{% endif %}
+					{# JavaScript for prepopulated fields #}
+					{% prepopulated_fields_js %}
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script src="{% static 'admin/js/admin/RelatedObjectLookups.js' %}"></script>
+<!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/js/standalone/selectize.js"></script> -->
+<script src="">
+	// This card is lazy initialized using data-card="true" attribute. You can access to the card object as shown below and override its behavior
+	var card = new KTCard('kt_card_1');
+
+	// Toggle event handlers
+	card.on('beforeCollapse', function (card) {
+		setTimeout(function () {
+			toastr.info('Before collapse event fired!');
+		}, 100);
+	});
+
+	card.on('afterCollapse', function (card) {
+		setTimeout(function () {
+			toastr.warning('Before collapse event fired!');
+		}, 2000);
+	});
+
+	card.on('beforeExpand', function (card) {
+		setTimeout(function () {
+			toastr.info('Before expand event fired!');
+		}, 100);
+	});
+
+	card.on('afterExpand', function (card) {
+		setTimeout(function () {
+			toastr.warning('After expand event fired!');
+		}, 2000);
+	});
+
+	// Remove event handlers
+	card.on('beforeRemove', function (card) {
+		toastr.info('Before remove event fired!');
+
+		return confirm('Are you sure to remove this card ?'); // remove card after user confirmation
+	});
+
+	card.on('afterRemove', function (card) {
+		setTimeout(function () {
+			toastr.warning('After remove event fired!');
+		}, 2000);
+	});
+
+	// Reload event handlers
+	card.on('reload', function (card) {
+		toastr.info('Leload event fired!');
+
+		KTApp.block(card.getSelf(), {
+			overlayColor: '#ffffff',
+			type: 'loader',
+			state: 'primary',
+			opacity: 0.3,
+			size: 'lg'
+		});
+
+		// update the content here
+
+		setTimeout(function () {
+			KTApp.unblock(card.getSelf());
+		}, 2000);
+	});
+</script>
+
+{% endblock %}

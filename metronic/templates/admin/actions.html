@@ -1,0 +1,42 @@
+{% load i18n %}
+{% load widgets %}
+<div class="d-flex justify-item-center">
+    <div class="actions mt-3 ml-3">
+        {% if cl.formset and cl.result_count %}
+        <button type="submit" name="_save"
+            class="btn btn-success waves-effect pull-right changelist-save">{% trans 'Simpan' %}</button>
+        {% endif %}
+
+        {% for field in action_form %}
+        {% if field.label %}
+        <div class="form-group">
+            <label
+                style="padding-right: 10px; padding-top: 10px;">{{ field.label }}{% endif %}{% if field.label %}</label>
+            {% endif %}
+            <div class="d-flex">{{ field|addcls:"form-control w-auto" }}{% endfor %}
+                <button class="btn btn-light-success btn-sm ml-2" type="submit" class="button"
+                    title="{% trans 'Run the selected action' %}" name="index" value="{{ action_index|default:0 }}"><i
+                        class="fa fa-cog mr-1"></i>{% trans "Jalankan" %}</button>
+            </div>
+        </div>
+        {% if actions_selection_counter_ %}
+        <script type="text/javascript">
+            var _actions_icnt = "{{ cl.result_list|length|default:"
+            0 " }}";
+        </script>
+        <span class="action-counter pull-right">{{ selection_note }}</span>
+        {% if cl.result_count != cl.result_list|length %}
+        <span class="all">{{ selection_note_all }}</span>
+        <span class="question">
+            <a href="javascript:;"
+                title="{% trans "Click here to select the objects across all pages" %}">{% blocktrans with cl.result_count as total_count %}Select
+                all {{ total_count }} {{ module_name }}{% endblocktrans %}</a>
+        </span>
+        <span class="clear"><a href="javascript:;">{% trans "Clear selection" %}</a></span>
+        {% else %}
+        <span class="">&nbsp;</span>
+        {% endif %}
+        <div style="display: inline-block;">&nbsp;</div>
+        {% endif %}
+    </div>
+</div>

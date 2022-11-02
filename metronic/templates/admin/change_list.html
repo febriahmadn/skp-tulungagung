@@ -1,0 +1,342 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static admin_list admin_urls suit_list suit_tags %}
+
+{% block title %}{{ cl.opts.verbose_name_plural|capfirst }}{% endblock %}
+
+{% block bodyclass %}{{ block.super }} {{ cl.opts.app_label }} {{ cl.opts.app_label }}-{{ cl.opts.model_name }}
+change-list{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+{{ media.js }}
+{% if action_form %}{% if actions_on_top or actions_on_bottom %}
+<script type="text/javascript">
+    (function ($) {
+        $(document).ready(function ($) {
+            // $("tr input.action-select").actions();
+        });
+    })(django.jQuery);
+</script>
+{% endif %}{% endif %}
+{% endblock %}
+
+{% block custom_style %}
+{{ block.super }}
+{% if action_form %}{% if actions_on_top or actions_on_bottom %}
+    <script type="text/javascript">
+        (function ($) {
+            $(document).ready(function ($) {
+                // $("tr input.action-select").actions();
+            });
+        })(django.jQuery);
+    </script>
+{% endif %}{% endif %}
+<style type="text/css">
+    .change_list__pagination>.pagination>li>a {
+        padding: .5rem .75rem;
+        border: 1px solid #dee2e6;
+        background: white;
+        border-radius: 5px;
+    }
+
+    .dropdown-menu.show {
+        left: -90px;
+    }
+
+    #changelist-form .actions {
+        display: inline-flex;
+        width: 100%;
+    }
+
+    .select-mobile {
+        width: 100%;
+        height: 40px;
+        border-radius: 5px;
+        background-color: white;
+    }
+
+    .paginate_button{
+        cursor: pointer;
+    }
+
+    .actions .form-group{
+        display: inherit;
+    }
+</style>
+{% endblock %}
+
+{% block custom_js %}
+{{ block.super }}
+{% if action_form %}{% if actions_on_top or actions_on_bottom %}
+<script type="text/javascript">
+    // This card is lazy initialized using data-card="true" attribute. You can access to the card object as shown below and override its behavior
+    var card = new KTCard('kt_card_1');
+
+    // Toggle event handlers
+    card.on('beforeCollapse', function (card) {
+        setTimeout(function () {
+            toastr.info('Before collapse event fired!');
+        }, 100);
+    });
+
+    card.on('afterCollapse', function (card) {
+        setTimeout(function () {
+            toastr.warning('Before collapse event fired!');
+        }, 2000);
+    });
+
+    card.on('beforeExpand', function (card) {
+        setTimeout(function () {
+            toastr.info('Before expand event fired!');
+        }, 100);
+    });
+
+    card.on('afterExpand', function (card) {
+        setTimeout(function () {
+            toastr.warning('After expand event fired!');
+        }, 2000);
+    });
+
+    // Remove event handlers
+    card.on('beforeRemove', function (card) {
+        toastr.info('Before remove event fired!');
+
+        return confirm('Are you sure to remove this card ?'); // remove card after user confirmation
+    });
+
+    card.on('afterRemove', function (card) {
+        setTimeout(function () {
+            toastr.warning('After remove event fired!');
+        }, 2000);
+    });
+
+    // Reload event handlers
+    card.on('reload', function (card) {
+        toastr.info('Leload event fired!');
+
+        KTApp.block(card.getSelf(), {
+            overlayColor: '#ffffff',
+            type: 'loader',
+            state: 'primary',
+            opacity: 0.3,
+            size: 'lg'
+        });
+
+        // update the content here
+
+        setTimeout(function () {
+            KTApp.unblock(card.getSelf());
+        }, 2000);
+    });
+</script>
+
+{% endif %}{% endif %}
+<script src="{% static 'scripts/jsi18n.js' %}"></script>
+<script src="{% static 'scripts/actions.js' %}"></script>
+<script type="text/javascript">
+    const OpenLink = (elem) => {
+        // console.log(elem.data('url'))
+        window.location.href = window.location.pathname+elem.data('url');
+    }
+
+    $(function () {
+        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+            $('select').addClass('select-mobile')
+        }
+
+        // load option ajax
+        var load_option_ajax = function (elemen_) {
+            let select_ = elemen_.find('select');
+            select_.select2();
+            let set_disable = elemen_.data('disable');
+            if(typeof set_disable != 'undefined' && set_disable){
+                select_.attr('disabled', true);
+            }
+            let url_ = $(elemen_).data('url');
+            let title_ = elemen_.data('title');
+            let value_ = elemen_.data('value');
+            if (typeof url_ != 'undefined' && url_ != ''){
+                $.ajax({
+                    url: url_,
+                    type: "GET",
+                    data: {
+                        act: "list-filter-json"
+                    },
+                    beforeSend: function(){
+                        // elemen_.select2("enable", true);
+                        select_.attr('disabled', true);
+                    },
+                    success: function (response) {
+                        // console.log(response)
+                        var html_ = "";
+                        if(typeof title_ != 'undefined'){
+                            html_ = `<option value>Semua ${title_}</option><option value="0">${title_} tidak diketahui</option>`;
+                        }
+                        try{
+                            if(response.success){
+                                response.data.map(item => {
+                                    var selected = "";
+                                    if(typeof value_ !== 'undefined'){
+                                        if(value_ == item.id){
+                                            selected = "selected";
+                                        }
+                                    }
+                                    html_ += `<option value="${item.id}" ${selected}>${item.text}</option>`
+                                })
+                            }
+                        }catch(e){
+                            console.log(e)
+                            html_ = response
+                        }
+
+                        select_.html(html_).trigger('change');
+                        // elem = elemen_.find('select');
+                        // html_before = elem.html();
+                        // elem.html(html_before + response);
+
+                        // selected = elemen_.data('selected');
+                        // if (typeof selected != 'undefined' && selected != '') {
+                        //     elem.val(selected).trigger('change');
+                        // }
+
+                        elemen_.attr('data-status', 'loaded');
+                        if ($('.select-filter[data-status=unload]').length > 0) {
+                            if ($('.select-filter[data-status=unload]').eq(0).data('url') !=
+                                'undefined') {
+                                load_option_ajax($('.select-filter[data-status=unload]').eq(0));
+                            }
+                        }
+                    },
+                    complete: function(){
+                        select_.attr('disabled', false);
+                    }
+                });
+            }else{
+                elemen_.attr('data-status', 'loaded');
+                if ($('.select-filter[data-status=unload]').length > 0) {
+                    if ($('.select-filter[data-status=unload]').eq(0).data('url') !=
+                        'undefined') {
+                        load_option_ajax($('.select-filter[data-status=unload]').eq(0));
+                    }
+                }
+            }
+        }
+
+        if ($('.select-filter[data-status=unload]').length > 0) {
+            if ($('.select-filter[data-status=unload]').eq(0).data('url') != 'undefined') {
+                load_option_ajax($('.select-filter[data-status=unload]').eq(0));
+            }
+        }
+    });
+</script>
+
+{% endblock %}
+
+{% block breadcrumbs %}
+<ul class="breadcrumb breadcrumb-transparent breadcrumb-dot font-weight-bold p-0 my-2 font-size-sm">
+    <li class="breadcrumb-item">
+        <a href="#" class="text-muted">{% trans 'Home' %}</a>
+    </li>
+    <li class="breadcrumb-item">
+        {% if title %}
+        <a href="" class="text-muted active">{{ cl.opts.verbose_name_plural|capfirst }}</a>
+        {% endif %}
+    </li>
+</ul>
+{% endblock breadcrumbs %}
+
+
+{% block extrastyle %}
+{{ block.super }}
+<!-- <link href="{% static 'vendors/select2/select2.min.css' %}" rel="stylesheet" /> -->
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<!-- <script src="{% static 'vendors/select2/select2.min.js' %}"></script> -->
+{% endblock %}
+
+{% block content %}
+    {% block date_hierarchy %}{% date_hierarchy cl %}{% endblock %}
+    {% block search %}{% search_form cl %}{% endblock %}
+    {% block extra-tools %}{% endblock %}
+
+    <div class="row">
+        <div class="col-lg-12">
+            {% if cl.formset.errors %}
+            <p class="errornote">
+                {% if cl.formset.total_error_count == 1 %}{% trans "Please correct the error below." %}{% else %}{% trans "Please correct the errors below." %}{% endif %}
+            </p>
+            {{ cl.formset.non_form_errors }}
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card card-custom" id="kt_card_1">
+        <div class="card-header">
+            <div class="card-title">
+                <h3 class="card-label">
+                    {% block extra-object-tools %}
+                    {% block header-extra-object-tools %}
+                    Pilih {{ cl.opts.verbose_name_plural|capfirst }}
+                    {% endblock %}
+                    {% endblock %}
+                </h3>
+            </div>
+            <div class="card-toolbar">
+                {% block actions %}
+                    {% block filters %}
+                    {% if cl.has_filters %}
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-primary">{% trans 'Filter' %}</button>
+                        <button type="button" class="btn btn-primary dropdown-toggle dropdown-icon" data-toggle="dropdown">
+                            <div class="dropdown-menu">
+                                {% for spec in cl.filter_specs %}{% admin_list_filter cl spec %}{% endfor %}
+                            </div>
+                        </button>
+                    </div>
+                    {% endif %}
+                {% endblock %}
+                
+                {% if has_add_permission %}
+                {% url cl.opts|admin_urlname:'add' as add_url %}
+                <a href="{% add_preserved_filters add_url is_popup %}" class="btn btn-light-primary font-weight-bolder btn-sm ml-10"><i
+                        class="nav-icon fas fa-plus"></i>
+                    {% trans 'Add' %}</a>
+                {% endif %}
+                {% endblock %}
+                
+                {% block sync %}
+                {% endblock %}
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <form id="changelist-form" action="" method="post" {% if cl.formset.is_multipart %}
+                enctype="multipart/form-data" {% endif %}>{% csrf_token %}
+                <div class="card-body p-0">
+                    {% if cl.formset %}
+                        <div>{{ cl.formset.management_form }}</div>
+                    {% endif %}
+                    {% block result_list %}
+                        {% block custom_action %}
+                            {% if action_form and cl.full_result_count %}
+                                <div style="margin-bottom: 15px;">{% admin_actions %}</div>
+                            {% endif %}
+                        {% endblock %}
+                        {% block custom_result_list %}
+                            {% result_list cl %}
+                        {% endblock %}
+                    {% endblock %}
+                </div>
+            </form>
+        </div>
+        {% block footer %}
+        {{ block.super }}
+        <div class="card-footer">
+            <div class="text-center">
+                {% block pagination %}{% pagination cl %}{% endblock %}
+            </div>
+        </div>
+        {% endblock %}
+    </div>
+{% endblock %}

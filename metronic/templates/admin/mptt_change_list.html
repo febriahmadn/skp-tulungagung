@@ -1,0 +1,13 @@
+{% extends "admin/change_list.html" %}
+{% load admin_list i18n mptt_admin %}
+
+{% block result_list %}
+    {% block custom_action %}
+        {% if action_form and cl.full_result_count %}
+            <div style="margin-bottom: 15px;">{% admin_actions %}</div>
+        {% endif %}
+    {% endblock %}
+    {% block custom_result_list %}
+        {% result_list cl %}
+    {% endblock %}
+{% endblock %}
