@@ -8,6 +8,9 @@ class UnitKerja(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return '{}'.format(self.unitkerja)
+
     class Meta:
         verbose_name = "Unit Kerja"
         verbose_name_plural = "Unit Kerja"
