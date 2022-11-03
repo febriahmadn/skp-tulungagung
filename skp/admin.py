@@ -1,3 +1,11 @@
-# from django.contrib import admin
+from django.contrib import admin
 
-# Register your models here.
+#model import 
+from .models import DetailSasaranKinerja
+
+#admin Import 
+from .subadmin.detailsasarankerja_admin import DetailsasarankerjaAdmin
+
+
+
+admin.site.register(DetailSasaranKinerja, DetailsasarankerjaAdmin)
