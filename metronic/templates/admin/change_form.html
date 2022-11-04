@@ -34,9 +34,11 @@
 <!-- <link href="{% static 'vendors/select2/select2.min.css' %}" rel="stylesheet" /> -->
 <!-- <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.css"> -->
 <link rel="stylesheet" type="text/css" href="{% static 'css/change_form.css' %}?v=2.2">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/css/tempusdominus-bootstrap-4.min.css" integrity="sha256-XPTBwC3SBoWHSmKasAk01c08M6sIA5gF5+sRxqak2Qs=" crossorigin="anonymous" />
 {% endblock %}
 
-{% block extrahead %}{{ block.super }}
+{% block extrahead %}
+{{ block.super }}
 {% url 'admin:jsi18n' as jsi18nurl %}
 <script type="text/javascript" src="{{ jsi18nurl|default:'../../../jsi18n/' }}"></script>
 {{ media }}
@@ -51,12 +53,17 @@
 	]
 </script>
 {{ media }}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.23.0/moment.min.js" integrity="sha256-VBLiveTKyUZMEzJd6z2mhfxIqz3ZATCuVMawPZGzIfA=" crossorigin="anonymous"></script>
+
+<!-- Tempus Dominus Bootstrap 4 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.1.2/js/tempusdominus-bootstrap-4.min.js" integrity="sha256-z0oKYg6xiLq3yJGsp/LsY9XykbweQlHl42jHv2XTBz4=" crossorigin="anonymous"></script>
 {% endblock %}
 
 {% block custom_js %}
 {{ block.super }}
 <script type="text/javascript">
 	$(function () {
+		$("#id_periode_awal").datetimepicker();
 		// if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
 		// 	$('select.chosen-select').addClass('select-mobile')
 		// } else {
@@ -103,7 +110,7 @@
 		font-weight: bold;
 	}
 
-	.form-columns. .related-widget-wrapper .related-widget-wrapper-link{
+	.form-columns .related-widget-wrapper .related-widget-wrapper-link {
 		margin-left: 5px;
 	}
 
@@ -120,11 +127,7 @@
 		margin-bottom: 0px;
 	}
 
-	/*fieldset.module{
-		padding: 30px;
-	}*/
-
-	fieldset.module .legend{
+	fieldset.module .legend {
 		background-color: #006f0f;
 	    font-size: 11px;
 	    padding-left: 10px;
@@ -134,11 +137,7 @@
 		color: white;
 	}
 
-	/*.vCheckboxLabel{
-		margin-left: 10px;
-	}*/
-
-	div.add-row{
+	div.add-row {
 		margin-top: 10px;
     	margin-bottom: 15px;
 	}

@@ -15,10 +15,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from skp.views import view_dashboard
 from usom.views import menu_pengguna
 
 urlpatterns = [
     path("menu-pengguna", menu_pengguna, name="menu_pengguna"),
+    path("", view_dashboard, name="admin_dashboard"),
     path("", include("usom.urls")),
     path("", admin.site.urls),
 ]
