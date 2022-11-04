@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 #model import 
-from .models import SasaranKinerja, DetailSasaranKinerja, RencanaHasilKerja, Perspektif, IndikatorKinerjaIndividu, PerilakuKerja, DaftarPerilakuKerja
+from .models import SasaranKinerja, DetailSasaranKinerja, RencanaHasilKerja, Perspektif, IndikatorKinerjaIndividu, PerilakuKerja, DaftarPerilakuKerja, Lampiran
 
 #admin Import 
 from skp.subadmin.sasarankinerja_admin import SasaranKinerjaAdmin
@@ -11,7 +11,7 @@ from .subadmin.perspektif_admin import PerspektifAdmin
 from .subadmin.indikator_admin import IndikatorAdmin
 from .subadmin.perilakukerja_admin import PerilakukerjaAdmin
 from .subadmin.daftarperilakukerja_admin import DaftarperilakukerjaAdmin
-
+from .subadmin.lampiran_admin import LampiranAdmin
 
 
 admin.site.register(DetailSasaranKinerja, DetailsasarankerjaAdmin)
@@ -21,3 +21,4 @@ admin.site.register(IndikatorKinerjaIndividu, IndikatorAdmin)
 admin.site.register(SasaranKinerja, SasaranKinerjaAdmin)
 admin.site.register(PerilakuKerja, PerilakukerjaAdmin)
 admin.site.register(DaftarPerilakuKerja, DaftarperilakukerjaAdmin)
+admin.site.register(Lampiran, LampiranAdmin)
