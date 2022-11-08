@@ -12,15 +12,31 @@
 
 {% block extrastyle %}
 {{block.super}}
-<link rel="stylesheet" type="text/css" href="{% static 'css/base_site_custom.css' %}">
+<!-- <link rel="stylesheet" type="text/css" href="{% static 'css/base_site_custom.css' %}"> -->
 {% endblock %}
 
 {% block custom_style %}
 {{block.super}}
 <style>
+    .aside-menu .menu-nav>.menu-item.menu-item-here>.menu-heading .menu-arrow, .aside-menu .menu-nav>.menu-item.menu-item-here>.menu-link .menu-arrow,
+    .aside-menu .menu-nav>.menu-item .menu-submenu .menu-item.menu-item-active>.menu-heading .fa, .aside-menu .menu-nav>.menu-item .menu-submenu .menu-item.menu-item-active>.menu-link .fa,
+    .aside-menu .menu-nav>.menu-item .menu-submenu .menu-item.menu-item-active>.menu-heading .menu-text, .aside-menu .menu-nav>.menu-item .menu-submenu .menu-item.menu-item-active>.menu-link .menu-text,
+    .aside-menu .menu-nav>.menu-item.menu-item-here>.menu-heading .fa, .aside-menu .menu-nav>.menu-item.menu-item-here>.menu-link .fa,
+    .aside-menu .menu-nav>.menu-item.menu-item-here>.menu-heading .menu-text, .aside-menu .menu-nav>.menu-item.menu-item-here>.menu-link .menu-text,
+    .aside-menu .menu-nav>.menu-item.menu-item-active>.menu-heading .menu-text, .aside-menu .menu-nav>.menu-item.menu-item-active>.menu-link .menu-text,
+    .aside-menu .menu-nav>.menu-item.menu-item-active>.menu-heading .menu-text, .aside-menu .menu-nav>.menu-item.menu-item-active>.menu-link .fa {
+        color: #ffffff !important;
+    }
+
     .aside{
         -webkit-box-shadow: 0 0 10px 0 rgb(82 63 105 / 8%);
         box-shadow: 0 0 10px 0 rgb(82 63 105 / 8%);
+    }
+
+    .aside-menu .menu-nav>.menu-item .menu-submenu .menu-item.menu-item-active>.menu-heading, .aside-menu .menu-nav>.menu-item .menu-submenu .menu-item.menu-item-active>.menu-link,
+    .aside-menu .menu-nav>.menu-item.menu-item-here>.menu-heading, .aside-menu .menu-nav>.menu-item.menu-item-here>.menu-link,
+    .aside-menu .menu-nav>.menu-item.menu-item-active>.menu-heading, .aside-menu .menu-nav>.menu-item.menu-item-active>.menu-link {
+        background-color: #fefefe36 !important;
     }
 </style>
 {% endblock %}
