@@ -31,9 +31,13 @@ ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
-
 AUTH_USER_MODEL = "usom.Account"
-AUTHENTICATION_BACKENDS = ["usom.auth_backends.AuthBackend"]
+
+AUTHENTICATION_BACKENDS = [
+    # "usom.auth_backends.AuthBackend"
+    'django.contrib.auth.backends.ModelBackend',
+    "django_cas_ng.backends.CASBackend",
+]
 
 INSTALLED_APPS = [
     "usom.apps.UsomConfig",
@@ -46,6 +50,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "suit",
+    "django_cas_ng",
 ]
 
 MIDDLEWARE = [
@@ -56,6 +61,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # "django_cas_ng.middleware.CASMiddleware",
 ]
 
 ROOT_URLCONF = "core.urls"
@@ -159,3 +165,15 @@ EMAIL_HOST_USER = "240a45a9af96cf"
 EMAIL_ADMIN = "admin@trethon.com"
 EMAIL_HOST_PASSWORD = "dab10f1fa13878"
 EMAIL_PORT = "2525"
+
+LOGOUT_REDIRECT_URL = '/'
+LOGIN_URL = '/admin/login/'
+
+USE_X_FORWARDED_HOST = True
+# CAS_ROOT_PROXIED_AS = 'http://127.0.0.1:9000'
+
+CAS_REDIRECT_URL = '/'
+CAS_SERVER_URL = 'http://127.0.0.1:9000/cas'
+CAS_VERIFY_SSL_CERTIFICATE = False
+CAS_VERSION = '3'
+CAS_AUTO_CREATE_USERS = True

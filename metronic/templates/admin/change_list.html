@@ -287,9 +287,9 @@ change-list{% endblock %}
                 {% block actions %}
                     {% block filters %}
                     {% if cl.has_filters %}
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-primary">{% trans 'Filter' %}</button>
-                        <button type="button" class="btn btn-primary dropdown-toggle dropdown-icon" data-toggle="dropdown">
+                    <div class="btn-group btn-sm">
+                        <button type="button" class="btn btn-primary btn-sm">{% trans 'Filter' %}</button>
+                        <button type="button" class="btn btn-primary btn-sm dropdown-toggle dropdown-icon" data-toggle="dropdown">
                             <div class="dropdown-menu">
                                 {% for spec in cl.filter_specs %}{% admin_list_filter cl spec %}{% endfor %}
                             </div>
@@ -300,7 +300,7 @@ change-list{% endblock %}
                 
                 {% if has_add_permission %}
                 {% url cl.opts|admin_urlname:'add' as add_url %}
-                <a href="{% add_preserved_filters add_url is_popup %}" class="btn btn-light-primary font-weight-bolder btn-sm ml-10"><i
+                <a href="{% add_preserved_filters add_url is_popup %}" class="btn btn-light-primary font-weight-bolder btn-sm"><i
                         class="nav-icon fas fa-plus"></i>
                     {% trans 'Add' %}</a>
                 {% endif %}

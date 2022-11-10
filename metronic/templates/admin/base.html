@@ -306,7 +306,7 @@
                 </div>
                 <div class="d-flex flex-column">
                     <a class="font-weight-bold font-size-h5 text-dark-75 text-hover-success text-uppercase">
-                        {{request.user.nama_lengkap}}
+                        {% if request.user.nama_lengkap %}{{request.user.nama_lengkap}}{% else %}{{ request.user.username }}{% endif%}
                     </a>
                     {% if request.user.is_superuser %}
                         <div class="text-muted mt-1">Superuser</div>
