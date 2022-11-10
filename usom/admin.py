@@ -12,7 +12,7 @@ admin.site.register(UnitKerja, UnitKerjaAdmin)
 
 
 class AccountAdmin(UserAdmin):
-    pass
+    list_display = ('username', 'nama_lengkap', 'email')
 
 
 admin.site.register(Account, AccountAdmin)
