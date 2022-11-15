@@ -1,0 +1,51 @@
+version: '3.7'
+
+services:
+  skpapps:
+    build:
+      context: .
+    image: skpapps:latest
+    volumes:
+      - skpapps_static_volume:/skpapps/files/static-collected/
+      - skpapps_media_volume:/skpapps/files/media/
+    expose:
+    - 8005
+    command: >
+      sh -c "python manage.py migrate &&
+            python manage.py collectstatic --noinput && 
+            gunicorn --bind :8005 --workers 3 core.wsgi"
+    environment:
+      - DEBUG=${DEBUG}
+      - SECRET_KEY=${SECRET_KEY}
+      - DB_USER=${DB_USER}
+      - DB_NAME=${DB_NAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+    networks:
+      skpapps_network:
+        ipv4_address: 172.35.0.2
+  
+  nginx:
+    build: ./nginx
+    volumes:
+      - skpapps_static_volume:/skpapps/files/static-collected/
+      - skpapps_media_volume:/skpapps/files/media/
+      - .:/nginx/etc/nginx/conf.d/
+    ports:
+      - "127.0.0.1:9095:80"
+    depends_on:
+      - skpapps
+    networks:
+      skpapps_network:
+        ipv4_address: 172.35.0.3
+
+volumes:
+  skpapps_static_volume:
+  skpapps_media_volume:
+
+networks:
+  skpapps_network:
+    ipam:
+      config:
+        - subnet: 172.35.0.0/16

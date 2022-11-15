@@ -3,7 +3,11 @@
 ### Pakai Python Python 3.10.6
 
 
-## Installation
+## Installation With Docker
+
+```sh
+cp .env.production .env
+```
 
 ### Create Database
 
