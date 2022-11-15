@@ -2,9 +2,9 @@
 <!DOCTYPE html>
 <html lang="en">
 	<!--begin::Head-->
-	<head><base href="../../../../">
+	<head>
 		<meta charset="utf-8" />
-		<title>Login Page 1 | Keenthemes</title>
+		<title>SKP Tulungagung</title>
 		<meta name="description" content="Login page example" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 		<!--begin::Fonts-->
@@ -27,7 +27,7 @@
 		<!--end::Layout Themes-->
 		<link rel="shortcut icon" href="{% static 'metronic/'%}assets/media/logos/favicon.ico" />
 		<style>
-			@media (min-width: 992px){
+			/* @media (min-width: 992px){
 				.login.login-1 .login-form {
 					width: 100%;
 					max-width: 800px;
@@ -49,7 +49,7 @@
 				.styledisplaynone {
 					display:none !important;
 				}
-			}
+			} */
 		</style>
 	</head>
 	<!--end::Head-->
@@ -60,7 +60,6 @@
 			<!--begin::Login-->
 			<div class="login login-1 login-signin-on d-flex flex-column flex-lg-row flex-column-fluid bg-white" id="kt_login">
 				<!--begin::Aside-->
-				{% comment %} 
 				<div class="login-aside d-flex flex-row-auto bgi-size-cover bgi-no-repeat p-10 p-lg-10" style="background-image: url({% static 'metronic/'%}assets/media/bg/bg-4.jpg);">
 					<!--begin: Aside Container-->
 					<div class="d-flex flex-row-fluid flex-column justify-content-between">
@@ -71,13 +70,15 @@
 						<!--end: Aside header-->
 						<!--begin: Aside content-->
 						<div class="flex-column-fluid d-flex flex-column justify-content-center">
-							<h3 class="font-size-h1 mb-5 text-white">Welcome to Metronic!</h3>
-							<p class="font-weight-lighter text-white opacity-80">The ultimate Bootstrap, Angular 8, React &amp; VueJS admin theme framework for next generation web apps.</p>
+							<h3 class="font-size-h1 mb-5 text-white">Welcome to SKP!</h3>
+							<p class="font-weight-lighter text-white opacity-80">
+								Gunakan username dan password yang sama dengan akun Presensi Online, Jika anda belum mempunyai akun Presensi Online Silahkan hubungi admin aplikasi. 
+							</p>
 						</div>
 						<!--end: Aside content-->
 						<!--begin: Aside footer for desktop-->
 						<div class="d-none flex-column-auto d-lg-flex justify-content-between mt-10">
-							<div class="opacity-70 font-weight-bold text-white">© 2021 Metronic</div>
+							<div class="opacity-70 font-weight-bold text-white">© 2022 AITC</div>
 							<div class="d-flex">
 								<a href="#" class="text-white">Privacy</a>
 								<a href="#" class="text-white ml-10">Legal</a>
@@ -88,7 +89,6 @@
 					</div>
 					<!--end: Aside Container-->
 				</div> 
-				{% endcomment %}
 				<!--begin::Aside-->
 
 				<!--begin::Content-->
@@ -96,58 +96,50 @@
 					<div class="d-flex flex-column-fluid flex-center mt-30 mt-lg-0">
 						<!--begin::Signin-->
 						<div class="login-form login-signin">
-							<div class="card">
-								<div class="card-body">
-									<div class="row">
-										<div class="col-md-6 styledisplaynone" style="">
-											<strong>Informasi:</strong><br/>
-											Gunakan username dan password yang sama dengan akun Presensi Online, Jika anda belum mempunyai akun Presensi Online Silahkan hubungi admin aplikasi. 
+							<!-- <div class="mb-8 mb-lg-8"> -->
+								<!-- <h3 class="text-center font-size-h1">Sign In</h3> -->
+								<div class="text-center mb-10 mb-lg-20">
+									<h3 class="font-size-h1">Sign In</h3>
+									<p class="text-center text-muted font-weight-bold">Enter your username and password</p>
+									{% if form.non_field_errors %}
+										<div class="alert alert-danger alert-dismissible fade show">
+											<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+												<span aria-hidden="true">&times;</span>
+											</button>
+											<!-- <h5><i class="icon fas fa-ban"></i> Alert!</h5> -->
+											{{ form.non_field_errors }}
 										</div>
-										<div class="col-md-6">
-											<div class="mb-8 mb-lg-8">
-												<h3 class="text-center font-size-h1">Sign In</h3>
-												<p class="text-center text-muted font-weight-bold">Enter your username and password</p>
-												{% if form.non_field_errors %}
-													<div class="alert alert-danger alert-dismissible fade show">
-														<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-															<span aria-hidden="true">&times;</span>
-														</button>
-														<!-- <h5><i class="icon fas fa-ban"></i> Alert!</h5> -->
-														{{ form.non_field_errors }}
-													</div>
-												{% endif %}
-											</div>
-											<form class="form" method="POST" novalidate="novalidate" action="{{ app_path }}" id="kt_login_signin_form">
-												{% csrf_token %}
-												<div class="form-group">
-													<input {% if form.errors.username %}style="border:1px solid red"{% endif %} class="form-control form-control-solid h-auto py-5 px-6" name="username" type="text" placeholder="Username" name="username" value="{{form.username.value | default:'' }}" required /> 
-													{% if form.errors.username %}
-														{% for error in form.errors.username %}
-														<div class="fv-plugins-message-container"><div data-field="username" data-validator="notEmpty" class="fv-help-block">{{ error }}</div></div>
-														{% endfor %}
-													{% endif %}
-													</div>
-												<div class="form-group">
-													<input {% if form.errors.password %}style="border:1px solid red"{% endif %} class="form-control form-control-solid h-auto py-5 px-6" name="password" type="password" placeholder="Password" name="password" required />
-													{% if form.errors.password %}
-														{% for error in form.errors.password %}
-														<div class="fv-plugins-message-container"><div data-field="username" data-validator="notEmpty" class="fv-help-block">{{ error }}</div></div>
-														{% endfor %}
-													{% endif %}
-												</div>
-												<!--begin::Action-->
-												<div class="form-group d-flex flex-wrap justify-content-between align-items-center">
-													<a href="{% url 'password_reset' %}" class="text-dark-50 text-hover-primary my-3 mr-2" id="kt_login_forgot">Forgot Password ?</a>
-													<button type="submit" class="btn btn-primary font-weight-bold px-9 py-4 my-3">Sign In</button>
-												</div>
-												<!--end::Action-->
-											</form>
-										</div>
-									</div>
+									{% endif %}
 								</div>
+							
+								<form class="form fv-plugins-bootstrap fv-plugins-framework" method="POST" novalidate="novalidate" action="{{ app_path }}" id="kt_login_signin_form">
+									{% csrf_token %}
+									<div class="form-group">
+										<input {% if form.errors.username %}style="border:1px solid red"{% endif %} class="form-control form-control-solid h-auto py-5 px-6" name="username" type="text" placeholder="Username" name="username" value="{{form.username.value | default:'' }}" required /> 
+										{% if form.errors.username %}
+											{% for error in form.errors.username %}
+											<div class="fv-plugins-message-container"><div data-field="username" data-validator="notEmpty" class="fv-help-block">{{ error }}</div></div>
+											{% endfor %}
+										{% endif %}
+										</div>
+									<div class="form-group">
+										<input {% if form.errors.password %}style="border:1px solid red"{% endif %} class="form-control form-control-solid h-auto py-5 px-6" name="password" type="password" placeholder="Password" name="password" required />
+										{% if form.errors.password %}
+											{% for error in form.errors.password %}
+											<div class="fv-plugins-message-container"><div data-field="username" data-validator="notEmpty" class="fv-help-block">{{ error }}</div></div>
+											{% endfor %}
+										{% endif %}
+									</div>
+									<!--begin::Action-->
+									<div class="form-group d-flex flex-wrap justify-content-between align-items-center">
+										<a href="{% url 'password_reset' %}" class="text-dark-50 text-hover-primary my-3 mr-2" id="kt_login_forgot">Forgot Password ?</a>
+										<button type="submit" class="btn btn-primary font-weight-bold px-9 py-4 my-3">Sign In</button>
+									</div>
+									<!--end::Action-->
+								</form>
 								<a href="{% url 'cas_ng_login' %}" class="btn btn-primary btn-block">Login with Presensi Online</a>
-								<!--end::Action-->
-							</form>
+							<!-- </div> -->
+
 							<!--end::Form-->
 						</div>
 						<!--end::Signin-->
@@ -176,24 +168,18 @@
 		<script src="{% static 'metronic/'%}assets/plugins/global/plugins.bundle.js"></script>
 		<script src="{% static 'metronic/'%}assets/plugins/custom/prismjs/prismjs.bundle.js"></script>
 		
-		<script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
+		<!-- <script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script> -->
 		<!--end::Global Theme Bundle-->
 		<script type="module">
-			const swiper = new Swiper('.swiper',{
-				// Optional parameters
-				//direction: 'vertical',
-				loop: true,
-				autoplay: {
-					delay: 3000,
-				},
-
-				// If we need pagination
-				pagination: {
-					el: '.swiper-pagination',
-				},
-
-				// Navigation arrows
-			})
+			// const swiper = new Swiper('.swiper',{
+			// 	loop: true,
+			// 	autoplay: {
+			// 		delay: 3000,
+			// 	},
+			// 	pagination: {
+			// 		el: '.swiper-pagination',
+			// 	},
+			// })
 		</script>
 	</body>
 	<!--end::Body-->
