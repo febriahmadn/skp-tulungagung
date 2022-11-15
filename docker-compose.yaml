@@ -24,7 +24,7 @@ services:
       - DB_PORT=${DB_PORT}
     networks:
       skpapps_network:
-        ipv4_address: 172.35.0.2
+        ipv4_address: 172.36.0.2
   
   nginx:
     build: ./nginx
@@ -33,12 +33,12 @@ services:
       - skpapps_media_volume:/skpapps/files/media/
       - .:/nginx/etc/nginx/conf.d/
     ports:
-      - "127.0.0.1:9095:80"
+      - "127.0.0.1:9096:80"
     depends_on:
       - skpapps
     networks:
       skpapps_network:
-        ipv4_address: 172.35.0.3
+        ipv4_address: 172.36.0.3
 
 volumes:
   skpapps_static_volume:
@@ -48,4 +48,4 @@ networks:
   skpapps_network:
     ipam:
       config:
-        - subnet: 172.35.0.0/16
+        - subnet: 172.36.0.0/16
