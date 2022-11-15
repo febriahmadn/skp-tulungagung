@@ -181,7 +181,7 @@ USE_X_FORWARDED_HOST = True
 # CAS_ROOT_PROXIED_AS = 'http://127.0.0.1:9000'
 
 CAS_REDIRECT_URL = '/'
-CAS_SERVER_URL = os.environ.get("CAS_SERVER_URL", 'http://127.0.0.1:9000/cas')
+CAS_SERVER_URL = 'https://{}/cas'.format(os.environ.get("CAS_SERVER_URL", '127.0.0.1:9000'))
 # CAS_VERIFY_SSL_CERTIFICATE = False
 CAS_VERSION = '3'
 CAS_AUTO_CREATE_USERS = True
