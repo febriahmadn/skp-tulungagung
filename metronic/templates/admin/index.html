@@ -2,51 +2,50 @@
 {% load i18n static %}
 
 {% block content %}
-{% if app_list %}
-{% for app in app_list %}
-<div class="card mb-5">
-	<h4 class="card-title"><a href="{{ app.app_url }}" class="section"
-			title="{% blocktrans with name=app.name %}Models in the {{ name }} application{% endblocktrans %}"
-			style="background-color: #607D8B;color: white;padding: 5px 10px 5px 10px;">{{app.name}}</a></h4>
-	<div class="card-body">
-		<table>
-			{% for model in app.models %}
-			<tr class="model-{{ model.object_name|lower }}">
-				{% if model.admin_url %}
-				<td width="60%" scope="row"><a href="{{ model.admin_url }}">{{ model.name }}</a></td>
-				{% else %}
-				<td width="60%" scope="row">{{ model.name }}</td>
-				{% endif %}
+	{% if app_list %}
+		{% for app in app_list %}
+		<div class="card mb-5">
+			<h4 class="card-title"><a href="{{ app.app_url }}" class="section"
+					title="{% blocktrans with name=app.name %}Models in the {{ name }} application{% endblocktrans %}"
+					style="background-color: #607D8B;color: white;padding: 5px 10px 5px 10px;">{{app.name}}</a></h4>
+			<div class="card-body">
+				<table>
+					{% for model in app.models %}
+					<tr class="model-{{ model.object_name|lower }}">
+						{% if model.admin_url %}
+						<td width="60%" scope="row"><a href="{{ model.admin_url }}">{{ model.name }}</a></td>
+						{% else %}
+						<td width="60%" scope="row">{{ model.name }}</td>
+						{% endif %}
 
-				{% if model.add_url %}
-				<td width="20%">
-					<a href="{{ model.add_url }}" class="btn btn-block btn-primary btn-sm addlink"><i
-							class="fa fa-plus"></i> {% trans 'Add' %}</a>
-				</td>
-				{% else %}
-				<td>&nbsp;</td>
-				{% endif %}
-				{% if model.admin_url %}
-				{% if model.view_only %}
-				<td width="20%">
-					<a href="{{ model.admin_url }}" class="btn btn-block btn-warning btn-sm viewlink"><i class="fa fa-pencil"></i>{% trans 'View' %}</a>
-				</td>
-				{% else %}
-				<td width="20%">
-					<a href="{{ model.admin_url }}" class="btn btn-block btn-warning btn-sm changelink"><i class="fa fa-edit"></i>{% trans 'Change' %}</a>
-				</td>
-				{% endif %}
-				{% else %}
-				<td>&nbsp;</td>
-				{% endif %}
-			</tr>
-			{% endfor %}
-		</table>
-	</div>
-</div>
-{% endfor %}
-{% else %}
-<h1>Belum ada Aplikasi.</h1>
-{% endif %}
-
+						{% if model.add_url %}
+						<td width="20%">
+							<a href="{{ model.add_url }}" class="btn btn-block btn-primary btn-sm addlink"><i
+									class="fa fa-plus"></i> {% trans 'Add' %}</a>
+						</td>
+						{% else %}
+						<td>&nbsp;</td>
+						{% endif %}
+						{% if model.admin_url %}
+						{% if model.view_only %}
+						<td width="20%">
+							<a href="{{ model.admin_url }}" class="btn btn-block btn-warning btn-sm viewlink"><i class="fa fa-pencil"></i>{% trans 'View' %}</a>
+						</td>
+						{% else %}
+						<td width="20%">
+							<a href="{{ model.admin_url }}" class="btn btn-block btn-warning btn-sm changelink"><i class="fa fa-edit"></i>{% trans 'Change' %}</a>
+						</td>
+						{% endif %}
+						{% else %}
+						<td>&nbsp;</td>
+						{% endif %}
+					</tr>
+					{% endfor %}
+				</table>
+			</div>
+		</div>
+		{% endfor %}
+	{% else %}
+		<h1>Belum ada Aplikasi.</h1>
+	{% endif %}
 {% endblock %}
