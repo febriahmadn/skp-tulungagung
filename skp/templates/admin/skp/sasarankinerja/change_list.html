@@ -46,7 +46,7 @@
                 
                 {% if has_add_permission %}
                 {% url cl.opts|admin_urlname:'add' as add_url %}
-                <a href="{% url 'admin:add_skp_admin' %}" class="btn btn-light-primary font-weight-bolder btn-sm"><i
+                <a href="{{ add_url }}" class="btn btn-light-primary font-weight-bolder btn-sm"><i
                         class="nav-icon fas fa-plus"></i>
                     {% trans 'Add' %}</a>
                 {% endif %}

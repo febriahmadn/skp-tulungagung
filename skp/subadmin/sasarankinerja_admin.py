@@ -19,6 +19,13 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         return ''
     get_unor.short_description = 'Unor'
 
+    def get_unit_kerja(self, obj):
+        if obj.pegawai:
+            if obj.pegawai.unitkerja:
+                return obj.pegawai.unitkerja
+        return ''
+    get_unit_kerja.short_description = 'Unit Kerja'
+
     def get_period(self, obj):
         return str(obj.periode_awal)+" / "+str(obj.periode_akhir)
     get_period.short_description = "Periode"
@@ -48,8 +55,8 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
     def changelist_view(self, request, extra_context={}):
         print(dir(request.user))
         print(request.user.is_staff)
-        if request.user.is_admin:
-            self.list_display = ('pk', 'pegawai', 'get_unor', 'jabatan', 'pejabat_penilai', 'periode_awal', 'periode_akhir', 'pendekatan', 'status','Aksi')
+        if request.user.is_superuser:
+            self.list_display = ('get_unor','get_period','pendekatan','jabatan','status','Aksi')
             self.list_filter = []
         else:
             self.list_display = ('get_unor','get_period','pendekatan','jabatan','status','Aksi')
@@ -72,7 +79,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
     def get_form(self, request, obj=None, **kwargs):
         kwargs['form'] = SasaranKinerjaForm
         form = super().get_form(request, obj, **kwargs)
-        form.request_user = request.user
+        form.user = request.user
         return form
 
     # def get_queryset(self, request):
