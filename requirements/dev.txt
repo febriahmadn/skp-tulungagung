@@ -1,5 +1,0 @@
-Django==4.1.2
-psycopg2-binary==2.9.5
-django-suit @ git+https://github.com/Abdurahman-hassan/django-suit
-black==22.10.0
-flake8==5.0.4

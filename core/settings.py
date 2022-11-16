@@ -152,8 +152,16 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "static"),
+)
 
-STATIC_ROOT = os.path.join(BASE_DIR, "metronic/static")
+STATIC_ROOT = os.path.join(BASE_DIR, 'files/static-collected/')
+
+MEDIA_URL = "/media/"
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'files/media/')
+
 
 
 # Default primary key field type
@@ -173,7 +181,7 @@ USE_X_FORWARDED_HOST = True
 # CAS_ROOT_PROXIED_AS = 'http://127.0.0.1:9000'
 
 CAS_REDIRECT_URL = '/'
-CAS_SERVER_URL = 'http://127.0.0.1:9000/cas'
+CAS_SERVER_URL = 'http://{}/cas'.format(os.environ.get("CAS_SERVER_URL", 'presensi.tulungagung.go.id'))
 CAS_VERIFY_SSL_CERTIFICATE = False
 CAS_VERSION = '3'
 CAS_AUTO_CREATE_USERS = True
