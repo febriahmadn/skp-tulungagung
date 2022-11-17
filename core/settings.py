@@ -49,8 +49,11 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    'django.forms',
+    
     "suit",
     "django_cas_ng",
+    'loginas'
 ]
 
 MIDDLEWARE = [
@@ -177,3 +180,7 @@ CAS_SERVER_URL = 'http://127.0.0.1:9000/cas'
 CAS_VERIFY_SSL_CERTIFICATE = False
 CAS_VERSION = '3'
 CAS_AUTO_CREATE_USERS = True
+
+# Login As
+CAN_LOGIN_AS = lambda request, target_user: request.user.is_superuser
+LOGINAS_REDIRECT_URL = '/admin'
