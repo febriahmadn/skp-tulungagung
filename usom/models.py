@@ -9,7 +9,7 @@ class UnitKerja(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return '{}'.format(self.unitkerja)
+        return "{}".format(self.unitkerja)
 
     class Meta:
         verbose_name = "Unit Kerja"
@@ -83,6 +83,13 @@ class Account(AbstractUser):
     ]
 
     # JPT (Jabatan Pimpinan Tinggi) (beda pengisian), JF (Jabatan Fungsional), JA (Jabatan Administrator)
+    atasan = models.ForeignKey(
+        "self",
+        related_name="pegawai_atasan",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
     nama_lengkap = models.CharField("Nama Lengkap", max_length=150)
     gelar_depan = models.CharField(
         max_length=50, null=True, blank=True, verbose_name="Gelar Depan"
@@ -122,6 +129,23 @@ class Account(AbstractUser):
     USERNAME_FIELD = "username"
     REQUIRED_FIELDS = ["nama_lengkap"]
     group_names = []
+
+    def get_complete_name(self):
+        nama = self.nama_lengkap
+        if self.gelar_depan:
+            if self.gelar_depan == "-":
+                gelar_depan = ""
+            else:
+                gelar_depan = self.gelar_depan
+            nama = gelar_depan + " " + nama
+        if self.gelar_belakang:
+            if self.gelar_belakang == "-":
+                gelar_belakang = ""
+            else:
+                gelar_belakang = self.gelar_belakang
+            nama = nama + ", " + gelar_belakang
+        # print(nama)
+        return nama
 
     class Meta:
         ordering = ["id"]

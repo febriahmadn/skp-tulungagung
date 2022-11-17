@@ -7,45 +7,110 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('usom', '0001_initial'),
+        ("usom", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='UnitKerja',
+            name="UnitKerja",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('unitkerja', models.CharField(max_length=200, null=True, verbose_name='Nama Unit Kerja')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "unitkerja",
+                    models.CharField(
+                        max_length=200, null=True, verbose_name="Nama Unit Kerja"
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
             ],
             options={
-                'verbose_name': 'Unit Kerja',
-                'verbose_name_plural': 'Unit Kerja',
+                "verbose_name": "Unit Kerja",
+                "verbose_name_plural": "Unit Kerja",
             },
         ),
         migrations.AddField(
-            model_name='account',
-            name='eselon',
-            field=models.CharField(blank=True, choices=[('II-A', 'II-A'), ('II-B', 'II-B'), ('III-A', 'III-A'), ('III-B', 'III-B'), ('IV-A', 'IV-A'), ('IV-B', 'IV-B'), ('V-C', 'V-C')], max_length=6, null=True, verbose_name='Eselon'),
+            model_name="account",
+            name="eselon",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("II-A", "II-A"),
+                    ("II-B", "II-B"),
+                    ("III-A", "III-A"),
+                    ("III-B", "III-B"),
+                    ("IV-A", "IV-A"),
+                    ("IV-B", "IV-B"),
+                    ("V-C", "V-C"),
+                ],
+                max_length=6,
+                null=True,
+                verbose_name="Eselon",
+            ),
         ),
         migrations.AddField(
-            model_name='account',
-            name='golongan',
-            field=models.CharField(blank=True, choices=[('I/A', 'I/A'), ('I/B', 'I/B'), ('I/C', 'I/C'), ('I/D', 'I/D'), ('II/A', 'II/A'), ('II/B', 'II/B'), ('II/C', 'II/C'), ('II/D', 'II/D'), ('III/A', 'III/A'), ('III/B', 'III/B'), ('III/C', 'III/C'), ('III/D', 'III/D'), ('IV/A', 'IV/A'), ('IV/B', 'IV/B'), ('IV/C', 'IV/C'), ('IV/D', 'IV/D'), ('IV/E', 'IV/E')], max_length=6, null=True, verbose_name='Golongan'),
+            model_name="account",
+            name="golongan",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("I/A", "I/A"),
+                    ("I/B", "I/B"),
+                    ("I/C", "I/C"),
+                    ("I/D", "I/D"),
+                    ("II/A", "II/A"),
+                    ("II/B", "II/B"),
+                    ("II/C", "II/C"),
+                    ("II/D", "II/D"),
+                    ("III/A", "III/A"),
+                    ("III/B", "III/B"),
+                    ("III/C", "III/C"),
+                    ("III/D", "III/D"),
+                    ("IV/A", "IV/A"),
+                    ("IV/B", "IV/B"),
+                    ("IV/C", "IV/C"),
+                    ("IV/D", "IV/D"),
+                    ("IV/E", "IV/E"),
+                ],
+                max_length=6,
+                null=True,
+                verbose_name="Golongan",
+            ),
         ),
         migrations.AddField(
-            model_name='account',
-            name='jabatan',
-            field=models.CharField(blank=True, max_length=250, null=True, verbose_name='Jabatan'),
+            model_name="account",
+            name="jabatan",
+            field=models.CharField(
+                blank=True, max_length=250, null=True, verbose_name="Jabatan"
+            ),
         ),
         migrations.AddField(
-            model_name='account',
-            name='jenis_pegawai',
-            field=models.CharField(blank=True, choices=[('PI', 'Pimpinan'), ('PA', 'Atasan'), ('PE', 'Pegawai')], default='PE', max_length=2, null=True, verbose_name='Jenis Pegawai'),
+            model_name="account",
+            name="jenis_pegawai",
+            field=models.CharField(
+                blank=True,
+                choices=[("PI", "Pimpinan"), ("PA", "Atasan"), ("PE", "Pegawai")],
+                default="PE",
+                max_length=2,
+                null=True,
+                verbose_name="Jenis Pegawai",
+            ),
         ),
         migrations.AddField(
-            model_name='account',
-            name='unitkerja',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='usom.unitkerja'),
+            model_name="account",
+            name="unitkerja",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="usom.unitkerja",
+            ),
         ),
     ]

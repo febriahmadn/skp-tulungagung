@@ -2,7 +2,7 @@
 {% load i18n static %}
 
 {% block title %}
-	{{ title }} | {{ site_title|default:_('SiMITA') }}
+	{{ title }} | {{ site_title|default:_('SKP') }}
 {% endblock %}
 
 {% block main-sidebar %}
@@ -37,6 +37,10 @@
     .aside-menu .menu-nav>.menu-item.menu-item-here>.menu-heading, .aside-menu .menu-nav>.menu-item.menu-item-here>.menu-link,
     .aside-menu .menu-nav>.menu-item.menu-item-active>.menu-heading, .aside-menu .menu-nav>.menu-item.menu-item-active>.menu-link {
         background-color: #fefefe36 !important;
+    }
+    .form-control[readonly] {
+        background-color: #e4e6ef;
+        color: #7e8299;
     }
 </style>
 {% endblock %}
