@@ -27,8 +27,13 @@ SECRET_KEY = os.environ.get(
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True if os.environ.get("DEBUG") in ["true", "True"] else False
+
 ALLOWED_HOSTS = ["*"]
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://simpatik.bahrulyahya.my.id',
+    'https://demo.skp.aitc.co.id',
+    ]
 
 # Application definition
 AUTH_USER_MODEL = "usom.Account"
