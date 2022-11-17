@@ -8,6 +8,7 @@ after_script:
 
 stages:
   - lint
+  - security
 
 lint:
   stage: lint
@@ -16,4 +17,14 @@ lint:
   script:
   - flake8 .
   allow_failure: true
+
+.anchore_scan:
+  image: anchore/engine-cli:latest
+  stage: security
+  tags:
+    - docker-privileged
+  variables:
+    # Configure for recursive submodule cloning
+    GIT_SUBMODULE_STRATEGY: recursive
+
 
