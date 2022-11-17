@@ -339,4 +339,7 @@ change-list{% endblock %}
         </div>
         {% endblock %}
     </div>
+    <form method="post" id="loginas-form" action="#" style="display: none">
+		{% csrf_token %}
+	</form>
 {% endblock %}

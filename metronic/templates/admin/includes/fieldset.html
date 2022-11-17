@@ -33,7 +33,7 @@
                         {% elif field.field|is_file %}
                             {{ field.field|addcls:"" }}
                         {% else %}
-                            {{ field.field|addcls:"form-control" }}
+                            {{ field.field }}
                         {% endif %}
                     {% endif %}
                 {% endif %}

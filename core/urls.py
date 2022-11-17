@@ -26,5 +26,6 @@ urlpatterns = [
     path('accounts/logout', django_cas_ng.views.LogoutView.as_view(), name='cas_ng_logout'),
     path('accounts/callback', django_cas_ng.views.CallbackView.as_view(), name='cas_ng_proxy_callback'),
     path("", include("usom.urls")),
+    path('admin/', include('loginas.urls')),
     path("admin/", admin.site.urls),
 ]

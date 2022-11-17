@@ -390,3 +390,9 @@ button, input, optgroup, select, textarea {
     border-radius: 5px;
     background-color: white;
 }
+.field-gelar_depan.field-nama_lengkap.field-gelar_belakang {
+    display: flex;
+}
+.field-gelar_depan.field-nama_lengkap.field-gelar_belakang input{
+    width: unset;
+}
