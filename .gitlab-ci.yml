@@ -11,6 +11,7 @@ stages:
   - build
   - security
   - test
+  - deploy
 
 lint:
   stage: lint
@@ -43,7 +44,6 @@ package:security:
 services:
   - docker:dind
 
-
 test:unit:
   stage: test
   image: hmajid2301/dind-docker-compose
@@ -51,6 +51,27 @@ test:unit:
     - docker-compose -f docker-compose-test.yaml up --build --exit-code-from test test db | grep -v "django.db.backends.schema\|faker.factory\|MOD schema\|MOD factory\|bad news\|autovacuum process"
   after_script:
     - docker-compose -f docker-compose-test.yaml down -v
+
+deploy_staging:
+  stage: deploy
+  environment:
+    name: staging
+    url: demo.skp.aitc.co.id
+  script:
+    - ssh $SSH_USER@$VM_IPADDRESS "cd /opt/apps/skp-tulungagung && git checkout main && git pull origin main && cp .env.production .env  && docker-compose up -d --build"
+  before_script:
+  - 'command -v ssh-agent >/dev/null || ( apk add --update openssh )' 
+  - eval $(ssh-agent -s)
+  - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+  - mkdir -p ~/.ssh
+  - chmod 700 ~/.ssh
+  - ssh-keyscan $VM_IPADDRESS >> ~/.ssh/known_hosts
+  - chmod 644 ~/.ssh/known_hosts
+  only:
+    - main
+  when: manual
+  allow_failure: false
+
 
 
 
