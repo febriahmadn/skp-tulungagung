@@ -1,0 +1,19 @@
+image: "python:3.10"
+
+before_script:
+  - python --version
+
+after_script:
+  - docker-compose down -v
+
+stages:
+  - lint
+
+lint:
+  stage: lint
+  before_script:
+    - pip3 install flake8
+  script:
+  - flake8 .
+  allow_failure: true
+
