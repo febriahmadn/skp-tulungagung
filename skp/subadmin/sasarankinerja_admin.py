@@ -49,7 +49,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         btn = '<div class="btn-group" role="group">'
         btn += '''
             <button id="btnGroupDrop1" type="button"
-                class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
                 aria-expanded="false">Aksi</button>'''
         btn += '<div class="dropdown-menu" aria-labelledby="btnGroupDrop1">'
         btn += '<a class="dropdown-item" href="{}">Detail SKP</a>'.format(reverse_lazy('admin:detail-skp',kwargs={'id': obj.id}))

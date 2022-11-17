@@ -48,6 +48,7 @@ class AccountAdmin(UserAdmin):
             "Hak Akses",
             {
                 "fields": (
+                    "tangggal_nonaktif",
                     "is_active",
                     "is_staff",
                     "is_superuser",
@@ -65,8 +66,15 @@ class AccountAdmin(UserAdmin):
 
     def get_list_display(self, request):
         if request.user.is_superuser:
-            return ("username", "nama_lengkap", "email", "aksi")
+            return ("username", "nama_lengkap", "unitkerja", "jabatan", "get_akses", "aksi")
         return super().get_list_display(request)
+
+    def get_akses(self, obj):
+        groups = obj.groups.all()
+        if groups.exists():
+            return ["".join(item.name) for item in groups]
+        return "-"
+    get_akses.short_description = "Akses"
 
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)

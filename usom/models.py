@@ -124,6 +124,7 @@ class Account(AbstractUser):
         null=True,
         blank=True,
     )
+    tangggal_nonaktif = models.DateField(null=True, blank=True, verbose_name="Tanggal Nonaktif")
 
     objects = AccountManager()
     USERNAME_FIELD = "username"

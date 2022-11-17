@@ -9,20 +9,46 @@
 </style>
 {% endblock custom_style %}
 
+{% block breadcrumbs %}
+<ul class="breadcrumb breadcrumb-transparent breadcrumb-dot font-weight-bold p-0 my-2 font-size-sm">
+  <li class="breadcrumb-item text-muted">
+    <a href="/admin" class="text-muted">Home</a>
+  </li>
+  <li class="breadcrumb-item text-muted">
+    <a href="/admin/skp" class="text-muted">Skp</a>
+  </li>
+  <li class="breadcrumb-item text-muted">
+    <a href="{% url 'admin:skp_sasarankinerja_changelist' %}" class="text-muted">Sasaran Kinerja</a>
+  </li>
+  <li class="breadcrumb-item text-muted">
+    <a href="#" class="text-muted">Detail Sasaran Kinerja</a>
+  </li>
+</ul>
+{% endblock breadcrumbs %}
+
 {% block content %}
+<div class="row px-5 pb-3">
+  <div class="col-md-6">
+    <div class="d-flex">
+      <label class="mx-1 py-2" style="min-width: 100px;">Status SKP</label>
+      <input type="text" readonly class="form-control form-control-sm" id="staticEmail" value="{{obj.get_status_display}}">
+    </div>
+  </div>
+
+  <div class="col-md-6 d-flex flex-row-reverse">
+    <button class="btn btn-sm btn-warning"><i class="fas fa-sync-alt"></i> Sinkron dengan e-kinerja</button>
+    <button class="btn btn-sm btn-primary mx-2"><i class="fas fa-paper-plane"></i> Ajukan SKP</button>
+    <button class="btn btn-sm btn-success"><i class="fas fa-print"></i> Cetak SKP</button>
+  </div>
+</div>
+
 <div class="d-flex">
   <div class="col-md-6">
-    <div class="form-group row">
-      <label class="col-sm-3 col-form-label mx-1 py-2">Status SKP</label>
-      <div class="col-sm-5">
-        <input type="text" readonly class="form-control form-control-sm" id="staticEmail" value="{{obj.get_status_display}}">
-      </div>
-    </div>
     <div class="card">
-      <div class="card-header py-4 px-5 bg-success text-white">
-          <h6>PEGAWAI YANG DINILAI</h6>
+      <div class="card-header bg-success text-white p-5">
+          <h6 class="m-0">PEGAWAI YANG DINILAI</h6>
       </div>
-      <div class="card-body py-4 px-5">
+      <div class="card-body p-0">
         <table class="table">
           <tr>
             <th style="width: 40%;">Nama</th>
@@ -37,7 +63,7 @@
           <tr>
             <th style="width: 40%;">Pangkat / Gol. Ruang</th>
             <th style="width: 5%;">:</th>
-            <th>{{pegawai.get_golongan_display}}</th>
+            <th>{{pegawai.get_golongan_display|default_if_none:"---"}}</th>
           </tr>
           <tr>
             <th style="width: 40%;">Jabatan</th>
@@ -54,16 +80,11 @@
     </div>
   </div>
   <div class="col-md-6">
-    <div class="form-group row justify-content-end pr-5">
-      <button class="btn btn-sm btn-warning"><i class="fas fa-sync-alt"></i> Sinkron dengan e-kinerja</button>
-      <button class="btn btn-sm btn-primary mx-2"><i class="fas fa-paper-plane"></i> Ajukan SKP</button>
-      <button class="btn btn-sm btn-success"><i class="fas fa-print"></i> Cetak SKP</button>
-    </div>
     <div class="card">
-      <div class="card-header py-4 px-5 bg-primary text-white">
-          <h6>PEJABAT PENILAI KINERJA</h6>
+      <div class="card-header bg-primary text-white p-5">
+          <h6 class="m-0">PEJABAT PENILAI KINERJA</h6>
       </div>
-      <div class="card-body py-4 px-5">
+      <div class="card-body p-0">
         <table class="table">
           <tr>
             <th style="width: 40%;">Nama</th>
@@ -98,7 +119,7 @@
 <div class="col-md-12 pt-3">
   <div class="card">
     <div class="d-flex justify-content-between card-header py-4 px-5">
-      <h6 style="margin: unset;">Hasil Kerja</h6>
+      <h6 class="d-flex align-items-center m-0">Hasil Kerja</h6>
       <div>
         <button class="btn btn-sm btn-primary mx-2"><i class="fas fa-plus"></i> Tambah RHK</button>
         <button class="btn btn-sm btn-danger"><i class="fas fa-plus"></i> Tambah Indikator</button>

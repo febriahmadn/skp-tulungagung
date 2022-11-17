@@ -72,13 +72,13 @@
 				elem_btn.html('<i style="color: black;" class="fa fa-plus"></i> ' + elem_btn.text())
 			}
 		}
-		$("input[id*='tanggal'], input[id*='tmt'], input[id*='periode']" ).each(function() {
-			$(this).datepicker({
-				autoclose:true,
-				format: 'dd-mm-yyyy',
-				uiLibrary: 'bootstrap4'
-			});
-		});
+		// $("input[id*='tanggal'], input[id*='tmt'], input[id*='periode']" ).each(function() {
+		// 	$(this).datepicker({
+		// 		autoclose:true,
+		// 		format: 'dd-mm-yyyy',
+		// 		uiLibrary: 'bootstrap4'
+		// 	});
+		// });
 	});
 </script>
 {% endblock %}
@@ -152,6 +152,36 @@
 	}
 	.field-hidden {
 		display: none;
+	}
+
+	input.vDateField {
+		min-width: 130px;
+		height: calc(1.5em + 1.3rem + 2px);
+		/* padding: 0.65rem 1rem; */
+		font-size: 1rem;
+		font-weight: 400;
+		line-height: 1.5;
+		color: #3f4254;
+		background-color: #fff;
+		background-clip: padding-box;
+		border-radius: 0.42rem;
+		text-align: center;
+	}
+
+	.calendarbox.module {
+		background-color: white;
+		font-size: 1rem;
+		width: 20rem;
+	}
+
+	.calendar th, .calendar td, .calendar-shortcuts, .calendar-cancel{
+		font-size: 1rem;
+	}
+	.calendar table {
+		margin-top: 30px;
+	}
+	.calendar caption {
+		background-color: #1e1e2e;
 	}
 </style>
 {% endblock %}
