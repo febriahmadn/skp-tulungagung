@@ -10,6 +10,7 @@ stages:
   - lint
   - build
   - security
+  - test
 
 lint:
   stage: lint
@@ -41,5 +42,15 @@ package:security:
 
 services:
   - docker:dind
+
+
+test:unit:
+  stage: test
+  image: hmajid2301/dind-docker-compose
+  script:
+    - docker-compose -f docker-compose-test.yaml up --build --exit-code-from test test db | grep -v "django.db.backends.schema\|faker.factory\|MOD schema\|MOD factory\|bad news\|autovacuum process"
+  after_script:
+    - docker-compose -f docker-compose-test.yaml down -v
+
 
 

@@ -1,0 +1,9 @@
+FROM python:alpine3.16 as test
+COPY . /skpapps
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE 1
+RUN apk update
+RUN apk add postgresql-client && apk add postgresql-libs && apk add git
+RUN pip install --upgrade pip
+RUN pip install -r skpapps/requirements/production.txt
+WORKDIR /skpapps
