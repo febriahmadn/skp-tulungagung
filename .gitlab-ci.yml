@@ -8,6 +8,7 @@ after_script:
 
 stages:
   - lint
+  - build
   - security
 
 lint:
@@ -18,6 +19,17 @@ lint:
   - flake8 .
   allow_failure: true
 
+package:security:
+  stage: build
+  before_script:
+    - pip3 install safety
+    - wget https://github.com/pyupio/safety-db/raw/master/data/insecure_full.json
+    - wget https://github.com/pyupio/safety-db/raw/master/data/insecure.json
+  script:
+    - safety check --full-report --db . -r requirements/development.txt
+    - safety check --full-report --db . -r requirements/production.txt
+
+
 .anchore_scan:
   image: anchore/engine-cli:latest
   stage: security
@@ -26,5 +38,8 @@ lint:
   variables:
     # Configure for recursive submodule cloning
     GIT_SUBMODULE_STRATEGY: recursive
+
+services:
+  - docker:dind
 
 
