@@ -1,0 +1,48 @@
+{% extends 'admin/base_site.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body p-3">
+                <strong>Information ! </strong>
+                <p>Inputan dengan label yang memakai huruf tebal wajib diisi. <br>
+                Cek terlebih dahulu data anda dan atasan sebelum membuat SKP <br>
+                Jika terdapat kesalahan bisa lakukan perubahan pada menu Profil</p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row mt-5">
+    <div class="col-md-12">
+        <div class="card">
+            <form action="">
+                <div class="card-body">
+                    {{ form.as_div }}
+                </div>
+                <div class="card-footer">
+                    <div class="row">
+                        <div class="col-12">
+                            <button class="btn btn-success" type="submit"> Simpan </button>
+                            <a class="btn btn-danger" href="{% url 'admin:list_skp_admin' %}"> Kembali </a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block custom_js %}
+{{ block.super }}
+<script>
+    $("input[id*='tanggal'], input[id*='tmt'], input[id*='periode']" ).each(function() {
+        $(this).datepicker({
+            autoclose:true,
+            format: 'dd-mm-yyyy',
+            uiLibrary: 'bootstrap4'
+        });
+    });
+</script>
+{% endblock %}

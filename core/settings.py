@@ -35,7 +35,7 @@ AUTH_USER_MODEL = "usom.Account"
 
 AUTHENTICATION_BACKENDS = [
     # "usom.auth_backends.AuthBackend"
-    'django.contrib.auth.backends.ModelBackend',
+    "django.contrib.auth.backends.ModelBackend",
     "django_cas_ng.backends.CASBackend",
 ]
 
@@ -49,11 +49,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    'django.forms',
-    
+    "django.forms",
     "suit",
     "django_cas_ng",
-    'loginas'
+    "loginas",
 ]
 
 MIDDLEWARE = [
@@ -155,8 +154,15 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
+# STATICFILES_DIRS = (
+#     os.path.join(BASE_DIR, "static"),
+# )
 
-STATIC_ROOT = os.path.join(BASE_DIR, "metronic/static")
+STATIC_ROOT = os.path.join(BASE_DIR, "files/static-collected/")
+
+MEDIA_URL = "/media/"
+
+MEDIA_ROOT = os.path.join(BASE_DIR, "files/media/")
 
 
 # Default primary key field type
@@ -169,18 +175,20 @@ EMAIL_ADMIN = "admin@trethon.com"
 EMAIL_HOST_PASSWORD = "dab10f1fa13878"
 EMAIL_PORT = "2525"
 
-LOGOUT_REDIRECT_URL = '/'
-LOGIN_URL = '/admin/login/'
+LOGOUT_REDIRECT_URL = "/"
+LOGIN_URL = "/admin/login/"
 
 USE_X_FORWARDED_HOST = True
 # CAS_ROOT_PROXIED_AS = 'http://127.0.0.1:9000'
 
-CAS_REDIRECT_URL = '/'
-CAS_SERVER_URL = 'http://127.0.0.1:9000/cas'
+CAS_REDIRECT_URL = "/"
+CAS_SERVER_URL = "http://{}/cas".format(
+    os.environ.get("CAS_SERVER_URL", "presensi.tulungagung.go.id")
+)
 CAS_VERIFY_SSL_CERTIFICATE = False
-CAS_VERSION = '3'
+CAS_VERSION = "3"
 CAS_AUTO_CREATE_USERS = True
 
 # Login As
-CAN_LOGIN_AS = lambda request, target_user: request.user.is_superuser
-LOGINAS_REDIRECT_URL = '/admin'
+CAN_LOGIN_AS = "usom.views.loginas"
+LOGINAS_REDIRECT_URL = "/admin"

@@ -4,3 +4,4 @@ files/
 dump.rdb
 .venv/
 __pycache__
+.env

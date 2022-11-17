@@ -1,0 +1,141 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h5>Informasi</h5><br />
+                Jika terdapat data pegawai yang tidak sesuai silahkan klik tombol Singkronkan data dengan SIPO di bawah apabila tetap tidak sesuai atau gagal saat proses singkron hubungi admin Aplikasi.  
+            </div>
+        </div>
+    </div>
+    <div class="col-12 mt-4">
+        <div class="card">
+            <div class="card-body p-2">
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="datapegawai-tab" data-toggle="tab" href="#datapegawai" role="tab" aria-controls="datapegawai" aria-selected="true">Data Pegawai</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="datapejabatnilai-tab" data-toggle="tab" href="#datapejabatnilai" role="tab" aria-controls="datapejabatnilai" aria-selected="false">Data Pejabat Nilai</a>
+                    </li>
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show p-3 active" id="datapegawai" role="tabpanel" aria-labelledby="datapegawai-tab">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <button class="btn btn-primary">
+                                    <i class="fa fa-reload"></i>
+                                     Singkronkan data dengan SIPO
+                                </button>
+                            </div>
+                            <div class="col-md-12 mt-5">
+                                <table class="table">
+                                    <tr>
+                                        <td>NIP</td>
+                                        <td>:</td>
+                                        <td>1234567899</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Nama Lengkap</td>
+                                        <td>:</td>
+                                        <td>MEDICE</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Unit Kerja</td>
+                                        <td>:</td>
+                                        <td>BADANG KEPEGAWAIAN DAN PENGEMBANGAN SUMBER DAYA MANUSIA</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Jabatan</td>
+                                        <td>:</td>
+                                        <td>Analis Sumber Daya Manusia Aparatur Ahli Media</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Pangkat</td>
+                                        <td>:</td>
+                                        <td>Penata Tingkat 1</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Golongan</td>
+                                        <td>:</td>
+                                        <td>III/d</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade p-3" id="datapejabatnilai" role="tabpanel" aria-labelledby="datapejabatnilai-tab">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-2 text-center ">
+                                        <label for="">NIP Atasan</label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <input type="text" class="form-control">
+                                    </div>
+                                </div>
+                                <label for="" class="m-2">Untuk menampilkan autocomplete, inputkan NIP atasan</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 mt-3">
+                                <div class="row">
+                                    <div class="col-md-2 text-center ">
+                                        <label for="">Nama Atasan</label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <input type="text" class="form-control" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mt-3">
+                                <div class="row">
+                                    <div class="col-md-2 text-center ">
+                                        <label for="">Unit Kerja Atasan </label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <input type="text" class="form-control" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mt-3">
+                                <div class="row">
+                                    <div class="col-md-2 text-center ">
+                                        <label for="">Jabatan Atasan</label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <input type="text" class="form-control" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mt-3">
+                                <div class="row">
+                                    <div class="col-md-2 text-center ">
+                                        <label for="">Pangkat Atasan</label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <input type="text" class="form-control" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 mt-3">
+                                <div class="row">
+                                    <div class="col-md-2 text-center ">
+                                        <label for="">Golongan Atasan </label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <input type="text" class="form-control" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

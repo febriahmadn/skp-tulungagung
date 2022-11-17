@@ -1,1 +1,66 @@
 {% extends "admin/base_site.html" %}
+{% load custom_template %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12">
+                <h5>Pencarian Data Statistik</h5>
+            </div>
+            <div class="col-12 mt-4">
+                <form method="get" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <select name="jenis_statistik" id="" class="form-control">
+                                    <option value="">-- Jenis Statistik --</option>
+                                    {% for jn in jenis %}
+                                    <option value="{{ jn.id }}" {{ jn.id|selected_jenis:request }}>{{ jn.text }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <select name="tahun" id="" class="form-control">
+                                    <option value="">-- Tahun --</option>
+                                    {% for tahuns in tahun %}
+                                    <option value="{{ tahuns.id }}" {{ tahuns.id|selected_tahun:request }}>{{ tahuns.text }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <button class="btn btn-success">Cari</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% if not request.GET|state_show %}
+<div class="card mt-5">
+    <div class="card-body text-center">
+        Data Belum ada
+    </div>
+</div>
+{% else %}
+    {% if request.GET.jenis_statistik == '1' %}
+        {% include 'admin/progress_pengisian.html' %}
+    {% elif request.GET.jenis_statistik == '2' %}
+        {% include 'admin/keterlibatan_matrix.html' %}
+    {% elif request.GET.jenis_statistik == '3' %}
+        {% include 'admin/penilaian_kurva.html' %}
+    {% else %}
+        <div class="card mt-5">
+            <div class="card-body text-center">
+                Data Belum ada
+            </div>
+        </div>
+    {% endif %}
+{% endif %}
+{% endblock %}

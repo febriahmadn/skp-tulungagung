@@ -13,9 +13,7 @@ def custom_submit_row(context):
     is_popup = context["is_popup"]
     save_as = context["save_as"]
     request = context["request"]
-    no_save_and_another = (
-        context["has_add_permission"] and not is_popup and (not save_as or context["add"])
-    )
+    no_save_and_another = (context["has_add_permission"] and not is_popup and (not save_as or context["add"]))
     if "no_save_and_another" in context:
         no_save_and_another = False
     akses_spesial = (
