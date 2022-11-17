@@ -1,10 +1,12 @@
 from django.contrib import admin
-from skp.forms.sasarankinerja_form import SasaranKinerjaForm, SKPForm
 from django.utils.safestring import mark_safe
-from django.urls import resolve, path
+from django.urls import resolve, path, reverse_lazy
 from django.template import loader
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
+from django.shortcuts import render
 
+from skp.forms.sasarankinerja_form import SasaranKinerjaForm, SKPForm
+from skp.models import SasaranKinerja
 
 class SasaranKinerjaAdmin(admin.ModelAdmin):
     list_display = (
@@ -50,7 +52,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                 class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
                 aria-expanded="false">Aksi</button>'''
         btn += '<div class="dropdown-menu" aria-labelledby="btnGroupDrop1">'
-        btn += '<a class="dropdown-item" href="#">Detail SKP</a>'
+        btn += '<a class="dropdown-item" href="{}">Detail SKP</a>'.format(reverse_lazy('admin:detail-skp',kwargs={'id': obj.id}))
         btn += '<a class="dropdown-item" href="#">Matriks Peran Hasil</a>'
         btn += '<a class="dropdown-item" href="#">SKP Bawahan</a>'
         btn += '<a class="dropdown-item" href="#">Penilaian</a>'
@@ -124,11 +126,27 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
     #     queryset = super(SasaranKinerjaAdmin, self).get_queryset()
     #     queryset = queryset # TODO
     #     return queryset
+    def detail_skp(self, request, extra_context={}, id=None):
+        try:
+            obj = SasaranKinerja.objects.get(pk=id)
+        except SasaranKinerja.DoesNotExist:
+            raise Http404()
+        except Exception as e:
+            raise Http404()
+        else:
+            extra_context.update({
+                'title':"Detail SKP",
+                'obj':obj,
+                'pegawai':obj.pegawai,
+                'penilai':obj.pejabat_penilai,
+            })
+        return render(request,"admin/skp/sasarankinerja/detail_skp.html", extra_context)
 
     def get_urls(self):
         urls = super(SasaranKinerjaAdmin, self).get_urls()
         urlp = [
-            path("skpdata/", self.view_custom, name="list_skp_admin"),
-            path("skpdata/add/", self.add_skp, name="add_skp_admin"),
+            path("<int:id>/detail",self.detail_skp, name="detail-skp"),
+            # path("skpdata/", self.view_custom, name="list_skp_admin"),
+            # path("skpdata/add/", self.add_skp, name="add_skp_admin"),
         ]
         return urlp + urls

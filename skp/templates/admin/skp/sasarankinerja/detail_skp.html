@@ -1,1 +1,109 @@
 {% extends 'admin/base_site.html' %}
+
+{% block custom_style %}
+{{ block.super }}
+<style>
+  table th{
+    font-size: 10pt;
+  }
+</style>
+{% endblock custom_style %}
+
+{% block content %}
+<div class="d-flex">
+  <div class="col-md-6">
+    <div class="form-group row">
+      <label class="col-sm-3 col-form-label mx-1 py-2">Status SKP</label>
+      <div class="col-sm-5">
+        <input type="text" readonly class="form-control form-control-sm" id="staticEmail" value="{{obj.get_status_display}}">
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header py-4 px-5 bg-success text-white">
+          <h6>PEGAWAI YANG DINILAI</h6>
+      </div>
+      <div class="card-body py-4 px-5">
+        <table class="table">
+          <tr>
+            <th style="width: 40%;">Nama</th>
+            <th style="width: 5%;">:</th>
+            <th>{{pegawai.get_complete_name}}</th>
+          </tr>
+          <tr>
+            <th style="width: 40%;">NIP</th>
+            <th style="width: 5%;">:</th>
+            <th>{{pegawai.username}}</th>
+          </tr>
+          <tr>
+            <th style="width: 40%;">Pangkat / Gol. Ruang</th>
+            <th style="width: 5%;">:</th>
+            <th>{{pegawai.get_golongan_display}}</th>
+          </tr>
+          <tr>
+            <th style="width: 40%;">Jabatan</th>
+            <th style="width: 5%;">:</th>
+            <th>{{pegawai.jabatan|default_if_none:"---"}}</th>
+          </tr>
+          <tr>
+            <th style="width: 40%;">Unit Kerja</th>
+            <th style="width: 5%;">:</th>
+            <th>{% if pegawai.unitkerja %}{{pegawai.unitkerja.unitkerja}}{% else %}---{% endif %}</th>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="form-group row justify-content-end pr-5">
+      <button class="btn btn-sm btn-warning"><i class="fas fa-sync-alt"></i> Sinkron dengan e-kinerja</button>
+      <button class="btn btn-sm btn-primary mx-2"><i class="fas fa-paper-plane"></i> Ajukan SKP</button>
+      <button class="btn btn-sm btn-success"><i class="fas fa-print"></i> Cetak SKP</button>
+    </div>
+    <div class="card">
+      <div class="card-header py-4 px-5 bg-primary text-white">
+          <h6>PEJABAT PENILAI KINERJA</h6>
+      </div>
+      <div class="card-body py-4 px-5">
+        <table class="table">
+          <tr>
+            <th style="width: 40%;">Nama</th>
+            <th style="width: 5%;">:</th>
+            <th>{{penilai.get_complete_name}}</th>
+          </tr>
+          <tr>
+            <th style="width: 40%;">NIP</th>
+            <th style="width: 5%;">:</th>
+            <th>{{penilai.username}}</th>
+          </tr>
+          <tr>
+            <th style="width: 40%;">Pangkat / Gol. Ruang</th>
+            <th style="width: 5%;">:</th>
+            <th>{{penilai.get_golongan_display|default_if_none:"---"}}</th>
+          </tr>
+          <tr>
+            <th style="width: 40%;">Jabatan</th>
+            <th style="width: 5%;">:</th>
+            <th>{{penilai.jabatan|default_if_none:"---"}}</th>
+          </tr>
+          <tr>
+            <th style="width: 40%;">Unit Kerja</th>
+            <th style="width: 5%;">:</th>
+            <th>{% if penilai.unitkerja %}{{penilai.unitkerja.unitkerja}}{% else %}---{% endif %}</th>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="col-md-12 pt-3">
+  <div class="card">
+    <div class="d-flex justify-content-between card-header py-4 px-5">
+      <h6 style="margin: unset;">Hasil Kerja</h6>
+      <div>
+        <button class="btn btn-sm btn-primary mx-2"><i class="fas fa-plus"></i> Tambah RHK</button>
+        <button class="btn btn-sm btn-danger"><i class="fas fa-plus"></i> Tambah Indikator</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

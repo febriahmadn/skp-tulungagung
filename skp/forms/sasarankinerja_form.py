@@ -67,8 +67,8 @@ class SasaranKinerjaForm(forms.ModelForm):
             self.fields["unit_kerja_atasan"].initial = (
                 user.atasan.unitkerja.unitkerja if user.atasan.unitkerja else "---"
             )
-            self.fields["pejabat_penilai"].initial = user.id
-            self.fields["pejabat_penilai"].queryset = Account.objects.filter(id=user.id)
+            self.fields["pejabat_penilai"].initial = user.atasan.id
+            self.fields["pejabat_penilai"].queryset = Account.objects.filter(id=user.atasan.id)
             self.fields["pejabat_penilai"].widget = forms.HiddenInput()
         # self.fields['nama'].initial = user.last().get_complate_name()
         # self.fields['nama'].initial = user.last().get_complate_name()

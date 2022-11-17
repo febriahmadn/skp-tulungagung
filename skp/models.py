@@ -26,7 +26,7 @@ class SasaranKinerja(models.Model):
     periode_awal = models.DateField(null=True, verbose_name="Periode Awal")
     periode_akhir = models.DateField(null=True, verbose_name="Periode Akhir")
     pendekatan = models.IntegerField(choices=Pendekatan.choices, null=True)
-    status = models.IntegerField(choices=Status.choices, null=True)
+    status = models.IntegerField(choices=Status.choices, null=True, default=Status.DRAFT)
     keterangan = models.CharField("Keterangan", max_length=255, null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
 
