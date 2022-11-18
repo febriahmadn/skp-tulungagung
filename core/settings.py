@@ -33,7 +33,7 @@ ALLOWED_HOSTS = ["*"]
 CSRF_TRUSTED_ORIGINS = [
     'https://simpatik.bahrulyahya.my.id',
     'https://demo.skp.aitc.co.id',
-    ]
+]
 
 # Application definition
 AUTH_USER_MODEL = "usom.Account"

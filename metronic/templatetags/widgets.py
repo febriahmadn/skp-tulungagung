@@ -36,7 +36,8 @@ def is_select(field):
     ):
         return False
     return (
-        isinstance(field.field.widget, forms.Select) or str(field.field.widget.__class__.__name__) == "RelatedFieldWidgetWrapper"
+        isinstance(field.field.widget, forms.Select) or str(
+            field.field.widget.__class__.__name__) == "RelatedFieldWidgetWrapper"
     )
 
 
@@ -58,6 +59,12 @@ def is_time(field):
 @register.filter("is_file")
 def is_file(field):
     return isinstance(field.field.widget, forms.FileInput)
+
+
+@register.filter("is_bool")
+def is_bool(field):
+    # if "file" in field:
+    return isinstance(field.field.widget, forms.CheckboxInput)
 
 
 @register.filter("is_readonlypassword")

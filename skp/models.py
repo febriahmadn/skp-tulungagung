@@ -13,6 +13,11 @@ class SasaranKinerja(models.Model):
         PERSETUJUAN = 3, "Persetujuan"
         CLOSE = 4, "Close"
 
+    class JenisJabatan(models.IntegerChoices):
+        JPT = 1, "Jabatan Pimpinan Tinggi"
+        JF = 2, "Jabatan Fungsional"
+        JA = 3, "Jabatan Administrator"
+
     pegawai = models.ForeignKey(Account, null=True, on_delete=models.SET_NULL)
     unor = models.ForeignKey(UnitKerja, null=True, on_delete=models.SET_NULL)
     unor_text = models.CharField("Unor Text", max_length=255, null=True, blank=True)
@@ -23,15 +28,29 @@ class SasaranKinerja(models.Model):
         on_delete=models.SET_NULL,
         related_name="pejabat_penilai_set",
     )
+    jenis_jabatan = models.IntegerField(
+        choices=JenisJabatan.choices,
+        verbose_name="Jenis Jabatan",
+        null=True,
+        blank=True,
+    )
     periode_awal = models.DateField(null=True, verbose_name="Periode Awal")
     periode_akhir = models.DateField(null=True, verbose_name="Periode Akhir")
     pendekatan = models.IntegerField(choices=Pendekatan.choices, null=True)
-    status = models.IntegerField(choices=Status.choices, null=True, default=Status.DRAFT)
+    status = models.IntegerField(
+        choices=Status.choices, null=True, default=Status.DRAFT
+    )
     keterangan = models.CharField("Keterangan", max_length=255, null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return "{}".format(str(self.id))
+
+    def get_periode(self):
+        return "{} - {}".format(
+            self.periode_awal.strftime("%d/%m/%Y"),
+            self.periode_akhir.strftime("%d/%m/%Y"),
+        )
 
     class Meta:
         verbose_name = "Sasaran Kinerja Pegawai"
@@ -86,6 +105,7 @@ class RencanaHasilKerja(models.Model):
         ORGANISASI = 1, "Organisasi"
         INDIVIDU = 2, "Individu"
 
+    induk = models.ForeignKey("self", on_delete=models.SET_NULL, null=True, blank=True)
     skp = models.ForeignKey(
         SasaranKinerja, on_delete=models.CASCADE, verbose_name="Sasaran Kinerja Pegawai"
     )
@@ -94,7 +114,7 @@ class RencanaHasilKerja(models.Model):
         "Penugasan Dari", max_length=255, null=True, blank=True
     )
     jenis = models.IntegerField(
-        choices=Jenis.choices, verbose_name="Jenis Rencana Hasik Kerja"
+        choices=Jenis.choices, verbose_name="Jenis Rencana Hasil Kerja"
     )
     klasifikasi = models.IntegerField(
         choices=Klasifikasi.choices, verbose_name="Klasifikasi Rencana Hasil Kerja"
@@ -105,7 +125,7 @@ class RencanaHasilKerja(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return "{}".format(str(self.id))
+        return "{}".format(str(self.rencana_kerja))
 
     class Meta:
         verbose_name = "Rencana Hasil Kerja"
@@ -117,7 +137,7 @@ class Perspektif(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return "{}".format(str(self.id))
+        return "{}".format(str(self.perspektif))
 
     class Meta:
         verbose_name = "Perspektif"
