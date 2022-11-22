@@ -4,17 +4,9 @@ from django.contrib import admin
 from skp.subadmin.sasarankinerja_admin import SasaranKinerjaAdmin
 
 # model import
-from .models import (
-    DaftarLampiran,
-    DaftarPerilakuKerja,
-    DetailSasaranKinerja,
-    IndikatorKinerjaIndividu,
-    Lampiran,
-    PerilakuKerja,
-    Perspektif,
-    RencanaHasilKerja,
-    SasaranKinerja,
-)
+from .models import (DaftarLampiran, DaftarPerilakuKerja, DetailSasaranKinerja,
+                     IndikatorKinerjaIndividu, Lampiran, PerilakuKerja,
+                     Perspektif, RencanaHasilKerja, SasaranKinerja)
 from .subadmin.daftarlampiran_admin import DaftarlampiranAdmin
 from .subadmin.daftarperilakukerja_admin import DaftarperilakukerjaAdmin
 from .subadmin.detailsasarankerja_admin import DetailsasarankerjaAdmin
