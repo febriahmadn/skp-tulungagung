@@ -83,11 +83,6 @@ class SasaranKinerjaForm(forms.ModelForm):
                 id=user.atasan.id
             )
             self.fields["pejabat_penilai"].widget = forms.HiddenInput()
-        # self.fields['nama'].initial = user.last().get_complate_name()
-        # self.fields['nama'].initial = user.last().get_complate_name()
-
-        # print('masuk sini')
-        # self.fields['periode_awal'].widget = forms.TextInput(attrs={'class': 'datetimepicker-input'})
 
     class Meta:
         model = SasaranKinerja

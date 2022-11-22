@@ -10,9 +10,10 @@ class TarikPegawaiSipo:
 
     def proses(self, nip=None):
         url = "https://sipo.bkd.tulungagung.go.id/web/index.php"
+        token = "79B00E729FCCA845C29E318AC377EB6C38E19A6009371107377AEE161A666233"
         params = {
             "r": "api/pns",
-            "access_token": "79B00E729FCCA845C29E318AC377EB6C38E19A6009371107377AEE161A666233",
+            "access_token": token,
         }
 
         if nip:

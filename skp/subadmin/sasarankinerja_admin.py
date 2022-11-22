@@ -52,7 +52,8 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         btn = '<div class="btn-group" role="group">'
         btn += """
             <button id="btnGroupDrop1" type="button"
-                class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                class="btn btn-warning dropdown-toggle"
+                data-toggle="dropdown" aria-haspopup="true"
                 aria-expanded="false">Aksi</button>"""
         btn += '<div class="dropdown-menu" aria-labelledby="btnGroupDrop1">'
         btn += '<a class="dropdown-item" href="{}">Detail SKP</a>'.format(
@@ -131,6 +132,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         qs = super(SasaranKinerjaAdmin, self).get_queryset(request)
         qs = qs.filter(pegawai=request.user)
         return qs
+
     def detail_skp(self, request, extra_context={}, id=None):
         try:
             obj = SasaranKinerja.objects.get(pk=id)

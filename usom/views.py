@@ -1,12 +1,14 @@
-from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 from django.urls import reverse
+
 
 # from django.shortcuts import render
 def loginas(request, target_user):
     if request.user.is_superuser:
         return True
     return False
+
 
 @login_required
 def menu_pengguna(request):
@@ -26,7 +28,7 @@ def menu_pengguna(request):
             dict(
                 title="Profil",
                 icon="fa fa-user",
-                url="#",
+                url=reverse('admin:usom_account_profile'),
             ),
             dict(
                 title="SKP",

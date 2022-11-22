@@ -1,7 +1,11 @@
 from django.contrib import admin
 from django.urls import path
 from django.http import JsonResponse
-from skp.models import RencanaHasilKerja, SasaranKinerja, IndikatorKinerjaIndividu
+from skp.models import (
+    RencanaHasilKerja,
+    SasaranKinerja,
+    IndikatorKinerjaIndividu,
+)
 
 
 class RencanahasilkerjaAdmin(admin.ModelAdmin):

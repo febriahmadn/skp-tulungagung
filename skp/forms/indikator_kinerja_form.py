@@ -3,7 +3,9 @@ from skp.models import IndikatorKinerjaIndividu
 
 
 class IndikatorForm(forms.ModelForm):
-    # induk = forms.ModelChoiceField(queryset=RencanaHasilKerja.objects.all(), required=False, label="Hasil Kerja Atasan yang Diintervensi")
+    # induk = forms.ModelChoiceField(
+    # queryset=RencanaHasilKerja.objects.all(),
+    # required=False, label="Hasil Kerja Atasan yang Diintervensi")
     class Meta:
         model = IndikatorKinerjaIndividu
         # fields = (

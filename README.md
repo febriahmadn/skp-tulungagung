@@ -3,11 +3,26 @@
 ### Pakai Python Python 3.10.6
 
 
-## Installation With Docker
+## Installation
 
 ```sh
 cp .env.production .env
 ```
+
+### Pre-commit
+
+create file pre-commit git `.git/hooks/pre-commit`
+    ```bash
+    #!/bin/bash
+    flake8 .
+    isort **/*.py
+    python manage.py test
+    ```
+
+chmod file
+    ```sh
+    chmod a+x .git/hooks/pre-commit
+    ```
 
 ### Create Database
 

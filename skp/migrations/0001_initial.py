@@ -30,13 +30,19 @@ class Migration(migrations.Migration):
                 (
                     "unor_text",
                     models.CharField(
-                        blank=True, max_length=255, null=True, verbose_name="Unor Text"
+                        blank=True,
+                        max_length=255,
+                        null=True,
+                        verbose_name="Unor Text",
                     ),
                 ),
                 (
                     "jabatan",
                     models.CharField(
-                        blank=True, max_length=255, null=True, verbose_name="Jabatan"
+                        blank=True,
+                        max_length=255,
+                        null=True,
+                        verbose_name="Jabatan",
                     ),
                 ),
                 (
@@ -50,7 +56,8 @@ class Migration(migrations.Migration):
                 (
                     "pendekatan",
                     models.IntegerField(
-                        choices=[(1, "Kuantitatif"), (2, "Kualitatif")], null=True
+                        choices=[(1, "Kuantitatif"), (2, "Kualitatif")],
+                        null=True,
                     ),
                 ),
                 (
@@ -62,7 +69,10 @@ class Migration(migrations.Migration):
                 (
                     "keterangan",
                     models.CharField(
-                        blank=True, max_length=255, null=True, verbose_name="Keterangan"
+                        blank=True,
+                        max_length=255,
+                        null=True,
+                        verbose_name="Keterangan",
                     ),
                 ),
                 (

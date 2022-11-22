@@ -22,7 +22,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get(
-    "SECRET_KEY", "django-insecure-1=eobg*-rgjn=p^vd5orgmc85dx&6v1)ekr7#6pa7d7tg(bk9g"
+    "SECRET_KEY",
+    "django-insecure-1=eobg*-rgjn=p^vd5orgmc85dx&6v1)ekr7#6pa7d7tg(bk9g",
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -31,8 +32,8 @@ DEBUG = True if os.environ.get("DEBUG") in ["true", "True"] else False
 ALLOWED_HOSTS = ["*"]
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://simpatik.bahrulyahya.my.id',
-    'https://demo.skp.aitc.co.id',
+    "https://simpatik.bahrulyahya.my.id",
+    "https://demo.skp.aitc.co.id",
 ]
 
 # Application definition
@@ -126,9 +127,13 @@ DATABASES = {
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
+UserAttributeSimilarityValidator = (
+    "django.contrib.auth" ".password_validation" ".UserAttributeSimilarityValidator"
+)
+
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        "NAME": UserAttributeSimilarityValidator,
     },
     {
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",

@@ -7,7 +7,10 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("skp", "0002_alter_sasarankinerja_options_sasarankinerja_created_and_more"),
+        (
+            "skp",
+            "0002_alter_sasarankinerja_options_sasarankinerja_created_and_more",
+        ),
     ]
 
     operations = [
@@ -26,7 +29,9 @@ class Migration(migrations.Migration):
                 (
                     "status",
                     models.IntegerField(
-                        choices=[(1, "Aktif"), (2, "Non Aktif")], default=1, null=True
+                        choices=[(1, "Aktif"), (2, "Non Aktif")],
+                        default=1,
+                        null=True,
                     ),
                 ),
                 ("created", models.DateTimeField(auto_now_add=True)),
@@ -55,7 +60,9 @@ class Migration(migrations.Migration):
                 (
                     "status",
                     models.IntegerField(
-                        choices=[(1, "Aktif"), (2, "Non Aktif")], default=1, null=True
+                        choices=[(1, "Aktif"), (2, "Non Aktif")],
+                        default=1,
+                        null=True,
                     ),
                 ),
                 ("created", models.DateTimeField(auto_now_add=True)),
@@ -122,7 +129,10 @@ class Migration(migrations.Migration):
                 (
                     "target",
                     models.CharField(
-                        blank=True, max_length=100, null=True, verbose_name="Target"
+                        blank=True,
+                        max_length=100,
+                        null=True,
+                        verbose_name="Target",
                     ),
                 ),
                 (
@@ -169,7 +179,9 @@ class Migration(migrations.Migration):
                 (
                     "status",
                     models.IntegerField(
-                        choices=[(1, "Aktif"), (2, "Non Aktif")], default=1, null=True
+                        choices=[(1, "Aktif"), (2, "Non Aktif")],
+                        default=1,
+                        null=True,
                     ),
                 ),
                 ("created", models.DateTimeField(auto_now_add=True)),
@@ -209,7 +221,8 @@ class Migration(migrations.Migration):
                 (
                     "lampiran",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="skp.lampiran"
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="skp.lampiran",
                     ),
                 ),
             ],

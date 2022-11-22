@@ -43,7 +43,9 @@ class Migration(migrations.Migration):
                 (
                     "rencana_kerja",
                     models.CharField(
-                        max_length=255, null=True, verbose_name="Rencana Hasil Kerja"
+                        max_length=255,
+                        null=True,
+                        verbose_name="Rencana Hasil Kerja",
                     ),
                 ),
                 (
