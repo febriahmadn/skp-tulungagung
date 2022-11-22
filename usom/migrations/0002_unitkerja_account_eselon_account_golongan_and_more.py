@@ -26,7 +26,9 @@ class Migration(migrations.Migration):
                 (
                     "unitkerja",
                     models.CharField(
-                        max_length=200, null=True, verbose_name="Nama Unit Kerja"
+                        max_length=200,
+                        null=True,
+                        verbose_name="Nama Unit Kerja",
                     ),
                 ),
                 ("created_at", models.DateTimeField(auto_now_add=True)),
@@ -96,7 +98,11 @@ class Migration(migrations.Migration):
             name="jenis_pegawai",
             field=models.CharField(
                 blank=True,
-                choices=[("PI", "Pimpinan"), ("PA", "Atasan"), ("PE", "Pegawai")],
+                choices=[
+                    ("PI", "Pimpinan"),
+                    ("PA", "Atasan"),
+                    ("PE", "Pegawai"),
+                ],
                 default="PE",
                 max_length=2,
                 null=True,

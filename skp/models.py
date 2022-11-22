@@ -1,4 +1,5 @@
 from django.db import models
+
 from usom.models import Account, UnitKerja
 
 
@@ -107,7 +108,9 @@ class RencanaHasilKerja(models.Model):
 
     induk = models.ForeignKey("self", on_delete=models.SET_NULL, null=True, blank=True)
     skp = models.ForeignKey(
-        SasaranKinerja, on_delete=models.CASCADE, verbose_name="Sasaran Kinerja Pegawai"
+        SasaranKinerja,
+        on_delete=models.CASCADE,
+        verbose_name="Sasaran Kinerja Pegawai",
     )
     rencana_kerja = models.CharField("Rencana Hasil Kerja", max_length=255, null=True)
     penugasan_dari = models.CharField(
@@ -117,7 +120,8 @@ class RencanaHasilKerja(models.Model):
         choices=Jenis.choices, verbose_name="Jenis Rencana Hasil Kerja"
     )
     klasifikasi = models.IntegerField(
-        choices=Klasifikasi.choices, verbose_name="Klasifikasi Rencana Hasil Kerja"
+        choices=Klasifikasi.choices,
+        verbose_name="Klasifikasi Rencana Hasil Kerja",
     )
     unor = models.ForeignKey(
         UnitKerja, null=True, blank=True, on_delete=models.SET_NULL
@@ -146,7 +150,9 @@ class Perspektif(models.Model):
 
 class IndikatorKinerjaIndividu(models.Model):
     rencana_kerja = models.ForeignKey(
-        RencanaHasilKerja, on_delete=models.CASCADE, verbose_name="Rencana Hasil Kerja"
+        RencanaHasilKerja,
+        on_delete=models.CASCADE,
+        verbose_name="Rencana Hasil Kerja",
     )
     indikator = models.CharField("Indikator", max_length=255, null=True)
     target = models.CharField("Target", max_length=100, null=True, blank=True)

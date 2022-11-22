@@ -13,7 +13,11 @@ def custom_submit_row(context):
     is_popup = context["is_popup"]
     save_as = context["save_as"]
     request = context["request"]
-    no_save_and_another = (context["has_add_permission"] and not is_popup and (not save_as or context["add"]))
+    no_save_and_another = (
+        context["has_add_permission"]
+        and not is_popup
+        and (not save_as or context["add"])
+    )
     if "no_save_and_another" in context:
         no_save_and_another = False
     akses_spesial = (
@@ -27,7 +31,12 @@ def custom_submit_row(context):
         show_save = False
     ctx = {
         "opts": opts,
-        "show_delete_link": (not is_popup and context["has_delete_permission"] and change and context.get("show_delete", True)),
+        "show_delete_link": (
+            not is_popup
+            and context["has_delete_permission"]
+            and change
+            and context.get("show_delete", True)
+        ),
         "show_save_as_new": not is_popup and change and save_as,
         "show_save_and_add_another": no_save_and_another,
         "show_save_and_continue": not is_popup and context["has_change_permission"],

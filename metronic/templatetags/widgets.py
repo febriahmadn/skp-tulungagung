@@ -35,9 +35,10 @@ def is_select(field):
         field.field.widget, forms.widgets.CheckboxSelectMultiple
     ):
         return False
+    name = str(field.field.widget.__class__.__name__)
+    isinstance_ = isinstance(field.field.widget, forms.Select)
     return (
-        isinstance(field.field.widget, forms.Select) or str(
-            field.field.widget.__class__.__name__) == "RelatedFieldWidgetWrapper"
+        isinstance_ or name == "RelatedFieldWidgetWrapper"
     )
 
 

@@ -3,8 +3,8 @@ from django.contrib.auth.admin import UserAdmin
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 
-from usom.models import Account, UnitKerja
 from usom.forms import AccountForm
+from usom.models import Account, UnitKerja
 
 
 class UnitKerjaAdmin(admin.ModelAdmin):
@@ -66,7 +66,14 @@ class AccountAdmin(UserAdmin):
 
     def get_list_display(self, request):
         if request.user.is_superuser:
-            return ("username", "nama_lengkap", "unitkerja", "jabatan", "get_akses", "aksi")
+            return (
+                "username",
+                "nama_lengkap",
+                "unitkerja",
+                "jabatan",
+                "get_akses",
+                "aksi",
+            )
         return super().get_list_display(request)
 
     def get_akses(self, obj):
@@ -74,6 +81,7 @@ class AccountAdmin(UserAdmin):
         if groups.exists():
             return ["".join(item.name) for item in groups]
         return "-"
+
     get_akses.short_description = "Akses"
 
     def get_form(self, request, obj=None, **kwargs):

@@ -1,5 +1,5 @@
-from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.db import models
 
 
 class UnitKerja(models.Model):
@@ -32,9 +32,10 @@ class AccountManager(BaseUserManager):
         return user
 
     def create_superuser(self, username, nama_lengkap, password):
-        """
-        Creates and saves a superuser with the given identity number, nama_lengkap and password.
-        """
+        '''
+        Creates and saves a superuser with the given identity number,
+        nama_lengkap and password.
+        '''
         user = self.create_user(username, password=password, nama_lengkap=nama_lengkap)
         user.is_admin = True
         user.is_superuser = True
@@ -44,7 +45,11 @@ class AccountManager(BaseUserManager):
 
 
 class Account(AbstractUser):
-    JENIS_PEGAWAI_CHOICES = [("PI", "Pimpinan"), ("PA", "Atasan"), ("PE", "Pegawai")]
+    JENIS_PEGAWAI_CHOICES = [
+        ("PI", "Pimpinan"),
+        ("PA", "Atasan"),
+        ("PE", "Pegawai"),
+    ]
     GOLONGAN = [
         ("I/A", "I/A"),
         ("I/B", "I/B"),
@@ -82,7 +87,9 @@ class Account(AbstractUser):
         ("JA", "Jabatan Administrator"),
     ]
 
-    # JPT (Jabatan Pimpinan Tinggi) (beda pengisian), JF (Jabatan Fungsional), JA (Jabatan Administrator)
+    # JPT (Jabatan Pimpinan Tinggi) (beda pengisian),
+    # JF (Jabatan Fungsional),
+    # JA (Jabatan Administrator)
     atasan = models.ForeignKey(
         "self",
         related_name="pegawai_atasan",
@@ -111,10 +118,18 @@ class Account(AbstractUser):
         UnitKerja, null=True, blank=True, on_delete=models.SET_NULL
     )
     golongan = models.CharField(
-        choices=GOLONGAN, max_length=6, verbose_name="Golongan", null=True, blank=True
+        choices=GOLONGAN,
+        max_length=6,
+        verbose_name="Golongan",
+        null=True,
+        blank=True,
     )
     eselon = models.CharField(
-        choices=ESELON, max_length=6, verbose_name="Eselon", null=True, blank=True
+        choices=ESELON,
+        max_length=6,
+        verbose_name="Eselon",
+        null=True,
+        blank=True,
     )
     jenis_pegawai = models.CharField(
         choices=JENIS_PEGAWAI_CHOICES,
@@ -124,7 +139,9 @@ class Account(AbstractUser):
         null=True,
         blank=True,
     )
-    tangggal_nonaktif = models.DateField(null=True, blank=True, verbose_name="Tanggal Nonaktif")
+    tangggal_nonaktif = models.DateField(
+        null=True, blank=True, verbose_name="Tanggal Nonaktif"
+    )
 
     objects = AccountManager()
     USERNAME_FIELD = "username"

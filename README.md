@@ -14,7 +14,6 @@ cp .env.production .env
 create file pre-commit git `.git/hooks/pre-commit`
     ```bash
     #!/bin/bash
-    blake .
     flake8 .
     isort **/*.py
     python manage.py test
