@@ -28,7 +28,7 @@ def menu_pengguna(request):
             dict(
                 title="Profil",
                 icon="fa fa-user",
-                url="#",
+                url=reverse('admin:usom_account_profile'),
             ),
             dict(
                 title="SKP",

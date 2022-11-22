@@ -1,7 +1,10 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from django.urls import reverse
+from django.urls import reverse, path
+from django.db.models import Q
 from django.utils.safestring import mark_safe
+from django.shortcuts import render
+from django.http import JsonResponse
 
 from usom.forms import AccountForm
 from usom.models import Account, UnitKerja
@@ -100,6 +103,91 @@ class AccountAdmin(UserAdmin):
             obj.nama_lengkap,
         )
         return mark_safe(str_aksi)
+
+    def view_pegawai_profile(self, request):
+        extra_context = {
+            "title": "Profile ({})".format(request.user.username),
+            "title_sort": "Profile",
+            "unor_list": UnitKerja.objects.filter(aktif=True),
+            "atasan": request.user.atasan if request.user.atasan else None,
+        }
+        # if request.user.atasan is None:
+        #     extra_context.update({
+        #         'unor_list': UnitKerja.objects.filter(aktif=True)
+        #     })
+        return render(request, "admin/usom/account/profile.html", extra_context)
+
+    def view_pegawai_edit_profile(self, request):
+        extra_context = {
+            "title": "Edit Profile ({})".format(request.user.username),
+            "title_sort": "Edit Profile",
+            "golongan_list": Account.GOLONGAN,
+            "unor_list": UnitKerja.objects.filter(aktif=True),
+        }
+        return render(request, "admin/usom/account/profile_edit.html", extra_context)
+
+    def view_pegawai_json(self, request):
+        results = []
+        search = request.GET.get("search", None)
+        unor_id = request.GET.get("unor_id", None)
+        pegawai_list = Account.objects.filter(is_active=True)
+        if unor_id:
+            pegawai_list = pegawai_list.filter(unitkerja_id=unor_id)
+
+        if search:
+            pegawai_list = pegawai_list.filter(
+                Q(nama_lengkap__icontains=search) | Q(username__icontains=search)
+            )
+        pegawai_list = pegawai_list.exclude(id=request.user.id)
+        for item in pegawai_list:
+            obj = {
+                "id": item.id,
+                "text": "[{}] {}".format(item.username, item.get_complete_name()),
+            }
+            results.append(obj)
+        respon = {"success": True, "results": results}
+        return JsonResponse(respon)
+
+    def action_set_pegawai_atasan(self, request):
+        respon = {"success": False, "message": "Terjadi kesalahan"}
+        user = request.user
+        atasan_id = request.GET.get("atasan_id", None)
+        if atasan_id:
+            try:
+                obj = Account.objects.get(id=atasan_id)
+            except Account.DoesNotExist:
+                respon = {"success": False, "message": "Akun atasan tidak ditemukan"}
+            else:
+                user.atasan = obj
+                user.save()
+                respon = {"success": True}
+        return JsonResponse(respon)
+
+    def get_urls(self):
+        admin_url = super().get_urls()
+        custom_url = [
+            path(
+                "profile",
+                self.admin_site.admin_view(self.view_pegawai_profile),
+                name="usom_account_profile",
+            ),
+            path(
+                "profile/edit",
+                self.admin_site.admin_view(self.view_pegawai_edit_profile),
+                name="usom_account_profile_edit",
+            ),
+            path(
+                "json",
+                self.admin_site.admin_view(self.view_pegawai_json),
+                name="usom_account_as_json",
+            ),
+            path(
+                "set-atasan",
+                self.admin_site.admin_view(self.action_set_pegawai_atasan),
+                name="usom_account_set_atasan",
+            ),
+        ]
+        return custom_url + admin_url
 
 
 admin.site.register(Account, AccountAdmin)

@@ -6,6 +6,7 @@ class UnitKerja(models.Model):
     unitkerja = models.CharField(
         max_length=200, null=True, verbose_name="Nama Unit Kerja"
     )
+    aktif = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
