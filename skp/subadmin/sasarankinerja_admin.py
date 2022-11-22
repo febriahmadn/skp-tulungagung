@@ -127,10 +127,10 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         form.request = request
         return form
 
-    # def get_queryset(self, request):
-    #     queryset = super(SasaranKinerjaAdmin, self).get_queryset()
-    #     queryset = queryset # TODO
-    #     return queryset
+    def get_queryset(self, request):
+        qs = super(SasaranKinerjaAdmin, self).get_queryset(request)
+        qs = qs.filter(pegawai=request.user)
+        return qs
     def detail_skp(self, request, extra_context={}, id=None):
         try:
             obj = SasaranKinerja.objects.get(pk=id)

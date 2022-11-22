@@ -281,6 +281,7 @@
 		console.log(total_data)
 		const getData = (elemen_) => {
 			url_ = elemen_.data('url')
+			id_ = elemen_.data('id')
 			if(typeof url_ != 'undefined'){
 				$.ajax({
 					url: url_,
@@ -291,24 +292,28 @@
             count_data += 1
             start_ = end_
             end_ = Math.round(count_data / total_data * 100)
-            if(respon.data.jenis == "rhk"){
-              indikator_html = `<td colspan="4" ></td>`
-            }else{
-              indikator_html = ""
-            }
-
+            indikator_html = `<td colspan="4" id="rhk-${id_}" ></td>`
+            html = ""
             if(respon.success){
-              // console.log(respon.data.indikator_list_id)
+              console.log(respon.data.indikator_list_id)
               // if(respon.data.indikator_list_id){
+              //   // console.log(respon.data.indikator_list_id.length)
               //   if(respon.data.indikator_list_id.length > 0){
-              //     indikator_html = "<tr>"
+              //       indikator_html = "<tr>"
               //       respon.data.indikator_list_id.map((idx)=>{
               //         indikator_html += `<td data-status="unload" data-url="{% url 'admin:load-indikator' %}?id=${idx}" ></td>`
               //       })
-              //     indikator_html += "</tr>"
+              //       indikator_html += "</tr>"
+              //       console.log(indikator_html)
+              //       //       {% comment %} $(`#rhk-${id_}`).append(indikator_html) {% endcomment %}
+              //       //     }else{
+              //         //       indikator_html = `<td colspan="4" id="rhk-${id_}" ></td>`
+              //     }
+              //   }else{
+              //     indikator_html = `<td colspan="4" id="rhk-${id_}" ></td>`
               //   }
-              // }
-              // console.log(indikator_html)
+                
+                console.log(indikator_html)
               if(respon.data.jenis == "rhk"){
               html = `
               <td rowspan="${respon.data.indikator_count}">${count_data}</td>
@@ -316,8 +321,8 @@
               <td rowspan="${respon.data.indikator_count}">${respon.data.jenis_rhk}</td>  
               ${indikator_html}
               `}else{
-                
-                html=indikator_html
+                console.log('lasd')
+                {% comment %} $(`#rhk-${id_}`).after(indikator_html) {% endcomment %}
               }
               elemen_.html(html)
             }
