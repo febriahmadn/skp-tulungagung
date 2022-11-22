@@ -191,7 +191,7 @@ LOGIN_URL = "/admin/login/"
 USE_X_FORWARDED_HOST = True
 # CAS_ROOT_PROXIED_AS = 'http://127.0.0.1:9000'
 
-CAS_REDIRECT_URL = "/"
+CAS_REDIRECT_URL = "http://demo.skp.aitc.co.id/"
 CAS_SERVER_URL = "http://{}/cas".format(
     os.environ.get("CAS_SERVER_URL", "presensi.tulungagung.go.id")
 )
