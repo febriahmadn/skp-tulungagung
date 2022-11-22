@@ -1,5 +1,4 @@
 import requests
-from services.models import 
 from usom.models import Account
 
 
