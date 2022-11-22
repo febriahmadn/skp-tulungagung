@@ -1,6 +1,6 @@
 from django.db import models
-
 from solo.models import SingletonModel
+
 
 class Configurations(SingletonModel):
     ekinerja_url = models.URLField("Ekinerja URL", null=True, blank=True)
