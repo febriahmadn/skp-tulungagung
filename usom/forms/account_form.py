@@ -12,17 +12,17 @@ class AccountForm(forms.ModelForm):
     nama_lengkap = forms.CharField(
         label="",
         required=True,
-        widget=forms.TextInput(attrs={"placeholder": "Nama Lengkap"}),
+        widget=forms.TextInput(attrs={"placeholder": "Nama Lengkap", "class": "form-control max-w-350px"}),
     )
     gelar_depan = forms.CharField(
         label="Nama Lengkap",
         required=False,
-        widget=forms.TextInput(attrs={"placeholder": "Gelar Depan"}),
+        widget=forms.TextInput(attrs={"placeholder": "Gelar Depan", "class": "form-control max-w-130px"}),
     )
     gelar_belakang = forms.CharField(
         label="",
         required=False,
-        widget=forms.TextInput(attrs={"placeholder": "Gelar Belakang"}),
+        widget=forms.TextInput(attrs={"placeholder": "Gelar Belakang", "class": "form-control max-w-130px"}),
     )
     password = ReadOnlyPasswordHashField(
         label=_("Password"),

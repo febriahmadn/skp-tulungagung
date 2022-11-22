@@ -1,1 +1,360 @@
 {% extends 'admin/base_site.html' %}
+{% load widgets %}
+
+{% block custom_style %}
+{{ block.super }}
+<style>
+  table th{
+    font-size: 10pt;
+    color:#fdfdfd;
+  }
+  .field-hidden{
+    display: none;
+  }
+  .btn-group-xs > .btn, .btn-xs {
+    padding: .25rem .4rem;
+    font-size: .875rem;
+    line-height: .5;
+    border-radius: .2rem;
+  }
+</style>
+{% endblock custom_style %}
+
+{% block breadcrumbs %}
+<ul class="breadcrumb breadcrumb-transparent breadcrumb-dot font-weight-bold p-0 my-2 font-size-sm">
+  <li class="breadcrumb-item text-muted">
+    <a href="/admin" class="text-muted">Home</a>
+  </li>
+  <li class="breadcrumb-item text-muted">
+    <a href="/admin/skp" class="text-muted">Skp</a>
+  </li>
+  <li class="breadcrumb-item text-muted">
+    <a href="{% url 'admin:skp_sasarankinerja_changelist' %}" class="text-muted">Sasaran Kinerja</a>
+  </li>
+  <li class="breadcrumb-item text-muted">
+    <a href="#" class="text-muted">Detail Sasaran Kinerja</a>
+  </li>
+</ul>
+{% endblock breadcrumbs %}
+
+{% block content %}
+<div class="row px-5 pb-3">
+  <div class="col-md-6">
+    <div class="d-flex">
+      <label class="mx-1 py-2" style="min-width: 100px;">Status SKP</label>
+      <input type="text" readonly class="form-control form-control-sm" id="staticEmail" value="{{obj.get_status_display}}">
+    </div>
+  </div>
+
+  <div class="col-md-6 d-flex flex-row-reverse">
+    <button class="btn btn-sm btn-warning"><i class="fas fa-sync-alt"></i> Sinkron dengan e-kinerja</button>
+    <button class="btn btn-sm btn-primary mx-2"><i class="fas fa-paper-plane"></i> Ajukan SKP</button>
+    <button class="btn btn-sm btn-success"><i class="fas fa-print"></i> Cetak SKP</button>
+  </div>
+</div>
+
+<div class="d-flex">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header bg-success text-white p-5">
+          <h6 class="m-0">PEGAWAI YANG DINILAI</h6>
+      </div>
+      <div class="card-body p-0">
+        <table class="table">
+          <tr>
+            <td style="width: 40%;">Nama</td>
+            <td style="width: 5%;">:</td>
+            <td>{{pegawai.get_complete_name}}</td>
+          </tr>
+          <tr>
+            <td style="width: 40%;">NIP</td>
+            <td style="width: 5%;">:</td>
+            <td>{{pegawai.username}}</td>
+          </tr>
+          <tr>
+            <td style="width: 40%;">Pangkat / Gol. Ruang</td>
+            <td style="width: 5%;">:</td>
+            <td>{{pegawai.get_golongan_display|default_if_none:"---"}}</td>
+          </tr>
+          <tr>
+            <td style="width: 40%;">Jabatan</td>
+            <td style="width: 5%;">:</td>
+            <td>{{pegawai.jabatan|default_if_none:"---"}}</td>
+          </tr>
+          <tr>
+            <td style="width: 40%;">Unit Kerja</td>
+            <td style="width: 5%;">:</td>
+            <td>{% if pegawai.unitkerja %}{{pegawai.unitkerja.unitkerja}}{% else %}---{% endif %}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header bg-primary text-white p-5">
+          <h6 class="m-0">PEJABAT PENILAI KINERJA</h6>
+      </div>
+      <div class="card-body p-0">
+        <table class="table">
+          <tr>
+            <td style="width: 40%;">Nama</td>
+            <td style="width: 5%;">:</td>
+            <td>{{penilai.get_complete_name|default_if_none:"---"}}</td>
+          </tr>
+          <tr>
+            <td style="width: 40%;">NIP</td>
+            <td style="width: 5%;">:</td>
+            <td>{{penilai.username|default_if_none:"---"}}</td>
+          </tr>
+          <tr>
+            <td style="width: 40%;">Pangkat / Gol. Ruang</td>
+            <td style="width: 5%;">:</td>
+            <td>{{penilai.get_golongan_display|default_if_none:"---"}}</td>
+          </tr>
+          <tr>
+            <td style="width: 40%;">Jabatan</td>
+            <td style="width: 5%;">:</td>
+            <td>{{penilai.jabatan|default_if_none:"---"}}</td>
+          </tr>
+          <tr>
+            <td style="width: 40%;">Unit Kerja</td>
+            <td style="width: 5%;">:</td>
+            <td>{% if penilai.unitkerja %}{{penilai.unitkerja.unitkerja}}{% else %}---{% endif %}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+  <div class="d-flex justify-content-end mt-3 pr-4" style="padding: unset;">
+    <h4 style="margin: unset;">Periode Penilaian: {{obj.get_periode}}</h4>
+  </div>
+<div class="col-md-12 pt-3">
+  <div class="card">
+    <div class="d-flex justify-content-between card-header py-4 px-5">
+      <h6 class="d-flex align-items-center m-0">Hasil Kerja</h6>
+      <div>
+        <button class="btn btn-sm btn-primary mx-2" data-toggle="modal" data-target="#tambahrhk"><i class="fas fa-plus"></i> Tambah RHK</button>
+        <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#tambahindikator"><i class="fas fa-plus"></i> Tambah Indikator</button>
+      </div>
+    </div>
+    <div class="card-body p-0">
+      <!-- <div class="table-responsive"> -->
+        <table class="table table-hover table-striped mb-0" id="result_list">
+          <thead style="background: #2196f3;">
+            <tr>
+              <th valign="center" >No</th>
+              {% if obj.jenis_jabatan == 1 %}
+              <th valign="center" >Rencana Hasil Kerja</th>
+              <th valign="center" >Jenis RHK</th>
+              <th valign="center" >Indikator Kinerja Individu</th>
+              <th valign="center" >Target</th>
+              <th valign="center" >Perspektif</th>
+              <th valign="center" >Aksi</th>
+              {% else %}
+              <th valign="center" >Rencana Hasil Kerja Pimpinan<br>yang Diintervensi</th>
+              <th valign="center" >Jenis RHK</th>
+              <th valign="center" >Indikator Kinerja Individu</th>
+              <th valign="center" >Rencana Hasil Kerja</th>
+              <th valign="center" >Target</th>
+              <th valign="center" >Aspek</th>
+              <th valign="center" >Aksi</th>
+              {% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% if hasil_kerja %}
+          {% for i in hasil_kerja %}
+          <tr data-id="{{i.id}}" data-url="{% url 'admin:load-rhk' %}?id={{i.id}}" data-status="unload">
+            <td colspan="8" style="text-align: center;">Sedang Memuat</td>
+          </tr>
+          {% endfor %}
+          {% else %}
+          <tr>
+            <td colspan="8" style="text-align: center;">Tidak Ada Data</td>
+          </tr>
+          {% endif %}
+        </tbody>
+        </table>
+      <!-- </div> -->
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="tambahrhk" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Tambah RHK</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="" method="post">
+      {% csrf_token %}
+      <input type="hidden" name="jenis_post" value="rhk">
+      <div class="modal-body">
+        {% for field in RHK_Form %}
+            <div class="mb-3 form-{{field.name}} {% if field.is_hidden %}field-hidden{% endif %}">
+                {% if field|is_bool %}
+                {{field}}
+                <label for="{{field.auto_id}}" class="form-label {% if field.field.required %}required{% endif %}">{{ field.label }}</label>
+                {% elif field|is_select %}
+                <label for="{{field.id}}" class="form-label {% if field.field.required %}required{% endif %}">{{ field.label }}</label>
+                {{ field|addcls:'form-control' }}
+                {% else %}
+                <label for="{{field.id}}" class="form-label {% if field.field.required %}required{% endif %}">{{ field.label }}</label>
+                {{ field|addcls:'form-control form-control-sm' }}
+                {% endif %}
+                {% if field.field.help_text %}
+                <div id="{{field.id}}" style="font-weight: bolder;" class="form-text">{{field.field.help_text}}</div>
+                {% endif %}
+              </div>
+        {% endfor %}
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-warning"><i class="fas fa-save"></i> Simpan</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fas fa-arrow-left"></i> Kembali</button>
+      </div>
+    </form>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="tambahindikator" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Tambah Indikator</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="" method="post">
+      {% csrf_token %}
+      <div class="modal-body">
+        <input type="hidden" name="jenis_post" value="indikator">
+        {% for field in indikator_form %}
+            <div class="mb-3 form-{{field.name}} {% if field.is_hidden %}field-hidden{% endif %}">
+                {% if field|is_bool %}
+                {{field}}
+                <label for="{{field.auto_id}}" class="form-label {% if field.field.required %}required{% endif %}">{{ field.label }}</label>
+                {% elif field|is_select %}
+                <label for="{{field.id}}" class="form-label {% if field.field.required %}required{% endif %}">{{ field.label }}</label>
+                {{ field|addcls:'form-control' }}
+                {% else %}
+                <label for="{{field.id}}" class="form-label {% if field.field.required %}required{% endif %}">{{ field.label }}</label>
+                {{ field|addcls:'form-control form-control-sm' }}
+                {% endif %}
+                {% if field.field.help_text %}
+                <div id="{{field.id}}" style="font-weight: bolder;" class="form-text">{{field.field.help_text}}</div>
+                {% endif %}
+              </div>
+        {% endfor %}
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-warning"><i class="fas fa-save"></i> Simpan</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fas fa-arrow-left"></i> Kembali</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+
+{% block custom_js %}
+{{ block.super }}
+<script>
+  $('.form-unor').hide()
+  const onChangeKlasifikasi = (elem) =>{
+    if(elem.val() == "1"){
+      $('.form-unor').show()
+    }else{
+      $('.form-unor').hide()
+    }
+  }
+
+  $(function(){
+    let total_data= $('#result_list tr[data-status=unload], td[data-status=unload]').length
+		let count_data = 0
+		let start_ = 0
+		let end_ = 0
+		console.log(total_data)
+		const getData = (elemen_) => {
+			url_ = elemen_.data('url')
+			id_ = elemen_.data('id')
+			if(typeof url_ != 'undefined'){
+				$.ajax({
+					url: url_,
+					type: "GET",
+					success: function(respon){
+						// console.log("Respon", respon.data.jenis)
+            elemen_.attr('data-status', 'loaded');
+            count_data += 1
+            start_ = end_
+            end_ = Math.round(count_data / total_data * 100)
+            indikator_html = `<td colspan="4" id="rhk-${id_}" ></td>`
+            html = ""
+            if(respon.success){
+              console.log(respon.data.indikator_list_id)
+              // if(respon.data.indikator_list_id){
+              //   // console.log(respon.data.indikator_list_id.length)
+              //   if(respon.data.indikator_list_id.length > 0){
+              //       indikator_html = "<tr>"
+              //       respon.data.indikator_list_id.map((idx)=>{
+              //         indikator_html += `<td data-status="unload" data-url="{% url 'admin:load-indikator' %}?id=${idx}" ></td>`
+              //       })
+              //       indikator_html += "</tr>"
+              //       console.log(indikator_html)
+              //       //       {% comment %} $(`#rhk-${id_}`).append(indikator_html) {% endcomment %}
+              //       //     }else{
+              //         //       indikator_html = `<td colspan="4" id="rhk-${id_}" ></td>`
+              //     }
+              //   }else{
+              //     indikator_html = `<td colspan="4" id="rhk-${id_}" ></td>`
+              //   }
+                
+                console.log(indikator_html)
+              if(respon.data.jenis == "rhk"){
+              html = `
+              <td rowspan="${respon.data.indikator_count}">${count_data}</td>
+              <td rowspan="${respon.data.indikator_count}">${respon.data.rencana_hasil}<button class="btn btn-xs btn-warning ml-1" data-toggle="modal" data-target="#tambahrhk"><i class="fas fa-edit" style="padding: unset;"></i></button></td>
+              <td rowspan="${respon.data.indikator_count}">${respon.data.jenis_rhk}</td>  
+              ${indikator_html}
+              `}else{
+                console.log('lasd')
+                {% comment %} $(`#rhk-${id_}`).after(indikator_html) {% endcomment %}
+              }
+              elemen_.html(html)
+            }
+						
+
+						if($('#result_list tbody tr[data-status=unload], td[data-status=unload]').length > 0){
+							if($('#result_list tbody tr[data-status=unload], td[data-status=unload]').eq(0).data('url')!= 'undefined'){
+								getData($('#result_list tbody tr[data-status=unload], td[data-status=unload]').eq(0));
+							}
+						}
+					},
+					error: function(e){
+						elemen_.attr('data-status', 'loaded')
+						count_data += 1
+						start_ = end_
+						end_ = Math.round(count_data / total_data * 100)
+
+						if($('#result_list tbody tr[data-status=unload], td[data-status=unload]').length > 0){
+							if($('#result_list tbody tr[data-status=unload], td[data-status=unload]').eq(0).data('url')!= 'undefined'){
+								getData($('#result_list tbody tr[data-status=unload], td[data-status=unload]').eq(0));
+							}
+						}
+					}
+				})
+			}
+		}
+
+		if($('#result_list tbody tr[data-status=unload], td[data-status=unload]').length > 0){
+			if($('#result_list tbody tr[data-status=unload], td[data-status=unload]').eq(0).data('url')!= 'undefined'){
+				getData($('#result_list tbody tr[data-status=unload], td[data-status=unload]').eq(0));
+			}
+		}
+  })
+</script>
+{% endblock custom_js %}

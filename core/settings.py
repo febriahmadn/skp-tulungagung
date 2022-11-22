@@ -33,7 +33,7 @@ ALLOWED_HOSTS = ["*"]
 CSRF_TRUSTED_ORIGINS = [
     'https://simpatik.bahrulyahya.my.id',
     'https://demo.skp.aitc.co.id',
-    ]
+]
 
 # Application definition
 AUTH_USER_MODEL = "usom.Account"
@@ -159,9 +159,9 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
-# STATICFILES_DIRS = (
-#     os.path.join(BASE_DIR, "static"),
-# )
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
 
 STATIC_ROOT = os.path.join(BASE_DIR, "files/static-collected/")
 

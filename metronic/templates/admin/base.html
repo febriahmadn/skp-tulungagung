@@ -32,7 +32,10 @@
     <link href="{% static 'metronic/' %}assets/css/themes/layout/brand/dark.css" rel="stylesheet" type="text/css" />
     <link href="{% static 'metronic/' %}assets/css/themes/layout/aside/dark.css" rel="stylesheet" type="text/css" />
     <!--end::Layout Themes-->
-    <link rel="shortcut icon" href="{% static 'img/SIMITA_1-min.ico' %}" />
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'favicon_io' %}/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon_io' %}/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon_io' %}/favicon-16x16.png">
+    <link rel="manifest" href="{% static 'favicon_io' %}/site.webmanifest">
     <!-- extrastyle -->
     {% block extrastyle %}
     {% endblock %}
@@ -70,9 +73,8 @@
     {% if not is_popup %}
     <div id="kt_header_mobile" class="header-mobile align-items-center header-mobile-fixed">
         <!--begin::Logo-->
-        <a href="#" class="brand-logo">
-            <img src="{% static 'metronic/' %}assets/media/logos/logo-light.png" alt="SKP Tulungagung">
-            <!-- <img alt="SiMITA" src="{% static 'img/SIMITA_1.png' %}" style="height:auto; width:11rem;" /> -->
+        <a href="/" class="brand-logo">
+            <img src="{% static 'logo-skp.png' %}" alt="SKP Tulungagung">
         </a>
         <!--end::Logo-->
         <!--begin::Toolbar-->
@@ -117,10 +119,8 @@
                 <!--begin::Brand-->
                 <div class="brand flex-column-auto" id="kt_brand">
                     <!--begin::Logo-->
-                    <a href="#" class="brand-logo">
-                        <!-- <img alt="SiMITA" src="{% static 'metronic/assets/media/logos/SIMITA.png' %}" style="height:auto; width:11rem;" /> -->
-                        <!-- <img alt="SiMITA" src="{% static 'img/SIMITA_1.png' %}" style="height:auto; width:11rem;" /> -->
-                        <img src="{% static 'metronic/' %}assets/media/logos/logo-light.png" alt="SKP Tulungagung">
+                    <a href="/" class="brand-logo">
+                        <img src="{% static 'logo-skp.png' %}" alt="SKP Tulungagung" class="max-w-150px">
                     </a>
                     <!--end::Logo-->
                     <!--begin::Toggle-->
@@ -209,7 +209,7 @@
                                 <!--begin::Page Heading-->
                                 <div class="d-flex align-items-baseline flex-wrap mr-5">
                                     <!--begin::Page Title-->
-                                    <h5 class="text-dark font-weight-bold my-1 mr-5">{{title}}</h5>
+                                    <h5 class="text-dark font-weight-bold my-1 mr-5">{% block subheader_title %}{{title}}{% endblock %}</h5>
                                     <!--end::Page Title-->
                                     <!--begin::Breadcrumb-->
                                     {% block breadcrumbs %}{% endblock breadcrumbs %}
@@ -256,14 +256,14 @@
                 <!--end::Content-->
 
                 <!--begin::Footer-->
-                <div class="footer bg-white py-4 d-flex flex-lg-column" id="kt_footer">
+                <div class="footer bg-white py-4 d-flex flex-lg-column mt-auto" id="kt_footer">
                     <!--begin::Container-->
                     <div
                         class="container-fluid d-flex flex-column flex-md-row align-items-center justify-content-between">
                         <!--begin::Copyright-->
                         <div class="text-dark order-2 order-md-1">
                             <span class="text-muted font-weight-bold mr-2">2022 ©</span>
-                            <a href="https://tubankab.go.id/" target="_blank"
+                            <a href="https://tulungagung.go.id/" target="_blank"
                                 class="text-dark-75 text-hover-success"> SKP - Tulungagung</a>
                         </div>
                         <!--end::Copyright-->
