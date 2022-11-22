@@ -52,10 +52,48 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
                 respon = {"success": True, "data": data}
         return JsonResponse(respon, safe=False)
 
+    def get_data_by_skp(self, request, obj_id):
+        # kalau bisa nanti diubah ke rest api lebih bagus
+        respon = []
+        jenis = request.GET.get('jenis', None)
+        try:
+            obj = SasaranKinerja.objects.get(pk=obj_id)
+        except SasaranKinerja.DoesNotExist:
+            pass
+        else:
+            rencanakerja_list = obj.rencanahasilkerja_set.filter(jenis=jenis)
+            if rencanakerja_list.exists():
+                for item in rencanakerja_list:
+                    rencana_kerja_induk = None
+                    if item.induk:
+                        rencana_kerja_induk = {
+                            'id': item.induk.id,
+                            'rencana_kerja': item.induk.rencana_kerja
+                        }
+                    indikator = []
+                    indikator_list = item.indikatorkinerjaindividu_set.all()
+                    if indikator_list.exists():
+                        for item_indikator in indikator_list:
+                            indikator.append({
+                                'indikator': item_indikator.indikator,
+                                'target': item_indikator.target,
+                                'aspek': item_indikator.aspek,
+                            })
+                    respon.append({
+                        'id': item.id,
+                        'induk': rencana_kerja_induk,
+                        'rencana_kerja': item.rencana_kerja,
+                        'penugasan_dari': item.penugasan_dari,
+                        'indikator': indikator
+                    })
+            
+        return JsonResponse(respon, safe=False)
+
     def get_urls(self):
-        urls = super(RencanahasilkerjaAdmin, self).get_urls()
+        urls = super().get_urls()
         urlp = [
             path("load/", self.load_data, name="load-rhk"),
+            path('get-data-skp/<int:obj_id>', self.admin_site.admin_view(self.get_data_by_skp), name='skp_rencarahasilkerja_get_by_skp')
             # path("skpdata/", self.view_custom, name="list_skp_admin"),
             # path("skpdata/add/", self.add_skp, name="add_skp_admin"),
         ]

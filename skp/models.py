@@ -126,6 +126,8 @@ class RencanaHasilKerja(models.Model):
     unor = models.ForeignKey(
         UnitKerja, null=True, blank=True, on_delete=models.SET_NULL
     )
+    ekinerja_id = models.IntegerField('Ekinerja ID', null=True, blank=True)
+    aspek = models.CharField('Aspek', null=True, blank=True, max_length=50)
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -151,11 +153,20 @@ class Perspektif(models.Model):
 class IndikatorKinerjaIndividu(models.Model):
     rencana_kerja = models.ForeignKey(
         RencanaHasilKerja,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
         verbose_name="Rencana Hasil Kerja",
     )
+    skp = models.ForeignKey(
+        SasaranKinerja,
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        verbose_name="Sasaran Kinerja Pegawai",
+    )
+    ekinerja_id = models.IntegerField('Ekinerja ID', null=True, blank=True)
     indikator = models.CharField("Indikator", max_length=255, null=True)
     target = models.CharField("Target", max_length=100, null=True, blank=True)
+    aspek = models.CharField('Aspek', null=True, blank=True, max_length=50)
     perspektif = models.ForeignKey(
         Perspektif, on_delete=models.SET_NULL, null=True, blank=True
     )

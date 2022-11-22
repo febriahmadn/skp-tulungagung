@@ -48,19 +48,24 @@ def menu_pengguna(request):
                     children=[
                         dict(
                             title="Unit Kerja",
-                            icon="fa fa-users",
+                            icon="fa fa-building",
                             url=reverse("admin:usom_unitkerja_changelist"),
                         ),
                         dict(
                             title="Pegawai",
-                            icon="fa fa-users",
+                            icon="fa fa-user",
                             url=reverse("admin:usom_account_changelist"),
                         ),
                     ],
                 ),
                 dict(
-                    title="Auth Groups",
-                    icon="fa fa-home",
+                    title="Configuration",
+                    icon="fa fa-cog",
+                    url=reverse("admin:services_configurations_changelist"),
+                ),
+                dict(
+                    title="Groups",
+                    icon="fa fa-users",
                     url=reverse("admin:auth_group_changelist"),
                 ),
             ]

@@ -1,13 +1,13 @@
 import requests
+from services.models import 
 from usom.models import Account
 
 
 class TarikPegawai:
     def proses(self):
-        url = "http://localhost:9000/api/v8/pegawai/simple/"
+        url = "http://presensi.tulungagung.go.id/api/v8/pegawai/simple/"
         params = {}
         response = requests.get(url, params=params, auth=("febriahmadn", "SegoPecel"))
-        print(response)
         if response.ok:
             results = response.json()
             # print(results)

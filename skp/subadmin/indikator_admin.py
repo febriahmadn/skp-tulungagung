@@ -1,11 +1,11 @@
 from django.contrib import admin
 from django.urls import path
 from django.http import JsonResponse
-from skp.models import IndikatorKinerjaIndividu
+from skp.models import IndikatorKinerjaIndividu, SasaranKinerja
 
 
 class IndikatorAdmin(admin.ModelAdmin):
-    list_display = ("pk", "rencana_kerja", "indikator", "target", "perspektif")
+    list_display = ("pk", "rencana_kerja", "indikator", "target", "aspek", "perspektif")
 
     def load_data(self, request):
         indikator_id = request.GET.get("id", None)
@@ -30,10 +30,45 @@ class IndikatorAdmin(admin.ModelAdmin):
                 respon = {"success": True, "data": data}
         return JsonResponse(respon, safe=False)
 
+    def get_indikator_by_skp(self, request, obj_id):
+        respon = []
+        try:
+            obj = SasaranKinerja.objects.get(pk=obj_id)
+        except SasaranKinerja.DoesNotExist:
+            pass
+        else:
+            indikator_list = obj.indikatorkinerjaindividu_set.all()
+            if indikator_list.exists():
+                for item in indikator_list:
+                    if item.rencana_kerja is None:
+                        respon.append({
+                            'id': item.id,
+                            'indikator': item.indikator,
+                            'target': item.target,
+                            'aspek': item.aspek,
+                        })
+        return JsonResponse(respon, safe=False)
+
+    def action_save_indikator_rhk(self, request):
+        respon = {'success': False}
+        rhk_id = request.GET.get('rhk_id', None)
+        indikator_id = request.GET.get('indikator_id', None)
+        try:
+            obj = IndikatorKinerjaIndividu.objects.get(pk=indikator_id)
+        except IndikatorKinerjaIndividu.DoesNotExist:
+            pass
+        else:
+            obj.rencana_kerja_id = rhk_id
+            obj.save()
+            respon = {'success': True}
+        return JsonResponse(respon, safe=False)
+
     def get_urls(self):
-        urls = super(IndikatorAdmin, self).get_urls()
+        urls = super().get_urls()
         urlp = [
             path("load/", self.load_data, name="load-indikator"),
+            path('get-by-skp/<int:obj_id>', self.admin_site.admin_view(self.get_indikator_by_skp), name='skp_indikator_get_by_skp'),
+            path('set-rhk', self.admin_site.admin_view(self.action_save_indikator_rhk), name='skp_indikator_set_indikator_rhk'),
             # path("skpdata/", self.view_custom, name="list_skp_admin"),
             # path("skpdata/add/", self.add_skp, name="add_skp_admin"),
         ]

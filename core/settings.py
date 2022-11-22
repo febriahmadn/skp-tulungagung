@@ -48,6 +48,7 @@ AUTHENTICATION_BACKENDS = [
 INSTALLED_APPS = [
     "usom.apps.UsomConfig",
     "skp.apps.SkpConfig",
+    "services.apps.ServicesConfig",
     "metronic",
     "django.contrib.admin",
     "django.contrib.auth",
@@ -59,6 +60,7 @@ INSTALLED_APPS = [
     "suit",
     "django_cas_ng",
     "loginas",
+    "solo",
 ]
 
 MIDDLEWARE = [

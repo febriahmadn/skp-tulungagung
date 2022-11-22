@@ -47,12 +47,12 @@
   </div>
 
   <div class="col-md-6 d-flex flex-row-reverse">
-    <button class="btn btn-sm btn-warning"><i class="fas fa-sync-alt"></i> Sinkron dengan e-kinerja</button>
+    <button class="btn btn-sm btn-warning" id="btn_action_sinkron_ekinerja_id"><i class="fas fa-sync-alt"></i> Sinkron dengan e-kinerja</button>
     <button class="btn btn-sm btn-primary mx-2"><i class="fas fa-paper-plane"></i> Ajukan SKP</button>
     <button class="btn btn-sm btn-success"><i class="fas fa-print"></i> Cetak SKP</button>
   </div>
 </div>
-
+<!-- data detail perlu diganti menggunakan detailrincian skp -->
 <div class="d-flex">
   <div class="col-md-6">
     <div class="card">
@@ -140,44 +140,34 @@
       </div>
     </div>
     <div class="card-body p-0">
-      <!-- <div class="table-responsive"> -->
+      <div class="table-responsive">
         <table class="table table-hover table-striped mb-0" id="result_list">
           <thead style="background: #2196f3;">
             <tr>
-              <th valign="center" >No</th>
+              <th valign="center">No</th>
               {% if obj.jenis_jabatan == 1 %}
-              <th valign="center" >Rencana Hasil Kerja</th>
-              <th valign="center" >Jenis RHK</th>
-              <th valign="center" >Indikator Kinerja Individu</th>
-              <th valign="center" >Target</th>
-              <th valign="center" >Perspektif</th>
-              <th valign="center" >Aksi</th>
+              <th valign="center">Rencana Hasil Kerja</th>
+              <th valign="center">Jenis RHK</th>
+              <th valign="center">Indikator Kinerja Individu</th>
+              <th valign="center">Target</th>
+              <th valign="center">Perspektif</th>
+              <th valign="center">Aksi</th>
               {% else %}
-              <th valign="center" >Rencana Hasil Kerja Pimpinan<br>yang Diintervensi</th>
-              <th valign="center" >Jenis RHK</th>
-              <th valign="center" >Indikator Kinerja Individu</th>
-              <th valign="center" >Rencana Hasil Kerja</th>
-              <th valign="center" >Target</th>
-              <th valign="center" >Aspek</th>
-              <th valign="center" >Aksi</th>
+              <th valign="center">Rencana Hasil Kerja Pimpinan<br>yang Diintervensi</th>
+              <th valign="center">Rencana Hasil Kerja</th>
+              <th valign="center">Aspek</th>
+              <th valign="center">Indikator Kinerja Individu</th>
+              <th valign="center">Target</th>
               {% endif %}
-          </tr>
-        </thead>
-        <tbody>
-          {% if hasil_kerja %}
-          {% for i in hasil_kerja %}
-          <tr data-id="{{i.id}}" data-url="{% url 'admin:load-rhk' %}?id={{i.id}}" data-status="unload">
-            <td colspan="8" style="text-align: center;">Sedang Memuat</td>
-          </tr>
-          {% endfor %}
-          {% else %}
-          <tr>
-            <td colspan="8" style="text-align: center;">Tidak Ada Data</td>
-          </tr>
-          {% endif %}
-        </tbody>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td colspan="8" style="text-align: center;">Tidak Ada Data</td>
+            </tr>
+          </tbody>
         </table>
-      <!-- </div> -->
+      </div>
     </div>
   </div>
 </div>
@@ -234,21 +224,21 @@
       <div class="modal-body">
         <input type="hidden" name="jenis_post" value="indikator">
         {% for field in indikator_form %}
-            <div class="mb-3 form-{{field.name}} {% if field.is_hidden %}field-hidden{% endif %}">
-                {% if field|is_bool %}
-                {{field}}
-                <label for="{{field.auto_id}}" class="form-label {% if field.field.required %}required{% endif %}">{{ field.label }}</label>
-                {% elif field|is_select %}
-                <label for="{{field.id}}" class="form-label {% if field.field.required %}required{% endif %}">{{ field.label }}</label>
-                {{ field|addcls:'form-control' }}
-                {% else %}
-                <label for="{{field.id}}" class="form-label {% if field.field.required %}required{% endif %}">{{ field.label }}</label>
-                {{ field|addcls:'form-control form-control-sm' }}
-                {% endif %}
-                {% if field.field.help_text %}
-                <div id="{{field.id}}" style="font-weight: bolder;" class="form-text">{{field.field.help_text}}</div>
-                {% endif %}
-              </div>
+          <div class="mb-3 form-{{field.name}} {% if field.is_hidden %}field-hidden{% endif %}">
+            {% if field|is_bool %}
+            {{field}}
+            <label for="{{field.auto_id}}" class="form-label {% if field.field.required %}required{% endif %}">{{ field.label }}</label>
+            {% elif field|is_select %}
+            <label for="{{field.id}}" class="form-label {% if field.field.required %}required{% endif %}">{{ field.label }}</label>
+            {{ field|addcls:'form-control' }}
+            {% else %}
+            <label for="{{field.id}}" class="form-label {% if field.field.required %}required{% endif %}">{{ field.label }}</label>
+            {{ field|addcls:'form-control form-control-sm' }}
+            {% endif %}
+            {% if field.field.help_text %}
+            <div id="{{field.id}}" style="font-weight: bolder;" class="form-text">{{field.field.help_text}}</div>
+            {% endif %}
+          </div>
         {% endfor %}
       </div>
       <div class="modal-footer">
@@ -256,6 +246,33 @@
         <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fas fa-arrow-left"></i> Kembali</button>
       </div>
       </form>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="setRHKIndikator_id" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Tambah Indikator</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="rhk_indikator_id" />
+        <div class="form-group">
+          <label for="indikatorkinerja_id">Indikator Kinerja Individu</label>
+          <select name="indikatorkinerja" id="indikatorkinerja_id" class="form-control">
+            <option value="0">Pilih Indikator Kinerja</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" onclick="on_save_rhk_indikator();">Submit</button>
+      </div>
     </div>
   </div>
 </div>
@@ -273,12 +290,163 @@
     }
   }
 
+  const on_save_rhk_indikator = () => {
+    let indikator_id = $('#indikatorkinerja_id').val();
+    let rhk_id = $('#rhk_indikator_id').val()
+    
+    $.ajax({
+      url: '{% url "admin:skp_indikator_set_indikator_rhk" %}',
+      type: 'GET',
+      data: {
+        indikator_id: indikator_id,
+        rhk_id: rhk_id
+      },
+      success: function(response){
+        console.log({response})
+        if(response.success){
+          toastr.success("Berhasil men-set rhk di indikator");
+          startLoad();
+          $('#setRHKIndikator_id').modal('hide');
+        }else{
+          toastr.warning("Terjadi kesalahan");
+        }
+      },
+      error: function(error){
+        console.log({error})
+        toastr.warning("Terjadi kesalahan server");
+      }
+    })
+  }
+
+  const set_rhk_indikator = async (elem) => {
+    let rhk_id = elem.data('rhk_id')
+    if (typeof rhk_id !== "undefined"){
+      $('#rhk_indikator_id').val(rhk_id)
+      await $.ajax({
+        url: "{% url 'admin:skp_indikator_get_by_skp' obj.id %}",
+        type: 'GET',
+        success: function(response){
+          console.log({response})
+          if (response.length > 0){
+            let options = '<option value="0">Pilih Indikator Kinerja</option>';
+            response.map(item => {
+              options += `
+              <option value="${item.id}">${item.indikator}</option>
+              `
+            })
+            $('#indikatorkinerja_id').html(options)
+          }
+        }
+      })
+      $('#setRHKIndikator_id').modal('show');
+    }
+  }
+
+  let no = 1;
+
+  const loadDataRHK = async (jenis=1) => {
+    // 1: Utama, 2: Tambahan
+    await $.ajax({
+      url: "{% url 'admin:skp_rencarahasilkerja_get_by_skp' obj.id %}",
+      type: 'GET',
+      data: {
+        jenis: jenis
+      },
+      success: function(response){
+        console.log({response})
+        if(response.length > 0){
+          let html_ = `<tr class="bg-dark">
+                        <td colspan="6"><span class="font-weight-bold text-white">Utama<span></td>
+                      </tr>`
+          response.map((item, index) => {
+            let indikator =  '';
+            if (item.indikator.length > 0){
+              item.indikator.map(item_indikator => {
+                indikator += `
+                <tr>
+                  <td colspan="3"></td>
+                  <td>${item_indikator.aspek}</td>
+                  <td>${item_indikator.indikator}</td>
+                  <td>${item_indikator.target}</td>
+                </tr>
+                `
+              })
+              
+            }
+
+            indikator += `
+              <tr>
+                <td colspan="3"></td>
+                <td colspan="3">
+                  <button class="btn btn-sm btn-primary btn-block" data-rhk_id="${item.id}" onclick="set_rhk_indikator($(this))">Pilih Indikator</button>
+                </td>
+              </tr>
+            `
+
+
+            html_ += `
+              <tr>
+                <td>${no}</td>
+                <td>${item?.induk ? item.induk : '-'}</td>
+                <td>${item.rencana_kerja}</td>
+                <td colspan="3" class="bg-dark"></td>
+              </tr>
+              ${indikator}
+            `
+            // <tr>
+            //     <td colspan="3"></td>
+            //     <td colspan="3"></td>
+            //   </tr>
+            no += 1;
+          })
+          $('#result_list > tbody').html(html_);
+        }
+      }
+    })
+  }
+
+  const loadIndikatorRHKNone = async () => {
+    await $.ajax({
+      url: "{% url 'admin:skp_indikator_get_by_skp' obj.id %}",
+      type: 'GET',
+      success: function(response){
+        console.log({response})
+        if (response.length > 0){
+          let html_ = '';
+          response.map(item => {
+            html_ += `
+              <tr>
+                <td colspan="3"></td>
+                <td>${item.aspek}</td>
+                <td>${item.indikator}</td>
+                <td>${item.target}</td>
+              </tr>
+            `
+          })
+          $('#result_list > tbody').append(html_);
+        }
+      }
+    })
+  }
+
+  const startLoad = () => {
+    loadDataRHK().then(() => {
+      loadIndikatorRHKNone()
+    })
+  }
+
+  $(function(){
+    startLoad()
+  })
+
+  /*
+
   $(function(){
     let total_data= $('#result_list tr[data-status=unload], td[data-status=unload]').length
 		let count_data = 0
 		let start_ = 0
 		let end_ = 0
-		console.log(total_data)
+		// console.log(total_data)
 		const getData = (elemen_) => {
 			url_ = elemen_.data('url')
 			id_ = elemen_.data('id')
@@ -355,6 +523,27 @@
 				getData($('#result_list tbody tr[data-status=unload], td[data-status=unload]').eq(0));
 			}
 		}
+  })
+  */
+
+  $('#btn_action_sinkron_ekinerja_id').on('click', function(){
+    $.ajax({
+      url: '{% url "admin:skp_sasarankinerja_sinkron" obj.id %}',
+      type: 'GET',
+      success: function(response){
+        console.log({response})
+        if (response.success){
+          toastr.success("Berhasil menambahkan atasan");
+          window.location.reload()
+        } else {
+          toastr.warning("Terjadi kesalahan");
+        }
+      },
+      error: function(error){
+        console.log({error})
+        toastr.warning("Terjadi kesalahan server");
+      }
+    })
   })
 </script>
 {% endblock custom_js %}

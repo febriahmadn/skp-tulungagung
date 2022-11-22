@@ -5,11 +5,11 @@ from skp.utils import string_to_int
 
 
 class SasaranKinerjaForm(forms.ModelForm):
-    pegawai = forms.ModelChoiceField(queryset=Account.objects.all(), required=False)
+    pegawai = forms.ModelChoiceField(queryset=Account.objects.none(), required=False)
     pejabat_penilai = forms.ModelChoiceField(
-        queryset=Account.objects.all(), required=False
+        queryset=Account.objects.none(), required=False
     )
-    unor = forms.ModelChoiceField(queryset=UnitKerja.objects.all(), required=False)
+    unor = forms.ModelChoiceField(queryset=UnitKerja.objects.none(), required=False)
     nama = forms.CharField(
         max_length=255,
         required=False,
@@ -71,6 +71,10 @@ class SasaranKinerjaForm(forms.ModelForm):
             )
 
         if user.atasan:
+            self.fields["pejabat_penilai"].initial = user.atasan.id
+            self.fields["pejabat_penilai"].queryset = Account.objects.filter(id=user.atasan.id)
+            self.fields["pejabat_penilai"].widget = forms.HiddenInput()
+
             self.fields["nama_atasan"].initial = user.atasan.get_complete_name
             self.fields["jabatan_atasan"].initial = (
                 user.atasan.jabatan if user.atasan.jabatan else "---"
@@ -78,17 +82,17 @@ class SasaranKinerjaForm(forms.ModelForm):
             self.fields["unit_kerja_atasan"].initial = (
                 user.atasan.unitkerja.unitkerja if user.atasan.unitkerja else "---"
             )
-            self.fields["pejabat_penilai"].initial = user.atasan.id
-            self.fields["pejabat_penilai"].queryset = Account.objects.filter(
-                id=user.atasan.id
-            )
-            self.fields["pejabat_penilai"].widget = forms.HiddenInput()
+            # self.fields["pejabat_penilai"].initial = user.atasan.id
+            # self.fields["pejabat_penilai"].queryset = Account.objects.filter(
+            #     id=user.atasan.id
+            # )
+            # self.fields["pejabat_penilai"].widget = forms.HiddenInput()
 
     class Meta:
         model = SasaranKinerja
         fields = (
             "unor",
-            "pejabat_penilai",
+            # "pejabat_penilai",
             "pegawai",
             "jenis_jabatan",
             "nama",
