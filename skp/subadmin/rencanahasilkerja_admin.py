@@ -79,6 +79,7 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
                                 'indikator': item_indikator.indikator,
                                 'target': item_indikator.target,
                                 'aspek': item_indikator.aspek,
+                                'perspektif': item_indikator.perspektif,
                             })
                     respon.append({
                         'id': item.id,

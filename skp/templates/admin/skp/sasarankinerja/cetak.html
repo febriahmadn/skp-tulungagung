@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,6 +6,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{title}}</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'favicon_io' %}/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon_io' %}/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon_io' %}/favicon-16x16.png">
+    <link rel="manifest" href="{% static 'favicon_io' %}/site.webmanifest">
     <style>
         * {
             font-family: Arial, Helvetica, sans-serif;
@@ -57,83 +62,128 @@
                 <tr>
                     <td class="t-c">1</td>
                     <td style="width: 15%;">NAMA</td>
-                    <td>SOEROTO</td>
+                    <td>{{ obj.detailsasarankinerja.nama_pegawai }}</td>
                     <td class="t-c">1</td>
                     <td style="width: 15%;">NAMA</td>
-                    <td>BUPATI</td>
+                    <td>{{ obj.detailsasarankinerja.nama_pejabat }}</td>
                 </tr>
                 <tr>
                     <td class="t-c">2</td>
                     <td>NIP</td>
-                    <td>SOEROTO</td>
+                    <td>{{ obj.detailsasarankinerja.nip_pegawai }}</td>
                     <td class="t-c">2</td>
                     <td>NIP</td>
-                    <td>BUPATI</td>
+                    <td>{{ obj.detailsasarankinerja.nip_pejabat }}</td>
                 </tr>
                 <tr>
                     <td class="t-c">3</td>
                     <td>PANGKAT / GOL. RUANG</td>
-                    <td>SOEROTO</td>
+                    <td>{{ obj.detailsasarankinerja.golongan_pegawai|default:'-' }}</td>
                     <td class="t-c">3</td>
                     <td>PANGKAT / GOL. RUANG</td>
-                    <td>BUPATI</td>
+                    <td>{{ obj.detailsasarankinerja.golongan_pejabat|default:'-' }}</td>
                 </tr>
                 <tr>
                     <td class="t-c">4</td>
                     <td>JABATAN</td>
-                    <td>SOEROTO</td>
+                    <td>{{ obj.detailsasarankinerja.jabatan_pegawai|default:'-' }}</td>
                     <td class="t-c">4</td>
                     <td>JABATAN</td>
-                    <td>BUPATI</td>
+                    <td>{{ obj.detailsasarankinerja.jabatan_pejabat|default:'-' }}</td>
                 </tr>
                 <tr>
                     <td class="t-c">5</td>
                     <td>UNIT KERJA</td>
-                    <td>SOEROTO</td>
+                    <td>{{ obj.detailsasarankinerja.unor_pegawai }}</td>
                     <td class="t-c">5</td>
                     <td>UNIT KERJA</td>
-                    <td>BUPATI</td>
+                    <td>{{ obj.detailsasarankinerja.unor_pejabat }}</td>
                 </tr>
             </tbody>
         </table>
         <table>
             <tr class="bg-blue">
-                <td colspan="5" align="left">HASIL KERJA</td>
+                <th colspan="5" align="left">HASIL KERJA</th>
             </tr>
             <tr class="bg-blue">
-                <td>NO</td>
-                <td>RENCANA HASIL KERJA</td>
-                <td>INDIKATOR KINERJA INDIVIDU</td>
-                <td>TARGET</td>
-                <td>PERSPEKTIF</td>
+                <th>NO</th>
+                <th>RENCANA HASIL KERJA</th>
+                <th>INDIKATOR KINERJA INDIVIDU</th>
+                <th>TARGET</th>
+                <th>PERSPEKTIF</th>
             </tr>
             <tr class="bg-blue">
-                <td>(1)</td>
-                <td>(2)</td>
-                <td>(3)</td>
-                <td>(4)</td>
-                <td>(5)</td>
+                <th>(1)</th>
+                <th>(2)</th>
+                <th>(3)</th>
+                <th>(4)</th>
+                <th>(5)</th>
             </tr>
             <tr class="bg-blue">
-                <td colspan="5">UTAMA</td>
+                <th colspan="5" align="left">UTAMA</th>
             </tr>
+            {% for utama in obj.get_rencanakerja_utama %}
+            {% with count_indikator=utama.indikatorkinerjaindividu_set.all.count|add:"1" %}
             <tr>
-                <td>1</td>
-                <td>Rencana Hasil Kerja Utama (Penugasan dari Setda)</td>
-                <td>Test indikator</td>
-                <td>10</td>
-                <td>Penerima Layanan</td>
+                <td rowspan="{{count_indikator}}" style="vertical-align: top; text-align: center;">{{ forloop.counter }}</td>
+                <td rowspan="{{count_indikator}}" style="vertical-align: top;">{{ utama.rencana_kerja }} {% if utama.penugasan_dari %}(Penugasan dari {{ utama.penugasan_dari|default:'-' }}){% endif %}</td>
             </tr>
-            <tr class="bg-blue">
-                <td colspan="5">TAMBAHAN</td>
-            </tr>
+            {% endwith %}
+            {% for indikator in utama.indikatorkinerjaindividu_set.all %}
             <tr>
-                <td>1</td>
-                <td>Rencana Hasil Kerja Utama (Penugasan dari Setda)</td>
-                <td>Test indikator</td>
-                <td>10</td>
-                <td>Penerima Layanan</td>
+                <td>{{ indikator.indikator }}</td>
+                <td>{{ indikator.target }}</td>
+                <td>{{ indikator.perspektif|default:'-' }}</td>
             </tr>
+            {% endfor %}
+            {% endfor %}
+
+            <tr class="bg-blue">
+                <th colspan="5" align="left">TAMBAHAN</th>
+            </tr>
+            {% for tambahan in obj.get_rencanakerja_tambahan %}
+            {% with count_indikator=tambahan.indikatorkinerjaindividu_set.all.count|add:"1" %}
+            <tr>
+                <td rowspan="{{count_indikator}}" style="vertical-align: top; text-align: center;">{{ forloop.counter }}</td>
+                <td rowspan="{{count_indikator}}" style="vertical-align: top;">{{ tambahan.rencana_kerja }} {% if tambahan.penugasan_dari %}(Penugasan dari {{ tambahan.penugasan_dari|default:'-' }}){% endif %}</td>
+            </tr>
+            {% endwith %}
+            {% for indikator in tambahan.indikatorkinerjaindividu_set.all %}
+            <tr>
+                <td>{{ indikator.indikator }}</td>
+                <td>{{ indikator.target }}</td>
+                <td>{{ indikator.perspektif|default:'-' }}</td>
+            </tr>
+            {% endfor %}
+            {% endfor %}
+        </table>
+        <table>
+            <thead class="bg-blue">
+                <tr>
+                    <th colspan="5" align="left">PERILAKU KERJA</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in perilakukerja_list %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td colspan="2">{{ item.perilaku_kerja }}</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td style="padding: 0px;">
+                        <ol>
+                        {% for subitem in item.daftarperilakukerja_set.all %}
+                        <li>{{ subitem.keterangan }}</li>
+                        {% endfor %}
+                        </ol>
+                    </td>
+                    <td style="width: 15%;">
+                        Ekspektasi Khusus Pimpinan:
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
         </table>
     </div>
 </body>

@@ -54,6 +54,12 @@ class SasaranKinerja(models.Model):
             self.periode_akhir.strftime("%d/%m/%Y"),
         )
 
+    def get_rencanakerja_utama(self):
+        return self.rencanahasilkerja_set.filter(jenis=1)
+    
+    def get_rencanakerja_tambahan(self):
+        return self.rencanahasilkerja_set.filter(jenis=2)
+
     class Meta:
         verbose_name = "Sasaran Kinerja Pegawai"
         verbose_name_plural = "Sasaran Kinerja Pegawai"

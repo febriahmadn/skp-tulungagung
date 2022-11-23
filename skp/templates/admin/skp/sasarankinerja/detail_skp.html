@@ -42,23 +42,23 @@
 {% endblock breadcrumbs %}
 
 {% block content %}
-<div class="row px-5 pb-3">
-  <div class="col-md-6">
+<div class="row px-4 pb-3">
+  <div class="col-md-4">
     <div class="d-flex">
       <label class="mx-1 py-2" style="min-width: 100px;">Status SKP</label>
       <input type="text" readonly class="form-control form-control-sm" id="staticEmail" value="{{obj.get_status_display}}">
     </div>
   </div>
 
-  <div class="col-md-6 d-flex flex-row-reverse">
+  <div class="col-md-8 d-flex flex-row-reverse">
     {% if obj.status == 1 %}
     <button class="btn btn-sm btn-warning" id="btn_action_sinkron_ekinerja_id"><i class="fas fa-sync-alt"></i> Sinkron dengan e-kinerja</button>
-    <button class="btn btn-sm btn-primary mx-2" id="action_ajukan_skp_id"><i class="fas fa-paper-plane"></i> Ajukan SKP</button>
-    <button class="btn btn-sm btn-danger" id="action_archive_skp_id"><i class="flaticon2-trash"></i> Archivekan SKP</button>
+    <button class="btn btn-sm btn-primary mr-1" id="action_ajukan_skp_id"><i class="fas fa-paper-plane"></i> Ajukan SKP</button>
+    <button class="btn btn-sm btn-danger mr-1" id="action_archive_skp_id"><i class="flaticon2-trash"></i> Archivekan SKP</button>
     {% endif %}
-    {% if obj.status == 3 %}
-    <button class="btn btn-sm btn-success"><i class="fas fa-print"></i> Cetak SKP</button>
-    {% endif %}
+    <a href="{% url 'admin:skp_sasarankinerja_cetak' obj.id %}">
+      <button class="btn btn-success mr-1"><i class="fas fa-print"></i> Cetak SKP</button>
+    </a>
   </div>
 </div>
 <!-- data detail perlu diganti menggunakan detailrincian skp -->
@@ -155,7 +155,7 @@
       </div>
       <div class="card-body p-2">
         <div class="table-responsive" style="border-radius: 5px;">
-          <table class="table table-hover table-striped mb-0" id="result_list">
+          <table class="table table-bordered mb-0" id="result_list">
             <thead style="background: #2196f3;">
               <tr>
                 <th valign="center">No</th>
@@ -605,7 +605,7 @@
 
   let no = 1;
 
-  const loadDataRHK = async (jenis=1) => {
+  const loadDataRHKUtama = async (jenis=1) => {
     // 1: Utama, 2: Tambahan
     await $.ajax({
       url: "{% url 'admin:skp_rencarahasilkerja_get_by_skp' obj.id %}",
@@ -631,12 +631,11 @@
               item.indikator.map(item_indikator => {
                 indikator += `
                 <tr>
-                  {% if obj.jenis_jabatan != 1 %}
-                  <td colspan="3"></td>
+                  {% if obj.jenis_jabatan == 1 %}
+                  <td>${item_indikator.perspektif ? item_indikator.perspektif : '-'}</td>
                   {% else %}
-                  <td colspan="2"></td>
+                  <td>${item_indikator.aspek ? item_indikator.aspek : '-'}</td>
                   {% endif %}
-                  <td>${item_indikator.aspek}</td>
                   <td>
                     <span>${item_indikator.indikator}</span>
                     {% if obj.status == 1 %}
@@ -654,6 +653,14 @@
                 </tr>
                 `
               })
+            } else {
+              indikator += `
+              <tr>
+                <td colspan="3">
+                  <button class="btn btn-sm btn-light-primary btn-block" data-rhk_id="${item.id}" onclick="set_rhk_indikator($(this))">Add Indikator</button>
+                </td>
+              </tr>
+              `
             }
 
             // indikator += `
@@ -664,20 +671,21 @@
             //     </td>
             //   </tr>
             // `
-
-            indikator += `
-              {% if obj.status == 1 %}
-              <tr>
-                <td colspan="3"></td>
-                <td colspan="3">
-                  <button class="btn btn-sm btn-primary btn-block" data-rhk_id="${item.id}" onclick="set_rhk_indikator($(this))">Add Indikator</button>
-                </td>
-              </tr>
-              {% endif %}
-            `
+            
+            if (item.indikator.length > 0){
+              indikator += `
+                {% if obj.status == 1 %}
+                <tr>
+                  <td colspan="3">
+                    <button class="btn btn-sm btn-light-primary btn-block" data-rhk_id="${item.id}" onclick="set_rhk_indikator($(this))">Add Indikator</button>
+                  </td>
+                </tr>
+                {% endif %}
+              `
+            }
 
             let induk_elem = `
-                <td>
+                <td rowspan="${item.indikator.length+2}">
                   ${item?.induk ? item.induk.rencana_kerja : ''}
                   {% if obj.status == 1 %}
                   <button type="button" class="btn btn-sm btn-block btn-light-success font-weight-bold" data-rhk_id="${item.id}" onclick="onOpenModalRHKPimpinan($(this))">Set RHK Pimpinan</button>  
@@ -687,10 +695,9 @@
 
             html_ += `
               <tr>
-                <td>${no}</td>
+                <td rowspan="${item.indikator.length+2}">${no}</td>
                 {% if obj.jenis_jabatan != 1 %}${induk_elem}{% endif %}
-                <td>${item.rencana_kerja}</td>
-                <td colspan="3" class="bg-warning-o-50"></td>
+                <td rowspan="${item.indikator.length+2}">${item.rencana_kerja}</td>
               </tr>
               ${indikator}
             `
@@ -704,6 +711,100 @@
         }
       }
     })
+  }
+
+  const loadDataRHKTambahan = async () => {
+    await $.ajax({
+      url: "{% url 'admin:skp_rencarahasilkerja_get_by_skp' obj.id %}",
+      type: 'GET',
+      data: {
+        jenis: 2
+      },
+      success: function(response){
+        console.log({response})
+        if(response.length > 0){
+          let html_ = `<tr class="bg-dark">
+                        {% if obj.jenis_jabatan != 1 %}
+                        <td colspan="6">
+                        {% else %}
+                        <td colspan="5">
+                        {% endif %}
+                          <span class="font-weight-bold text-white">Tambahan<span>
+                        </td>
+                      </tr>`
+          response.map((item, index) => {
+            let indikator =  '';
+            if (item.indikator.length > 0){
+              item.indikator.map(item_indikator => {
+                indikator += `
+                <tr>
+                  {% if obj.jenis_jabatan == 1 %}
+                  <td>${item_indikator.perspektif ? item_indikator.perspektif : '-'}</td>
+                  {% else %}
+                  <td>${item_indikator.aspek ? item_indikator.aspek : '-'}</td>
+                  {% endif %}
+                  <td>
+                    <span>${item_indikator.indikator}</span>
+                    {% if obj.status == 1 %}
+                    <div class="d-flex justify-content-center mt-3">
+                      <a href="#" class="btn btn-icon btn-warning mr-1">
+                        <i class="flaticon2-pen"></i>
+                      </a>
+                      <a href="#" class="btn btn-icon btn-danger">
+                        <i class="flaticon-delete-1"></i>
+                      </a>
+                    </div>
+                    {% endif %}
+                  </td>
+                  <td>${item_indikator.target}</td>
+                </tr>
+                `
+              })
+            } else {
+              indikator += `
+              <tr>
+                <td colspan="3">
+                  <button class="btn btn-sm btn-light-primary btn-block" data-rhk_id="${item.id}" onclick="set_rhk_indikator($(this))">Add Indikator</button>
+                </td>
+              </tr>
+              `
+            }
+
+            if (item.indikator.length > 0){
+              indikator += `
+                {% if obj.status == 1 %}
+                <tr>
+                  <td colspan="3">
+                    <button class="btn btn-sm btn-light-primary btn-block" data-rhk_id="${item.id}" onclick="set_rhk_indikator($(this))">Add Indikator</button>
+                  </td>
+                </tr>
+                {% endif %}
+              `
+            }
+
+            let induk_elem = `
+                <td rowspan="${item.indikator.length+2}">
+                  ${item?.induk ? item.induk.rencana_kerja : ''}
+                  {% if obj.status == 1 %}
+                  <button type="button" class="btn btn-sm btn-block btn-light-success font-weight-bold" data-rhk_id="${item.id}" onclick="onOpenModalRHKPimpinan($(this))">Set RHK Pimpinan</button>  
+                  {% endif %}
+                </td>
+              `
+
+            html_ += `
+              <tr>
+                <td rowspan="${item.indikator.length+2}">${no}</td>
+                {% if obj.jenis_jabatan != 1 %}${induk_elem}{% endif %}
+                <td rowspan="${item.indikator.length+2}">${item.rencana_kerja} ${item.penugasan_dari ? `(Penugasan dari ${item.penugasan_dari})` : ''}</td>
+              </tr>
+              ${indikator}
+            `
+            no += 1;
+          })
+          $('#result_list > tbody').append(html_);
+        }
+      }
+    });
   }
 
   const loadIndikatorRHKNone = async () => {
@@ -781,8 +882,9 @@
   }
 
   const startLoad = () => {
-    loadDataRHK().then(() => {
+    loadDataRHKUtama().then(() => {
       // loadIndikatorRHKNone()
+      loadDataRHKTambahan()
     })
   }
 

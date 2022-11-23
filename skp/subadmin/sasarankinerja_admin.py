@@ -262,7 +262,9 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
     def view_cetak_skp_pegawai(self, request, obj_id):
         obj = get_object_or_404(SasaranKinerja, pk=obj_id)
         extra_context = {
-
+            'obj': obj,
+            'title': 'Cetak SKP {} [{}]'.format(obj.pegawai.username, obj.get_periode()),
+            'perilakukerja_list': PerilakuKerja.objects.filter(is_active=True)
         }
         return render(request, 'admin/skp/sasarankinerja/cetak.html', extra_context)
 
