@@ -42,11 +42,11 @@
         }
     </style>
 </head>
-<body>
+<body onload="window.print();">
     <div class="contents">
         <div style="text-align: center; margin: 20px;">
             <h4 class="m-0">SASARAN KINERJA PEGAWAI</h4>
-            <h4 class="m-0">ENDEKATAN HASIL KERJA KUANTITATIF</h4>
+            <h4 class="m-0">PENDEKATAN HASIL KERJA KUANTITATIF</h4>
             <h4 class="m-0">BAGI PEJABAT PIMPINAN TINGGI DAN PIMIPINAN UNIT KERJA MANDIRI</h4>
         </div>
         <table>
@@ -103,8 +103,22 @@
         </table>
         <table>
             <tr class="bg-blue">
+                {% if obj.jenis_jabatan != 1 %}
+                <th colspan="6" align="left">HASIL KERJA</th>
+                {% else %}
                 <th colspan="5" align="left">HASIL KERJA</th>
+                {% endif %}
             </tr>
+            {% if obj.jenis_jabatan != 1 %}
+            <tr class="bg-blue">
+                <th>NO</th>
+                <th>RENCANA HASIL KERJA PIMPINAN YANG DIINTERVENSI</th>
+                <th>RENCANA HASIL KERJA</th>
+                <th>INDIKATOR KINERJA INDIVIDU</th>
+                <th>TARGET</th>
+                <th>PERSPEKTIF</th>
+            </tr>
+            {% else %}
             <tr class="bg-blue">
                 <th>NO</th>
                 <th>RENCANA HASIL KERJA</th>
@@ -112,20 +126,31 @@
                 <th>TARGET</th>
                 <th>PERSPEKTIF</th>
             </tr>
+            {% endif %}
             <tr class="bg-blue">
                 <th>(1)</th>
                 <th>(2)</th>
                 <th>(3)</th>
                 <th>(4)</th>
                 <th>(5)</th>
+                {% if obj.jenis_jabatan != 1 %}
+                <th>(6)</th>
+                {% endif %}
             </tr>
             <tr class="bg-blue">
+                {% if obj.jenis_jabatan != 1 %}
+                <th colspan="6" align="left">UTAMA</th>
+                {% else %}
                 <th colspan="5" align="left">UTAMA</th>
+                {% endif %}
             </tr>
             {% for utama in obj.get_rencanakerja_utama %}
             {% with count_indikator=utama.indikatorkinerjaindividu_set.all.count|add:"1" %}
             <tr>
                 <td rowspan="{{count_indikator}}" style="vertical-align: top; text-align: center;">{{ forloop.counter }}</td>
+                {% if obj.jenis_jabatan != 1 %}
+                <td rowspan="{{count_indikator}}" style="vertical-align: top;">{{ utama.induk.rencana_kerja }}</td>
+                {% endif %}
                 <td rowspan="{{count_indikator}}" style="vertical-align: top;">{{ utama.rencana_kerja }} {% if utama.penugasan_dari %}(Penugasan dari {{ utama.penugasan_dari|default:'-' }}){% endif %}</td>
             </tr>
             {% endwith %}
@@ -133,18 +158,29 @@
             <tr>
                 <td>{{ indikator.indikator }}</td>
                 <td>{{ indikator.target }}</td>
+                {% if obj.jenis_jabatan != 1 %}
+                <td>{{ indikator.aspek|default:'-' }}</td>
+                {% else %}
                 <td>{{ indikator.perspektif|default:'-' }}</td>
+                {% endif %}
             </tr>
             {% endfor %}
             {% endfor %}
 
             <tr class="bg-blue">
+                {% if obj.jenis_jabatan != 1 %}
+                <th colspan="6" align="left">TAMBAHAN</th>
+                {% else %}
                 <th colspan="5" align="left">TAMBAHAN</th>
+                {% endif %}
             </tr>
             {% for tambahan in obj.get_rencanakerja_tambahan %}
             {% with count_indikator=tambahan.indikatorkinerjaindividu_set.all.count|add:"1" %}
             <tr>
                 <td rowspan="{{count_indikator}}" style="vertical-align: top; text-align: center;">{{ forloop.counter }}</td>
+                {% if obj.jenis_jabatan != 1 %}
+                <td rowspan="{{count_indikator}}" style="vertical-align: top;">{{ tambahan.induk.rencana_kerja }}</td>
+                {% endif %}
                 <td rowspan="{{count_indikator}}" style="vertical-align: top;">{{ tambahan.rencana_kerja }} {% if tambahan.penugasan_dari %}(Penugasan dari {{ tambahan.penugasan_dari|default:'-' }}){% endif %}</td>
             </tr>
             {% endwith %}
@@ -152,7 +188,11 @@
             <tr>
                 <td>{{ indikator.indikator }}</td>
                 <td>{{ indikator.target }}</td>
+                {% if obj.jenis_jabatan != 1 %}
+                <td>{{ indikator.aspek|default:'-' }}</td>
+                {% else %}
                 <td>{{ indikator.perspektif|default:'-' }}</td>
+                {% endif %}
             </tr>
             {% endfor %}
             {% endfor %}
