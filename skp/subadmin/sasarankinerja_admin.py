@@ -10,7 +10,7 @@ from services.models import Configurations
 from skp.forms.sasarankinerja_form import SasaranKinerjaForm, SKPForm
 from skp.forms.rhk_form import RHKJFJAForm, RHKJPTForm
 from skp.forms.indikator_kinerja_form import IndikatorForm
-from skp.models import SasaranKinerja, RencanaHasilKerja, DetailSasaranKinerja, IndikatorKinerjaIndividu, PerilakuKerja
+from skp.models import SasaranKinerja, RencanaHasilKerja, DetailSasaranKinerja, IndikatorKinerjaIndividu, PerilakuKerja, Perspektif
 
 
 class SasaranKinerjaAdmin(admin.ModelAdmin):
@@ -148,7 +148,8 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
             "obj": obj,
             "pegawai": obj.pegawai,
             "penilai": obj.pejabat_penilai,
-            "perilaku_kerja_list": perilaku_kerja_list
+            "perilaku_kerja_list": perilaku_kerja_list,
+            "perspektif_list": Perspektif.objects.all()
         }
         return render(
             request, "admin/skp/sasarankinerja/detail_skp.html", extra_context

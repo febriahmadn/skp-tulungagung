@@ -218,10 +218,6 @@
   {% endif %}
 </div>
 
-
-
-
-
 <div class="modal fade" id="tambahrhk" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
@@ -277,72 +273,6 @@
   </div>
 </div>
 
-<!-- <div class="modal fade" id="tambahindikator" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Tambah Indikator</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <form action="" method="post">
-      {% csrf_token %}
-      <div class="modal-body">
-        <input type="hidden" name="jenis_post" value="indikator">
-        {% for field in indikator_form %}
-          <div class="mb-3 form-{{field.name}} {% if field.is_hidden %}field-hidden{% endif %}">
-            {% if field|is_bool %}
-            {{field}}
-            <label for="{{field.auto_id}}" class="form-label {% if field.field.required %}required{% endif %}">{{ field.label }}</label>
-            {% elif field|is_select %}
-            <label for="{{field.id}}" class="form-label {% if field.field.required %}required{% endif %}">{{ field.label }}</label>
-            {{ field|addcls:'form-control' }}
-            {% else %}
-            <label for="{{field.id}}" class="form-label {% if field.field.required %}required{% endif %}">{{ field.label }}</label>
-            {{ field|addcls:'form-control form-control-sm' }}
-            {% endif %}
-            {% if field.field.help_text %}
-            <div id="{{field.id}}" style="font-weight: bolder;" class="form-text">{{field.field.help_text}}</div>
-            {% endif %}
-          </div>
-        {% endfor %}
-      </div>
-      <div class="modal-footer">
-        <button type="submit" class="btn btn-warning"><i class="fas fa-save"></i> Simpan</button>
-        <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fas fa-arrow-left"></i> Kembali</button>
-      </div>
-      </form>
-    </div>
-  </div>
-</div> -->
-
-<!-- <div class="modal fade" id="setRHKIndikator_id" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Tambah Indikator</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <input type="hidden" id="rhk_indikator_id" />
-        <div class="form-group">
-          <label for="indikatorkinerja_id">Indikator Kinerja Individu</label>
-          <select name="indikatorkinerja" id="indikatorkinerja_id" class="form-control">
-            <option value="0">Pilih Indikator Kinerja</option>
-          </select>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" onclick="on_save_rhk_indikator();">Submit</button>
-      </div>
-    </div>
-  </div>
-</div> -->
-
 <div class="modal fade" id="modal_add_rhk_indikator_id" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
@@ -356,6 +286,7 @@
         <form id="form-add-indikator">
           {% csrf_token %}
           <input type="hidden" id="rhk_indikator_id" />
+          {% if obj.jenis_jabatan != 1 %}
           <div class="form-group">
             <label for="">Aspek</label>
             <select name="aspek" class="form-control">
@@ -365,6 +296,17 @@
               <option value="Biaya">Biaya</option>
             </select>
           </div>
+          {% else %}
+          <div class="form-group">
+            <label>Perspektif</label>
+            <select name="perspektif" class="form-control">
+              <option value="0">Pilih Prespektif</option>
+              {% for item in perspektif_list %}
+              <option value="{{ item.id }}">{{ item.perspektif }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          {% endif %}
 
           <div class="form-group">
             <label for="">Indikator Kinerja Individu</label>
@@ -546,6 +488,7 @@
     let form_id = $('#form-add-indikator')
     let rhk_id = $('#rhk_indikator_id').val()
     let aspek = form_id.find('select[name=aspek]').val();
+    let perspektif= form_id.find('select[name=perspektif]').val();
     let indikator = form_id.find('input[name=indikator]').val();
     let target = form_id.find('input[name=target]').val();
     let csrf = form_id.find('input[name=csrfmiddlewaretoken]').val();
@@ -554,6 +497,7 @@
       rhk_id: rhk_id,
       aspek: aspek,
       indikator: indikator,
+      perspektif: perspektif,
       target: target,
       csrfmiddlewaretoken: csrf
     }
@@ -929,94 +873,6 @@
       }
     })
   }
-
-
-  /*
-
-  $(function(){
-    let total_data= $('#result_list tr[data-status=unload], td[data-status=unload]').length
-		let count_data = 0
-		let start_ = 0
-		let end_ = 0
-		// console.log(total_data)
-		const getData = (elemen_) => {
-			url_ = elemen_.data('url')
-			id_ = elemen_.data('id')
-			if(typeof url_ != 'undefined'){
-				$.ajax({
-					url: url_,
-					type: "GET",
-					success: function(respon){
-						// console.log("Respon", respon.data.jenis)
-            elemen_.attr('data-status', 'loaded');
-            count_data += 1
-            start_ = end_
-            end_ = Math.round(count_data / total_data * 100)
-            indikator_html = `<td colspan="4" id="rhk-${id_}" ></td>`
-            html = ""
-            if(respon.success){
-              console.log(respon.data.indikator_list_id)
-              // if(respon.data.indikator_list_id){
-              //   // console.log(respon.data.indikator_list_id.length)
-              //   if(respon.data.indikator_list_id.length > 0){
-              //       indikator_html = "<tr>"
-              //       respon.data.indikator_list_id.map((idx)=>{
-              //         indikator_html += `<td data-status="unload" data-url="{% url 'admin:load-indikator' %}?id=${idx}" ></td>`
-              //       })
-              //       indikator_html += "</tr>"
-              //       console.log(indikator_html)
-              //       //       {% comment %} $(`#rhk-${id_}`).append(indikator_html) {% endcomment %}
-              //       //     }else{
-              //         //       indikator_html = `<td colspan="4" id="rhk-${id_}" ></td>`
-              //     }
-              //   }else{
-              //     indikator_html = `<td colspan="4" id="rhk-${id_}" ></td>`
-              //   }
-                
-                console.log(indikator_html)
-              if(respon.data.jenis == "rhk"){
-              html = `
-              <td rowspan="${respon.data.indikator_count}">${count_data}</td>
-              <td rowspan="${respon.data.indikator_count}">${respon.data.rencana_hasil}<button class="btn btn-xs btn-warning ml-1" data-toggle="modal" data-target="#tambahrhk"><i class="fas fa-edit" style="padding: unset;"></i></button></td>
-              <td rowspan="${respon.data.indikator_count}">${respon.data.jenis_rhk}</td>  
-              ${indikator_html}
-              `}else{
-                console.log('lasd')
-                {% comment %} $(`#rhk-${id_}`).after(indikator_html) {% endcomment %}
-              }
-              elemen_.html(html)
-            }
-						
-
-						if($('#result_list tbody tr[data-status=unload], td[data-status=unload]').length > 0){
-							if($('#result_list tbody tr[data-status=unload], td[data-status=unload]').eq(0).data('url')!= 'undefined'){
-								getData($('#result_list tbody tr[data-status=unload], td[data-status=unload]').eq(0));
-							}
-						}
-					},
-					error: function(e){
-						elemen_.attr('data-status', 'loaded')
-						count_data += 1
-						start_ = end_
-						end_ = Math.round(count_data / total_data * 100)
-
-						if($('#result_list tbody tr[data-status=unload], td[data-status=unload]').length > 0){
-							if($('#result_list tbody tr[data-status=unload], td[data-status=unload]').eq(0).data('url')!= 'undefined'){
-								getData($('#result_list tbody tr[data-status=unload], td[data-status=unload]').eq(0));
-							}
-						}
-					}
-				})
-			}
-		}
-
-		if($('#result_list tbody tr[data-status=unload], td[data-status=unload]').length > 0){
-			if($('#result_list tbody tr[data-status=unload], td[data-status=unload]').eq(0).data('url')!= 'undefined'){
-				getData($('#result_list tbody tr[data-status=unload], td[data-status=unload]').eq(0));
-			}
-		}
-  })
-  */
 
   $('#btn_action_sinkron_ekinerja_id').on('click', function(){
     $.ajax({

@@ -53,18 +53,23 @@ class IndikatorAdmin(admin.ModelAdmin):
         respon = {'success': False}
         rhk_id = request.POST.get('rhk_id', None)
         aspek = request.POST.get('aspek', None)
+        perspektif = request.POST.get('perspektif', None)
         indikator = request.POST.get('indikator', None)
         target = request.POST.get('target', None)
         try:
-            IndikatorKinerjaIndividu.objects.create(
+            obj = IndikatorKinerjaIndividu.objects.create(
                 rencana_kerja_id=rhk_id,
                 aspek=aspek,
                 indikator=indikator,
                 target=target,
             )
+            if perspektif:
+                if perspektif != "0" or perspektif != 0:
+                    obj.perspektif_id = perspektif
+                    obj.save()
             respon = {'success': True}
-        except Exception:
-            pass
+        except Exception as e:
+            print(e)
         return JsonResponse(respon, safe=False)
 
     def get_urls(self):
