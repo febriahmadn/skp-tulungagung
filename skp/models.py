@@ -13,6 +13,7 @@ class SasaranKinerja(models.Model):
         PENGAJUAN = 2, "Pengajuan"
         PERSETUJUAN = 3, "Persetujuan"
         CLOSE = 4, "Close"
+        ARCHIVE = 5, "Archive"
 
     class JenisJabatan(models.IntegerChoices):
         JPT = 1, "Jabatan Pimpinan Tinggi"

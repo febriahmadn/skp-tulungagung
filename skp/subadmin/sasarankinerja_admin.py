@@ -205,44 +205,43 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                             satuan = uraianobj.get('satuan', None)
                             target = uraianobj.get('target', None)
 
-                            indikator_list = IndikatorKinerjaIndividu.objects.filter(
-                                skp=obj,
-                                ekinerja_id=uraian_id,
-                            )
-                            if indikator_list.exists():
-                                # update
-                                print("update")
-                                update += 1
-                            else:
-                                print("create")
-                                indikator_obj = IndikatorKinerjaIndividu(
-                                    ekinerja_id=uraian_id,
-                                    indikator=uraian,
-                                    aspek=satuan,
-                                    target=target,
-                                    skp=obj,
-                                )
-                                indikator_obj.save()
-                                create += 1
-                            # rhk_list = RencanaHasilKerja.objects.filter(
+                            # indikator_list = IndikatorKinerjaIndividu.objects.filter(
                             #     skp=obj,
                             #     ekinerja_id=uraian_id,
                             # )
-                            # if rhk_list.exists():
+                            # if indikator_list.exists():
                             #     # update
-                            #     print('update')
-                            #     rhk = rhk_list.last()
-                            #     rhk.aspek = satuan
-                            #     rhk.save()
+                            #     print("update")
+                            #     update += 1
                             # else:
-                            #     rhk = RencanaHasilKerja.objects.create(
-                            #         skp=obj,
+                            #     print("create")
+                            #     indikator_obj = IndikatorKinerjaIndividu(
                             #         ekinerja_id=uraian_id,
-                            #         jenis=1,
-                            #         klasifikasi=1,
-                            #         rencana_kerja=uraian,
-                            #         aspek=satuan
+                            #         indikator=uraian,
+                            #         aspek=satuan,
+                            #         target=target,
+                            #         skp=obj,
                             #     )
+                            #     indikator_obj.save()
+                            #     create += 1
+                            rhk_list = RencanaHasilKerja.objects.filter(
+                                skp=obj,
+                                ekinerja_id=uraian_id,
+                            )
+                            if rhk_list.exists():
+                                # update
+                                print('update')
+                                # rhk = rhk_list.last()
+                                # rhk.save()
+                            else:
+                                RencanaHasilKerja.objects.create(
+                                    skp=obj,
+                                    ekinerja_id=uraian_id,
+                                    jenis=1,
+                                    klasifikasi=1,
+                                    rencana_kerja=uraian,
+                                )
+                                print('create')
 
                             # if rhk:
                             #     indikator_obj = IndikatorKinerjaIndividu(
@@ -256,11 +255,31 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                     respon = {'success': True, 'message': 'Berhasil mensinkronkan dengan ekinerja'}
         return JsonResponse(respon)
 
+    def action_change_status_skp(self, request):
+        respon = {'success': False}
+        skp_id = request.GET.get('skp_id', None)
+        status = request.GET.get('status', None)
+        try:
+            obj = SasaranKinerja.objects.get(id=skp_id)
+        except SasaranKinerja.DoesNotExist:
+            pass
+        else:
+            if status:
+                try:
+                    obj.status = status
+                    obj.save()
+                except Exception:
+                    pass
+                else:
+                    respon = {'success': True}
+        return JsonResponse(respon)
+
     def get_urls(self):
         admin_url = super(SasaranKinerjaAdmin, self).get_urls()
         custom_url = [
             path('<int:id>/detail', self.admin_site.admin_view(self.view_detail_skp), name="detail-skp"),
-            path('<int:obj_id>/sinkron', self.admin_site.admin_view(self.action_sinkron_ekinerja), name='skp_sasarankinerja_sinkron')
+            path('<int:obj_id>/sinkron', self.admin_site.admin_view(self.action_sinkron_ekinerja), name='skp_sasarankinerja_sinkron'),
+            path('change-status', self.admin_site.admin_view(self.action_change_status_skp), name='skp_sasarankinerja_changestatus'),
             # path("skpdata/", self.view_custom, name="list_skp_admin"),
             # path("skpdata/add/", self.add_skp, name="add_skp_admin"),
         ]

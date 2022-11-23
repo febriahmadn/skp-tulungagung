@@ -13,6 +13,28 @@ from usom.models import Account, UnitKerja
 class UnitKerjaAdmin(admin.ModelAdmin):
     list_display = ("id", "unitkerja")
 
+    def load_data_json(self, request):
+        respon = []
+        unitkerja_list = UnitKerja.objects.filter(aktif=True)
+        if unitkerja_list.exists():
+            for item in unitkerja_list:
+                respon.append({
+                    'id': item.id,
+                    'text': item.unitkerja,
+                })
+        return JsonResponse(respon, safe=False)
+
+    def get_urls(self):
+        admin_url = super().get_urls()
+        custom_url = [
+            path(
+                "load-data",
+                self.admin_site.admin_view(self.load_data_json),
+                name="usom_unitkerja_loaddata",
+            ),
+        ]
+        return custom_url + admin_url
+
 
 admin.site.register(UnitKerja, UnitKerjaAdmin)
 

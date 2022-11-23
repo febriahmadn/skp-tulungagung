@@ -51,16 +51,20 @@ class IndikatorAdmin(admin.ModelAdmin):
 
     def action_save_indikator_rhk(self, request):
         respon = {'success': False}
-        rhk_id = request.GET.get('rhk_id', None)
-        indikator_id = request.GET.get('indikator_id', None)
+        rhk_id = request.POST.get('rhk_id', None)
+        aspek = request.POST.get('aspek', None)
+        indikator = request.POST.get('indikator', None)
+        target = request.POST.get('target', None)
         try:
-            obj = IndikatorKinerjaIndividu.objects.get(pk=indikator_id)
-        except IndikatorKinerjaIndividu.DoesNotExist:
-            pass
-        else:
-            obj.rencana_kerja_id = rhk_id
-            obj.save()
+            IndikatorKinerjaIndividu.objects.create(
+                rencana_kerja_id=rhk_id,
+                aspek=aspek,
+                indikator=indikator,
+                target=target,
+            )
             respon = {'success': True}
+        except Exception:
+            pass
         return JsonResponse(respon, safe=False)
 
     def get_urls(self):
