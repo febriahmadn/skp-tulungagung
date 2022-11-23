@@ -10,7 +10,7 @@ from services.models import Configurations
 from skp.forms.sasarankinerja_form import SasaranKinerjaForm, SKPForm
 from skp.forms.rhk_form import RHKJFJAForm, RHKJPTForm
 from skp.forms.indikator_kinerja_form import IndikatorForm
-from skp.models import SasaranKinerja, RencanaHasilKerja, DetailSasaranKinerja, IndikatorKinerjaIndividu
+from skp.models import SasaranKinerja, RencanaHasilKerja, DetailSasaranKinerja, IndikatorKinerjaIndividu, PerilakuKerja
 
 
 class SasaranKinerjaAdmin(admin.ModelAdmin):
@@ -142,40 +142,14 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
 
     def view_detail_skp(self, request, id=None):
         obj = get_object_or_404(SasaranKinerja, pk=id)
-        if obj.jenis_jabatan == SasaranKinerja.JenisJabatan.JPT:
-            if request.POST:
-                jenis_post = request.POST.get("jenis_post", None)
-                if jenis_post == "rhk":
-                    form = RHKJPTForm(request.POST)
-                elif jenis_post == "indikator":
-                    form = IndikatorForm(request.POST)
-
-                if form.is_valid():
-                    form.save()
-                    messages.success(request, "Data Telah Berhasil Tersimpan")
-                    return redirect(
-                        reverse("admin:detail-skp", kwargs={"id": obj.id})
-                    )
-                else:
-                    messages.error(request, form.errors.as_text())
-            else:
-                form = RHKJPTForm(initial={"skp": obj.id})
-                indikator_form = IndikatorForm
-        else:
-            form = RHKJFJAForm
-            indikator_form = IndikatorForm
-        hasil_kerja_list = RencanaHasilKerja.objects.filter(skp=obj).order_by(
-            "-created"
-        )
+        perilaku_kerja_list = PerilakuKerja.objects.filter(is_active=True)
         extra_context = {
-                "title": "Detail SKP",
-                "obj": obj,
-                "pegawai": obj.pegawai,
-                "penilai": obj.pejabat_penilai,
-                "RHK_Form": form,
-                "hasil_kerja": hasil_kerja_list,
-                "indikator_form": indikator_form,
-            }
+            "title": "Detail SKP",
+            "obj": obj,
+            "pegawai": obj.pegawai,
+            "penilai": obj.pejabat_penilai,
+            "perilaku_kerja_list": perilaku_kerja_list
+        }
         return render(
             request, "admin/skp/sasarankinerja/detail_skp.html", extra_context
         )

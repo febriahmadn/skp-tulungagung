@@ -5,12 +5,136 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{title}}</title>
+    <style>
+        * {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        table td, table th {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        .t-c {
+            text-align: center;
+        }
+        
+        .bg-blue {
+            background-color: #86caff;
+        }
+
+        .m-0 {
+            margin: 0;
+        }
+
+        .contents {
+            padding: 10px 30px 10px 30px;
+        }
+    </style>
 </head>
 <body>
-    <table>
-        <tr>
-            <td>Test</td>
-        </tr>
-    </table>
+    <div class="contents">
+        <div style="text-align: center; margin: 20px;">
+            <h4 class="m-0">SASARAN KINERJA PEGAWAI</h4>
+            <h4 class="m-0">ENDEKATAN HASIL KERJA KUANTITATIF</h4>
+            <h4 class="m-0">BAGI PEJABAT PIMPINAN TINGGI DAN PIMIPINAN UNIT KERJA MANDIRI</h4>
+        </div>
+        <table>
+            <thead class="bg-blue">
+                <tr>
+                    <th style="width: 5%;">NO</th>
+                    <th colspan="2">PEGAWAI YANG DINILAI</th>
+                    <th style="width: 5%;">NO</th>
+                    <th colspan="2">PEJABAT PENILAI KINERJA</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="t-c">1</td>
+                    <td style="width: 15%;">NAMA</td>
+                    <td>SOEROTO</td>
+                    <td class="t-c">1</td>
+                    <td style="width: 15%;">NAMA</td>
+                    <td>BUPATI</td>
+                </tr>
+                <tr>
+                    <td class="t-c">2</td>
+                    <td>NIP</td>
+                    <td>SOEROTO</td>
+                    <td class="t-c">2</td>
+                    <td>NIP</td>
+                    <td>BUPATI</td>
+                </tr>
+                <tr>
+                    <td class="t-c">3</td>
+                    <td>PANGKAT / GOL. RUANG</td>
+                    <td>SOEROTO</td>
+                    <td class="t-c">3</td>
+                    <td>PANGKAT / GOL. RUANG</td>
+                    <td>BUPATI</td>
+                </tr>
+                <tr>
+                    <td class="t-c">4</td>
+                    <td>JABATAN</td>
+                    <td>SOEROTO</td>
+                    <td class="t-c">4</td>
+                    <td>JABATAN</td>
+                    <td>BUPATI</td>
+                </tr>
+                <tr>
+                    <td class="t-c">5</td>
+                    <td>UNIT KERJA</td>
+                    <td>SOEROTO</td>
+                    <td class="t-c">5</td>
+                    <td>UNIT KERJA</td>
+                    <td>BUPATI</td>
+                </tr>
+            </tbody>
+        </table>
+        <table>
+            <tr class="bg-blue">
+                <td colspan="5" align="left">HASIL KERJA</td>
+            </tr>
+            <tr class="bg-blue">
+                <td>NO</td>
+                <td>RENCANA HASIL KERJA</td>
+                <td>INDIKATOR KINERJA INDIVIDU</td>
+                <td>TARGET</td>
+                <td>PERSPEKTIF</td>
+            </tr>
+            <tr class="bg-blue">
+                <td>(1)</td>
+                <td>(2)</td>
+                <td>(3)</td>
+                <td>(4)</td>
+                <td>(5)</td>
+            </tr>
+            <tr class="bg-blue">
+                <td colspan="5">UTAMA</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>Rencana Hasil Kerja Utama (Penugasan dari Setda)</td>
+                <td>Test indikator</td>
+                <td>10</td>
+                <td>Penerima Layanan</td>
+            </tr>
+            <tr class="bg-blue">
+                <td colspan="5">TAMBAHAN</td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>Rencana Hasil Kerja Utama (Penugasan dari Setda)</td>
+                <td>Test indikator</td>
+                <td>10</td>
+                <td>Penerima Layanan</td>
+            </tr>
+        </table>
+    </div>
 </body>
 </html>

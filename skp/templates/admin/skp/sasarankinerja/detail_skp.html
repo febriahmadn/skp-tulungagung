@@ -17,6 +17,10 @@
     line-height: .5;
     border-radius: .2rem;
   }
+
+  .table-custom th{
+    background-color: #2196f3;
+  }
 </style>
 {% endblock custom_style %}
 
@@ -58,7 +62,7 @@
   </div>
 </div>
 <!-- data detail perlu diganti menggunakan detailrincian skp -->
-<div class="d-flex">
+<div class="row">
   <div class="col-md-6">
     <div class="card">
       <div class="card-header bg-success text-white p-5">
@@ -67,28 +71,28 @@
       <div class="card-body p-0">
         <table class="table">
           <tr>
-            <td style="width: 40%;">Nama</td>
+            <td style="width: 30%;">Nama</td>
             <td style="width: 5%;">:</td>
             <td>{{pegawai.get_complete_name}}</td>
           </tr>
           <tr>
-            <td style="width: 40%;">NIP</td>
-            <td style="width: 5%;">:</td>
+            <td>NIP</td>
+            <td>:</td>
             <td>{{pegawai.username}}</td>
           </tr>
           <tr>
-            <td style="width: 40%;">Pangkat / Gol. Ruang</td>
-            <td style="width: 5%;">:</td>
+            <td>Pangkat / Gol. Ruang</td>
+            <td>:</td>
             <td>{{pegawai.get_golongan_display|default_if_none:"---"}}</td>
           </tr>
           <tr>
-            <td style="width: 40%;">Jabatan</td>
-            <td style="width: 5%;">:</td>
+            <td>Jabatan</td>
+            <td>:</td>
             <td>{{pegawai.jabatan|default_if_none:"---"}}</td>
           </tr>
           <tr>
-            <td style="width: 40%;">Unit Kerja</td>
-            <td style="width: 5%;">:</td>
+            <td>Unit Kerja</td>
+            <td>:</td>
             <td>{% if pegawai.unitkerja %}{{pegawai.unitkerja.unitkerja}}{% else %}---{% endif %}</td>
           </tr>
         </table>
@@ -103,28 +107,28 @@
       <div class="card-body p-0">
         <table class="table">
           <tr>
-            <td style="width: 40%;">Nama</td>
+            <td style="width: 30%;">Nama</td>
             <td style="width: 5%;">:</td>
             <td>{{penilai.get_complete_name|default_if_none:"---"}}</td>
           </tr>
           <tr>
-            <td style="width: 40%;">NIP</td>
-            <td style="width: 5%;">:</td>
+            <td>NIP</td>
+            <td>:</td>
             <td>{{penilai.username|default_if_none:"---"}}</td>
           </tr>
           <tr>
-            <td style="width: 40%;">Pangkat / Gol. Ruang</td>
-            <td style="width: 5%;">:</td>
+            <td>Pangkat / Gol. Ruang</td>
+            <td>:</td>
             <td>{{penilai.get_golongan_display|default_if_none:"---"}}</td>
           </tr>
           <tr>
-            <td style="width: 40%;">Jabatan</td>
-            <td style="width: 5%;">:</td>
+            <td>Jabatan</td>
+            <td>:</td>
             <td>{{penilai.jabatan|default_if_none:"---"}}</td>
           </tr>
           <tr>
-            <td style="width: 40%;">Unit Kerja</td>
-            <td style="width: 5%;">:</td>
+            <td>Unit Kerja</td>
+            <td>:</td>
             <td>{% if penilai.unitkerja %}{{penilai.unitkerja.unitkerja}}{% else %}---{% endif %}</td>
           </tr>
         </table>
@@ -137,47 +141,86 @@
   <h4 style="margin: unset;">Periode Penilaian: {{obj.get_periode}}</h4>
 </div>
 
-<div class="col-md-12 pt-3">
-  <div class="card">
-    <div class="d-flex justify-content-between card-header py-4 px-5">
-      <h6 class="d-flex align-items-center m-0">Hasil Kerja</h6>
-      <div>
-        {% if obj.status == 1 %}
-        <button class="btn btn-sm btn-primary mx-2" data-toggle="modal" data-target="#tambahrhk"><i class="fas fa-plus"></i> Tambah RHK</button>
-        {% endif %}
-        <!-- <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#tambahindikator"><i class="fas fa-plus"></i> Tambah Indikator</button> -->
+<div class="row">
+  <div class="col-md-12 pt-3">
+    <div class="card">
+      <div class="d-flex justify-content-between card-header py-4 px-5">
+        <h6 class="d-flex align-items-center m-0">HASIL KERJA</h6>
+        <div>
+          {% if obj.status == 1 %}
+          <button class="btn btn-sm btn-primary mx-2" data-toggle="modal" data-target="#tambahrhk"><i class="fas fa-plus"></i> Tambah RHK</button>
+          {% endif %}
+          <!-- <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#tambahindikator"><i class="fas fa-plus"></i> Tambah Indikator</button> -->
+        </div>
       </div>
-    </div>
-    <div class="card-body p-0">
-      <div class="table-responsive">
-        <table class="table table-hover table-striped mb-0" id="result_list">
-          <thead style="background: #2196f3;">
-            <tr>
-              <th valign="center">No</th>
-              {% if obj.jenis_jabatan == 1 %}
-              <th valign="center" style="width: 40%;">Rencana Hasil Kerja</th>
-              <th valign="center">Perspektif</th>
-              <th valign="center">Indikator Kinerja Individu</th>
-              <th valign="center">Target</th>
-              {% else %}
-              <th valign="center" style="min-width: 250px;">Rencana Hasil Kerja Pimpinan<br>yang Diintervensi</th>
-              <th valign="center" style="min-width: 250px;">Rencana Hasil Kerja</th>
-              <th valign="center">Aspek</th>
-              <th valign="center">Indikator Kinerja Individu</th>
-              <th valign="center">Target</th>
-              {% endif %}
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td colspan="8" style="text-align: center;">Tidak Ada Data</td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="card-body p-2">
+        <div class="table-responsive" style="border-radius: 5px;">
+          <table class="table table-hover table-striped mb-0" id="result_list">
+            <thead style="background: #2196f3;">
+              <tr>
+                <th valign="center">No</th>
+                {% if obj.jenis_jabatan == 1 %}
+                <th valign="center" style="width: 40%;">Rencana Hasil Kerja</th>
+                <th valign="center">Perspektif</th>
+                <th valign="center">Indikator Kinerja Individu</th>
+                <th valign="center">Target</th>
+                {% else %}
+                <th valign="center" style="min-width: 250px;">Rencana Hasil Kerja Pimpinan<br>yang Diintervensi</th>
+                <th valign="center" style="min-width: 250px;">Rencana Hasil Kerja</th>
+                <th valign="center">Aspek</th>
+                <th valign="center">Indikator Kinerja Individu</th>
+                <th valign="center">Target</th>
+                {% endif %}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td colspan="8" style="text-align: center;">Tidak Ada Data</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
+  
+  {% if perilaku_kerja_list %}
+  <div class="col-md-12 pt-3">
+    <div class="card">
+      <div class="d-flex justify-content-between card-header py-4 px-5">
+        <h6 class="d-flex align-items-center m-0">PERILAKU KERJA</h6>
+      </div>
+      <div class="card-body p-2">
+        <div class="table-responsive">
+          <table class="table table-bordered mb-0 table-custom">
+            {% for item in perilaku_kerja_list %}
+            <tr>
+              <td rowspan="2" style="vertical-align : middle;text-align:center; width: 5%;">{{ forloop.counter }}</td>
+              <th>{{ item.perilaku_kerja }}</th>
+              <th style="width: 20%;">Ekspektasi Khusus Pimpinan</th>
+            </tr>
+            <tr>
+              <td>
+                <ol>
+                  {% for subitem in item.daftarperilakukerja_set.all %}
+                  <li>{{ subitem.keterangan }}</li>
+                  {% endfor %}
+                </ol>
+              </td>
+              <td></td>
+            </tr>
+            {% endfor %}
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
 </div>
+
+
+
+
 
 <div class="modal fade" id="tambahrhk" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">

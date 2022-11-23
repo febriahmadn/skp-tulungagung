@@ -181,15 +181,18 @@ class IndikatorKinerjaIndividu(models.Model):
 
 
 class PerilakuKerja(models.Model):
-    class Status(models.IntegerChoices):
-        ACTIVE = 1, "Aktif"
-        NONACTIVE = 2, "Non Aktif"
+    # class Status(models.IntegerChoices):
+    #     ACTIVE = 1, "Aktif"
+    #     NONACTIVE = 2, "Non Aktif"
 
     perilaku_kerja = models.CharField("Perilaku Kerja", max_length=200)
-    status = models.IntegerField(choices=Status.choices, null=True, default=1)
+    # status = models.IntegerField(choices=Status.choices, null=True, default=1)
+    is_active = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
+        if self.perilaku_kerja:
+            return self.perilaku_kerja
         return "{}".format(str(self.id))
 
     class Meta:
@@ -198,18 +201,21 @@ class PerilakuKerja(models.Model):
 
 
 class DaftarPerilakuKerja(models.Model):
-    class Status(models.IntegerChoices):
-        ACTIVE = 1, "Aktif"
-        NONACTIVE = 2, "Non Aktif"
+    # class Status(models.IntegerChoices):
+    #     ACTIVE = 1, "Aktif"
+    #     NONACTIVE = 2, "Non Aktif"
 
     perilaku_kerja = models.ForeignKey(
         PerilakuKerja, on_delete=models.CASCADE, verbose_name="Perilaku Kerja"
     )
     keterangan = models.CharField("Keterangan Perilaku", max_length=255)
-    status = models.IntegerField(choices=Status.choices, null=True, default=1)
+    # status = models.IntegerField(choices=Status.choices, null=True, default=1)
+    is_active = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
+        if self.keterangan:
+            return self.keterangan
         return "{}".format(str(self.id))
 
     class Meta:

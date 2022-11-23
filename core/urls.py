@@ -13,6 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.contrib.auth.views import LogoutView
 import django_cas_ng.views
 from django.contrib import admin
 from django.urls import include, path
@@ -21,6 +22,7 @@ from skp.views import view_dashboard, view_profil
 from usom.views import menu_pengguna
 
 urlpatterns = [
+    path('logout/', LogoutView.as_view(next_page='/'), name="admin_logout"),
     path("menu-pengguna", menu_pengguna, name="menu_pengguna"),
     path("", view_dashboard, name="admin_dashboard"),
     path("profil/", view_profil, name="admin_profil"),
