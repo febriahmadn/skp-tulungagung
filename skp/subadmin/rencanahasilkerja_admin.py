@@ -18,6 +18,7 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
         "klasifikasi",
         "unor",
     )
+    search_fields = ('rencana_kerja', 'skp__pegawai__nama_lengkap')
 
     def load_data(self, request):
         rencana_id = request.GET.get("id", None)

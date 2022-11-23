@@ -132,7 +132,12 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         qs = super(SasaranKinerjaAdmin, self).get_queryset(request)
-        qs = qs.filter(pegawai=request.user)
+        func_view, func_view_args, func_view_kwargs = resolve(request.path)
+        if func_view.__name__ == self.view_detail_skp.__name__:
+            qs = qs
+            print(qs)
+        else:
+            qs = qs.filter(pegawai=request.user)
         return qs
 
     def view_detail_skp(self, request, id=None):
@@ -187,7 +192,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
             # print(config.ekinerja_token)
             url = '{}/api/kinerja-pegawai/'.format(config.ekinerja_url)
             headers = {'Authorization': 'Token {}'.format(config.ekinerja_token)}
-            params = {'q': obj.pegawai.username, 'tahun': 2022}
+            params = {'nip': obj.pegawai.username, 'tahun': 2022}
             fetch_kinerja = requests.get(url, headers=headers, params=params)
             if fetch_kinerja.ok:
                 respon_json = fetch_kinerja.json()
@@ -274,10 +279,25 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                     respon = {'success': True}
         return JsonResponse(respon)
 
+    def view_changelist_penilaian_skp(self, request):
+        extra_context = {
+			'title': 'Penilaian SKP Pegawai'
+		}
+        return super().changelist_view(request, extra_context)
+
+    def view_cetak_skp_pegawai(self, request, obj_id):
+        obj = get_object_or_404(SasaranKinerja, pk=obj_id)
+        extra_context = {
+
+        }
+        return render(request, 'admin/skp/sasarankinerja/cetak.html', extra_context)
+
     def get_urls(self):
         admin_url = super(SasaranKinerjaAdmin, self).get_urls()
         custom_url = [
+            path('penilaian', self.admin_site.admin_view(self.view_changelist_penilaian_skp), name="skp_sasarankinerja_changelist_penilaian"),
             path('<int:id>/detail', self.admin_site.admin_view(self.view_detail_skp), name="detail-skp"),
+            path('<int:obj_id>/cetak', self.admin_site.admin_view(self.view_cetak_skp_pegawai), name="skp_sasarankinerja_cetak"),
             path('<int:obj_id>/sinkron', self.admin_site.admin_view(self.action_sinkron_ekinerja), name='skp_sasarankinerja_sinkron'),
             path('change-status', self.admin_site.admin_view(self.action_change_status_skp), name='skp_sasarankinerja_changestatus'),
             # path("skpdata/", self.view_custom, name="list_skp_admin"),

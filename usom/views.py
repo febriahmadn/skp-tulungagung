@@ -39,6 +39,59 @@ def menu_pengguna(request):
         if request.user.is_superuser:
             menus += [
                 dict(
+                    title="SKP Manage",
+                    css_classes=["xn-title"],
+                ),
+                dict(
+                    title="Detail Sasaran Kinerja",
+                    icon="fa fa-building",
+                    url=reverse("admin:skp_detailsasarankinerja_changelist"),
+                ),
+                dict(
+                    title="Rencana Hasil Kerja",
+                    icon="fa fa-building",
+                    url=reverse("admin:skp_rencanahasilkerja_changelist"),
+                ),
+                dict(
+                    title="Indikator Kinerja Individu",
+                    icon="fa fa-building",
+                    url=reverse("admin:skp_indikatorkinerjaindividu_changelist"),
+                ),
+                dict(
+                    title="Master SKP",
+                    icon="fa fa-users-cog",
+                    children=[
+                        dict(
+                            title="Perilaku Kerja",
+                            icon="fa fa-home",
+                            url=reverse("admin:skp_perilakukerja_changelist")
+                        ),
+                        dict(
+                            title="Perspektif",
+                            icon="fa fa-home",
+                            url=reverse("admin:skp_perspektif_changelist")
+                        ),
+                        dict(
+                            title="Lampiran",
+                            icon="fa fa-home",
+                            url=reverse("admin:skp_lampiran_changelist")
+                        ),
+                    ]
+                ),
+                dict(
+                    title="Daftar Lampiran",
+                    icon="fa fa-building",
+                    url=reverse("admin:skp_daftarlampiran_changelist"),
+                ),
+                dict(
+                    title="Daftar Perilaku Kerja",
+                    icon="fa fa-building",
+                    url=reverse("admin:skp_daftarperilakukerja_changelist"),
+                ),
+            ]
+
+            menus += [
+                dict(
                     title="Khusus Administrator",
                     css_classes=["xn-title"],
                 ),
@@ -56,17 +109,17 @@ def menu_pengguna(request):
                             icon="fa fa-user",
                             url=reverse("admin:usom_account_changelist"),
                         ),
+                        dict(
+                            title="Groups",
+                            icon="fa fa-users",
+                            url=reverse("admin:auth_group_changelist"),
+                        ),
                     ],
                 ),
                 dict(
                     title="Configuration",
                     icon="fa fa-cog",
                     url=reverse("admin:services_configurations_changelist"),
-                ),
-                dict(
-                    title="Groups",
-                    icon="fa fa-users",
-                    url=reverse("admin:auth_group_changelist"),
                 ),
             ]
     return JsonResponse(menus, safe=False)
