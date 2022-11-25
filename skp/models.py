@@ -13,6 +13,7 @@ class SasaranKinerja(models.Model):
         PENGAJUAN = 2, "Pengajuan"
         PERSETUJUAN = 3, "Persetujuan"
         CLOSE = 4, "Close"
+        ARCHIVE = 5, "Archive"
 
     class JenisJabatan(models.IntegerChoices):
         JPT = 1, "Jabatan Pimpinan Tinggi"
@@ -52,6 +53,12 @@ class SasaranKinerja(models.Model):
             self.periode_awal.strftime("%d/%m/%Y"),
             self.periode_akhir.strftime("%d/%m/%Y"),
         )
+
+    def get_rencanakerja_utama(self):
+        return self.rencanahasilkerja_set.filter(jenis=1).order_by('id', 'induk')
+
+    def get_rencanakerja_tambahan(self):
+        return self.rencanahasilkerja_set.filter(jenis=2).order_by('id', 'induk')
 
     class Meta:
         verbose_name = "Sasaran Kinerja Pegawai"
@@ -126,6 +133,8 @@ class RencanaHasilKerja(models.Model):
     unor = models.ForeignKey(
         UnitKerja, null=True, blank=True, on_delete=models.SET_NULL
     )
+    ekinerja_id = models.IntegerField('Ekinerja ID', null=True, blank=True)
+    aspek = models.CharField('Aspek', null=True, blank=True, max_length=50)
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -151,11 +160,20 @@ class Perspektif(models.Model):
 class IndikatorKinerjaIndividu(models.Model):
     rencana_kerja = models.ForeignKey(
         RencanaHasilKerja,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
         verbose_name="Rencana Hasil Kerja",
     )
+    skp = models.ForeignKey(
+        SasaranKinerja,
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        verbose_name="Sasaran Kinerja Pegawai",
+    )
+    ekinerja_id = models.IntegerField('Ekinerja ID', null=True, blank=True)
     indikator = models.CharField("Indikator", max_length=255, null=True)
     target = models.CharField("Target", max_length=100, null=True, blank=True)
+    aspek = models.CharField('Aspek', null=True, blank=True, max_length=50)
     perspektif = models.ForeignKey(
         Perspektif, on_delete=models.SET_NULL, null=True, blank=True
     )
@@ -169,15 +187,18 @@ class IndikatorKinerjaIndividu(models.Model):
 
 
 class PerilakuKerja(models.Model):
-    class Status(models.IntegerChoices):
-        ACTIVE = 1, "Aktif"
-        NONACTIVE = 2, "Non Aktif"
+    # class Status(models.IntegerChoices):
+    #     ACTIVE = 1, "Aktif"
+    #     NONACTIVE = 2, "Non Aktif"
 
     perilaku_kerja = models.CharField("Perilaku Kerja", max_length=200)
-    status = models.IntegerField(choices=Status.choices, null=True, default=1)
+    # status = models.IntegerField(choices=Status.choices, null=True, default=1)
+    is_active = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
+        if self.perilaku_kerja:
+            return self.perilaku_kerja
         return "{}".format(str(self.id))
 
     class Meta:
@@ -186,18 +207,21 @@ class PerilakuKerja(models.Model):
 
 
 class DaftarPerilakuKerja(models.Model):
-    class Status(models.IntegerChoices):
-        ACTIVE = 1, "Aktif"
-        NONACTIVE = 2, "Non Aktif"
+    # class Status(models.IntegerChoices):
+    #     ACTIVE = 1, "Aktif"
+    #     NONACTIVE = 2, "Non Aktif"
 
     perilaku_kerja = models.ForeignKey(
         PerilakuKerja, on_delete=models.CASCADE, verbose_name="Perilaku Kerja"
     )
     keterangan = models.CharField("Keterangan Perilaku", max_length=255)
-    status = models.IntegerField(choices=Status.choices, null=True, default=1)
+    # status = models.IntegerField(choices=Status.choices, null=True, default=1)
+    is_active = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
+        if self.keterangan:
+            return self.keterangan
         return "{}".format(str(self.id))
 
     class Meta:

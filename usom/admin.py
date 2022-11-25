@@ -13,6 +13,28 @@ from usom.models import Account, UnitKerja
 class UnitKerjaAdmin(admin.ModelAdmin):
     list_display = ("id", "unitkerja")
 
+    def load_data_json(self, request):
+        respon = []
+        unitkerja_list = UnitKerja.objects.filter(aktif=True)
+        if unitkerja_list.exists():
+            for item in unitkerja_list:
+                respon.append({
+                    'id': item.id,
+                    'text': item.unitkerja,
+                })
+        return JsonResponse(respon, safe=False)
+
+    def get_urls(self):
+        admin_url = super().get_urls()
+        custom_url = [
+            path(
+                "load-data",
+                self.admin_site.admin_view(self.load_data_json),
+                name="usom_unitkerja_loaddata",
+            ),
+        ]
+        return custom_url + admin_url
+
 
 admin.site.register(UnitKerja, UnitKerjaAdmin)
 
@@ -70,14 +92,22 @@ class AccountAdmin(UserAdmin):
     def get_list_display(self, request):
         if request.user.is_superuser:
             return (
-                "username",
-                "nama_lengkap",
+                "get_name_and_username",
                 "unitkerja",
                 "jabatan",
+                "jenis_jabatan",
                 "get_akses",
                 "aksi",
             )
         return super().get_list_display(request)
+
+    def get_name_and_username(self, obj):
+        html_ = '''
+        <span>{}</span></br>
+        <span class="text-muted">{}</span>
+        '''.format(obj.username, obj.get_complete_name())
+        return mark_safe(html_)
+    get_name_and_username.short_description = "Pegawai"
 
     def get_akses(self, obj):
         groups = obj.groups.all()

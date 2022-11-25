@@ -17,6 +17,10 @@
     line-height: .5;
     border-radius: .2rem;
   }
+
+  .table-custom th{
+    background-color: #2196f3;
+  }
 </style>
 {% endblock custom_style %}
 
@@ -38,22 +42,27 @@
 {% endblock breadcrumbs %}
 
 {% block content %}
-<div class="row px-5 pb-3">
-  <div class="col-md-6">
+<div class="row px-4 pb-3">
+  <div class="col-md-4">
     <div class="d-flex">
       <label class="mx-1 py-2" style="min-width: 100px;">Status SKP</label>
       <input type="text" readonly class="form-control form-control-sm" id="staticEmail" value="{{obj.get_status_display}}">
     </div>
   </div>
 
-  <div class="col-md-6 d-flex flex-row-reverse">
-    <button class="btn btn-sm btn-warning"><i class="fas fa-sync-alt"></i> Sinkron dengan e-kinerja</button>
-    <button class="btn btn-sm btn-primary mx-2"><i class="fas fa-paper-plane"></i> Ajukan SKP</button>
-    <button class="btn btn-sm btn-success"><i class="fas fa-print"></i> Cetak SKP</button>
+  <div class="col-md-8 d-flex flex-row-reverse">
+    {% if obj.status == 1 %}
+    <button class="btn btn-sm btn-warning" id="btn_action_sinkron_ekinerja_id"><i class="fas fa-sync-alt"></i> Sinkron dengan e-kinerja</button>
+    <button class="btn btn-sm btn-primary mr-1" id="action_ajukan_skp_id"><i class="fas fa-paper-plane"></i> Ajukan SKP</button>
+    <button class="btn btn-sm btn-danger mr-1" id="action_archive_skp_id"><i class="flaticon2-trash"></i> Archivekan SKP</button>
+    {% endif %}
+    <a href="{% url 'admin:skp_sasarankinerja_cetak' obj.id %}">
+      <button class="btn btn-success mr-1"><i class="fas fa-print"></i> Cetak SKP</button>
+    </a>
   </div>
 </div>
-
-<div class="d-flex">
+<!-- data detail perlu diganti menggunakan detailrincian skp -->
+<div class="row">
   <div class="col-md-6">
     <div class="card">
       <div class="card-header bg-success text-white p-5">
@@ -62,28 +71,28 @@
       <div class="card-body p-0">
         <table class="table">
           <tr>
-            <td style="width: 40%;">Nama</td>
+            <td style="width: 30%;">Nama</td>
             <td style="width: 5%;">:</td>
             <td>{{pegawai.get_complete_name}}</td>
           </tr>
           <tr>
-            <td style="width: 40%;">NIP</td>
-            <td style="width: 5%;">:</td>
+            <td>NIP</td>
+            <td>:</td>
             <td>{{pegawai.username}}</td>
           </tr>
           <tr>
-            <td style="width: 40%;">Pangkat / Gol. Ruang</td>
-            <td style="width: 5%;">:</td>
+            <td>Pangkat / Gol. Ruang</td>
+            <td>:</td>
             <td>{{pegawai.get_golongan_display|default_if_none:"---"}}</td>
           </tr>
           <tr>
-            <td style="width: 40%;">Jabatan</td>
-            <td style="width: 5%;">:</td>
+            <td>Jabatan</td>
+            <td>:</td>
             <td>{{pegawai.jabatan|default_if_none:"---"}}</td>
           </tr>
           <tr>
-            <td style="width: 40%;">Unit Kerja</td>
-            <td style="width: 5%;">:</td>
+            <td>Unit Kerja</td>
+            <td>:</td>
             <td>{% if pegawai.unitkerja %}{{pegawai.unitkerja.unitkerja}}{% else %}---{% endif %}</td>
           </tr>
         </table>
@@ -98,28 +107,28 @@
       <div class="card-body p-0">
         <table class="table">
           <tr>
-            <td style="width: 40%;">Nama</td>
+            <td style="width: 30%;">Nama</td>
             <td style="width: 5%;">:</td>
             <td>{{penilai.get_complete_name|default_if_none:"---"}}</td>
           </tr>
           <tr>
-            <td style="width: 40%;">NIP</td>
-            <td style="width: 5%;">:</td>
+            <td>NIP</td>
+            <td>:</td>
             <td>{{penilai.username|default_if_none:"---"}}</td>
           </tr>
           <tr>
-            <td style="width: 40%;">Pangkat / Gol. Ruang</td>
-            <td style="width: 5%;">:</td>
+            <td>Pangkat / Gol. Ruang</td>
+            <td>:</td>
             <td>{{penilai.get_golongan_display|default_if_none:"---"}}</td>
           </tr>
           <tr>
-            <td style="width: 40%;">Jabatan</td>
-            <td style="width: 5%;">:</td>
+            <td>Jabatan</td>
+            <td>:</td>
             <td>{{penilai.jabatan|default_if_none:"---"}}</td>
           </tr>
           <tr>
-            <td style="width: 40%;">Unit Kerja</td>
-            <td style="width: 5%;">:</td>
+            <td>Unit Kerja</td>
+            <td>:</td>
             <td>{% if penilai.unitkerja %}{{penilai.unitkerja.unitkerja}}{% else %}---{% endif %}</td>
           </tr>
         </table>
@@ -127,60 +136,88 @@
     </div>
   </div>
 </div>
-  <div class="d-flex justify-content-end mt-3 pr-4" style="padding: unset;">
-    <h4 style="margin: unset;">Periode Penilaian: {{obj.get_periode}}</h4>
-  </div>
-<div class="col-md-12 pt-3">
-  <div class="card">
-    <div class="d-flex justify-content-between card-header py-4 px-5">
-      <h6 class="d-flex align-items-center m-0">Hasil Kerja</h6>
-      <div>
-        <button class="btn btn-sm btn-primary mx-2" data-toggle="modal" data-target="#tambahrhk"><i class="fas fa-plus"></i> Tambah RHK</button>
-        <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#tambahindikator"><i class="fas fa-plus"></i> Tambah Indikator</button>
+
+<div class="d-flex justify-content-end mt-3 pr-4" style="padding: unset;">
+  <h4 style="margin: unset;">Periode Penilaian: {{obj.get_periode}}</h4>
+</div>
+
+<div class="row">
+  <div class="col-md-12 pt-3">
+    <div class="card">
+      <div class="d-flex justify-content-between card-header py-4 px-5">
+        <h6 class="d-flex align-items-center m-0">HASIL KERJA</h6>
+        <div>
+          {% if obj.status == 1 %}
+          <button class="btn btn-sm btn-primary mx-2" data-toggle="modal" data-target="#tambahrhk"><i class="fas fa-plus"></i> Tambah RHK</button>
+          {% endif %}
+          <!-- <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#tambahindikator"><i class="fas fa-plus"></i> Tambah Indikator</button> -->
+        </div>
+      </div>
+      <div class="card-body p-2">
+        <div class="table-responsive" style="border-radius: 5px;">
+          <table class="table table-bordered mb-0" id="result_list">
+            <thead style="background: #2196f3;">
+              <tr>
+                <th valign="center">No</th>
+                {% if obj.jenis_jabatan == 1 %}
+                <th valign="center" style="width: 40%;">Rencana Hasil Kerja</th>
+                <th valign="center">Perspektif</th>
+                <th valign="center">Indikator Kinerja Individu</th>
+                <th valign="center">Target</th>
+                {% else %}
+                <th valign="center" style="min-width: 250px;">Rencana Hasil Kerja Pimpinan<br>yang Diintervensi</th>
+                <th valign="center" style="min-width: 250px;">Rencana Hasil Kerja</th>
+                <th valign="center">Aspek</th>
+                <th valign="center">Indikator Kinerja Individu</th>
+                <th valign="center">Target</th>
+                {% endif %}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td colspan="8" style="text-align: center;">Tidak Ada Data</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
-    <div class="card-body p-0">
-      <!-- <div class="table-responsive"> -->
-        <table class="table table-hover table-striped mb-0" id="result_list">
-          <thead style="background: #2196f3;">
+  </div>
+  
+  {% if perilaku_kerja_list %}
+  <div class="col-md-12 pt-3">
+    <div class="card">
+      <div class="d-flex justify-content-between card-header py-4 px-5">
+        <h6 class="d-flex align-items-center m-0">PERILAKU KERJA</h6>
+      </div>
+      <div class="card-body p-2">
+        <div class="table-responsive">
+          <table class="table table-bordered mb-0 table-custom">
+            {% for item in perilaku_kerja_list %}
             <tr>
-              <th valign="center" >No</th>
-              {% if obj.jenis_jabatan == 1 %}
-              <th valign="center" >Rencana Hasil Kerja</th>
-              <th valign="center" >Jenis RHK</th>
-              <th valign="center" >Indikator Kinerja Individu</th>
-              <th valign="center" >Target</th>
-              <th valign="center" >Perspektif</th>
-              <th valign="center" >Aksi</th>
-              {% else %}
-              <th valign="center" >Rencana Hasil Kerja Pimpinan<br>yang Diintervensi</th>
-              <th valign="center" >Jenis RHK</th>
-              <th valign="center" >Indikator Kinerja Individu</th>
-              <th valign="center" >Rencana Hasil Kerja</th>
-              <th valign="center" >Target</th>
-              <th valign="center" >Aspek</th>
-              <th valign="center" >Aksi</th>
-              {% endif %}
-          </tr>
-        </thead>
-        <tbody>
-          {% if hasil_kerja %}
-          {% for i in hasil_kerja %}
-          <tr data-id="{{i.id}}" data-url="{% url 'admin:load-rhk' %}?id={{i.id}}" data-status="unload">
-            <td colspan="8" style="text-align: center;">Sedang Memuat</td>
-          </tr>
-          {% endfor %}
-          {% else %}
-          <tr>
-            <td colspan="8" style="text-align: center;">Tidak Ada Data</td>
-          </tr>
-          {% endif %}
-        </tbody>
-        </table>
-      <!-- </div> -->
+              <td rowspan="2" style="vertical-align : middle;text-align:center; width: 5%;">{{ forloop.counter }}</td>
+              <th>{{ item.perilaku_kerja }}</th>
+              <th style="width: 20%;">Ekspektasi Khusus Pimpinan</th>
+            </tr>
+            <tr>
+              <td>
+                <ol>
+                  {% for subitem in item.daftarperilakukerja_set.all %}
+                  <li>{{ subitem.keterangan }}</li>
+                  {% endfor %}
+                </ol>
+              </td>
+              <td></td>
+            </tr>
+            {% endfor %}
+          </table>
+        </div>
+      </div>
     </div>
   </div>
+  {% endif %}
 </div>
+
 <div class="modal fade" id="tambahrhk" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
@@ -190,37 +227,53 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form action="" method="post">
-      {% csrf_token %}
-      <input type="hidden" name="jenis_post" value="rhk">
       <div class="modal-body">
-        {% for field in RHK_Form %}
-            <div class="mb-3 form-{{field.name}} {% if field.is_hidden %}field-hidden{% endif %}">
-                {% if field|is_bool %}
-                {{field}}
-                <label for="{{field.auto_id}}" class="form-label {% if field.field.required %}required{% endif %}">{{ field.label }}</label>
-                {% elif field|is_select %}
-                <label for="{{field.id}}" class="form-label {% if field.field.required %}required{% endif %}">{{ field.label }}</label>
-                {{ field|addcls:'form-control' }}
-                {% else %}
-                <label for="{{field.id}}" class="form-label {% if field.field.required %}required{% endif %}">{{ field.label }}</label>
-                {{ field|addcls:'form-control form-control-sm' }}
-                {% endif %}
-                {% if field.field.help_text %}
-                <div id="{{field.id}}" style="font-weight: bolder;" class="form-text">{{field.field.help_text}}</div>
-                {% endif %}
-              </div>
-        {% endfor %}
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="">Klasifikasi</label>
+          <select name="klasifikasi" class="form-control" id="klasifikasi_id">
+            <option value="0">Pilih Klasifikasi</option>
+            <option value="1">Organisasi</option>
+            <option value="2">Individu</option>
+          </select>
+        </div>
+        
+        <div class="form-group" id="field_set_unitkerja_id" style="display: none;">
+          <label for="">Unit Kerja</label>
+          <select name="" class="form-control">
+            <option value="2">Individu</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="">Jenis RHK</label>
+          <select name="jenis" class="form-control">
+            <option value="0">Pilih Jenis RHK</option>
+            <!-- <option value="1">Utama</option> -->
+            <option value="2">Tambahan</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="">Rencana Hasil Kerja</label>
+          <input type="text" class="form-control" name="rencana_kerja">
+        </div>
+
+        <div class="form-group">
+          <label for="">Penugasan Dari</label>
+          <input type="text" class="form-control" name="penugasan_dari">
+        </div>
+
       </div>
       <div class="modal-footer">
-        <button type="submit" class="btn btn-warning"><i class="fas fa-save"></i> Simpan</button>
-        <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fas fa-arrow-left"></i> Kembali</button>
+        <button type="button" class="btn btn-warning" onclick="handleSaveRHK()"><i class="fas fa-save"></i> Simpan</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
       </div>
-    </form>
     </div>
   </div>
 </div>
-<div class="modal fade" id="tambahindikator" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+
+<div class="modal fade" id="modal_add_rhk_indikator_id" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -229,33 +282,72 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <form action="" method="post">
-      {% csrf_token %}
       <div class="modal-body">
-        <input type="hidden" name="jenis_post" value="indikator">
-        {% for field in indikator_form %}
-            <div class="mb-3 form-{{field.name}} {% if field.is_hidden %}field-hidden{% endif %}">
-                {% if field|is_bool %}
-                {{field}}
-                <label for="{{field.auto_id}}" class="form-label {% if field.field.required %}required{% endif %}">{{ field.label }}</label>
-                {% elif field|is_select %}
-                <label for="{{field.id}}" class="form-label {% if field.field.required %}required{% endif %}">{{ field.label }}</label>
-                {{ field|addcls:'form-control' }}
-                {% else %}
-                <label for="{{field.id}}" class="form-label {% if field.field.required %}required{% endif %}">{{ field.label }}</label>
-                {{ field|addcls:'form-control form-control-sm' }}
-                {% endif %}
-                {% if field.field.help_text %}
-                <div id="{{field.id}}" style="font-weight: bolder;" class="form-text">{{field.field.help_text}}</div>
-                {% endif %}
-              </div>
-        {% endfor %}
+        <form id="form-add-indikator">
+          {% csrf_token %}
+          <input type="hidden" id="rhk_indikator_id" />
+          {% if obj.jenis_jabatan != 1 %}
+          <div class="form-group">
+            <label for="">Aspek</label>
+            <select name="aspek" class="form-control">
+              <option value="Kualitas">Kualitas</option>
+              <option value="Kuantitas">Kuantitas</option>
+              <option value="Waktu">Waktu</option>
+              <option value="Biaya">Biaya</option>
+            </select>
+          </div>
+          {% else %}
+          <div class="form-group">
+            <label>Perspektif</label>
+            <select name="perspektif" class="form-control">
+              <option value="0">Pilih Prespektif</option>
+              {% for item in perspektif_list %}
+              <option value="{{ item.id }}">{{ item.perspektif }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          {% endif %}
+
+          <div class="form-group">
+            <label for="">Indikator Kinerja Individu</label>
+            <input name="indikator" class="form-control" />
+          </div>
+
+          <div class="form-group">
+            <label for="">Target</label>
+            <input name="target" class="form-control" />
+          </div>
+        </form>
       </div>
       <div class="modal-footer">
-        <button type="submit" class="btn btn-warning"><i class="fas fa-save"></i> Simpan</button>
-        <button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fas fa-arrow-left"></i> Kembali</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" onclick="on_save_rhk_indikator();">Submit</button>
       </div>
-      </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal_set_rhk_pimpinan_id" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Set RHK Pimpinan</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" name="rhk_id" />
+        <div class="form-group">
+          <select name="rhk_pimpinan" class="form-control">
+            <option value="0">Pilih RHK Pimpinan</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="set_rhk_pimpinan()">Submit</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
     </div>
   </div>
 </div>
@@ -263,7 +355,125 @@
 
 {% block custom_js %}
 {{ block.super }}
-<script>
+<script type="text/javascript">
+  const changeStatus = (status=1) => {
+    return new Promise((resolve, reject) => {
+      $.ajax({
+        url: "{% url 'admin:skp_sasarankinerja_changestatus' %}",
+        type: "GET",
+        data: {
+          skp_id: '{{ obj.id }}',
+          status: status
+        },
+        success: function(response){
+          console.log({response})
+          if(response.success){
+            resolve('ok')
+          }else{
+            reject('fail')
+          }
+        },
+        error: function(error){
+          reject('fail')
+        }
+      })
+    })
+  }
+
+  // Action Archive SKP
+  $('#action_archive_skp_id').on('click', function(){
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, cancel!",
+      reverseButtons: true
+    }).then(function(result) {
+      if (result.value) {
+        changeStatus(5)
+        .then(() => {
+          Swal.fire(
+            "Deleted!",
+            "Your file has been deleted.",
+            "success"
+          )
+          .then(() => {
+            window.location.reload();
+          })
+        })
+        // result.dismiss can be "cancel", "overlay",
+        // "close", and "timer"
+      } else if (result.dismiss === "cancel") {
+        Swal.fire(
+          "Cancelled",
+          "Your imaginary file is safe :)",
+          "error"
+        )
+      }
+    });
+  })
+
+  // Action Submit / Ajukan SKP
+  $('#action_ajukan_skp_id').on('click', function(){
+    Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, delete it!",
+        cancelButtonText: "No, cancel!",
+        reverseButtons: true
+    }).then(function(result) {
+        if (result.value) {
+          changeStatus(2)
+          .then(() => {
+            Swal.fire(
+              "Deleted!",
+              "Your file has been deleted.",
+              "success"
+            )
+            .then(() => {
+              window.location.reload();
+            })
+          })
+          // result.dismiss can be "cancel", "overlay",
+          // "close", and "timer"
+        } else if (result.dismiss === "cancel") {
+          Swal.fire(
+            "Cancelled",
+            "Your imaginary file is safe :)",
+            "error"
+          )
+        }
+    });
+  })
+
+
+  $('#klasifikasi_id').on('change', function(e){
+    let value = e.target.value;
+    if (value == 1 || value == "1"){
+      console.log('show')
+      $('#field_set_unitkerja_id').show();
+    }else{
+      console.log('hide')
+      $('#field_set_unitkerja_id').hide();
+    }
+  })
+
+  const handleOpenAddRHK = () => {
+    let modal = $('#tambahrhk')
+    $.ajax({
+      url: '{% url "admin:usom_unitkerja_loaddata" %}',
+      type: 'GET',
+      success: function(response){
+        console.log({response})
+      }
+    })
+    modal.modal('show')
+  }
+
   $('.form-unor').hide()
   const onChangeKlasifikasi = (elem) =>{
     if(elem.val() == "1"){
@@ -273,88 +483,415 @@
     }
   }
 
-  $(function(){
-    let total_data= $('#result_list tr[data-status=unload], td[data-status=unload]').length
-		let count_data = 0
-		let start_ = 0
-		let end_ = 0
-		console.log(total_data)
-		const getData = (elemen_) => {
-			url_ = elemen_.data('url')
-			id_ = elemen_.data('id')
-			if(typeof url_ != 'undefined'){
-				$.ajax({
-					url: url_,
-					type: "GET",
-					success: function(respon){
-						// console.log("Respon", respon.data.jenis)
-            elemen_.attr('data-status', 'loaded');
-            count_data += 1
-            start_ = end_
-            end_ = Math.round(count_data / total_data * 100)
-            indikator_html = `<td colspan="4" id="rhk-${id_}" ></td>`
-            html = ""
-            if(respon.success){
-              console.log(respon.data.indikator_list_id)
-              // if(respon.data.indikator_list_id){
-              //   // console.log(respon.data.indikator_list_id.length)
-              //   if(respon.data.indikator_list_id.length > 0){
-              //       indikator_html = "<tr>"
-              //       respon.data.indikator_list_id.map((idx)=>{
-              //         indikator_html += `<td data-status="unload" data-url="{% url 'admin:load-indikator' %}?id=${idx}" ></td>`
-              //       })
-              //       indikator_html += "</tr>"
-              //       console.log(indikator_html)
-              //       //       {% comment %} $(`#rhk-${id_}`).append(indikator_html) {% endcomment %}
-              //       //     }else{
-              //         //       indikator_html = `<td colspan="4" id="rhk-${id_}" ></td>`
-              //     }
-              //   }else{
-              //     indikator_html = `<td colspan="4" id="rhk-${id_}" ></td>`
-              //   }
-                
-                console.log(indikator_html)
-              if(respon.data.jenis == "rhk"){
-              html = `
-              <td rowspan="${respon.data.indikator_count}">${count_data}</td>
-              <td rowspan="${respon.data.indikator_count}">${respon.data.rencana_hasil}<button class="btn btn-xs btn-warning ml-1" data-toggle="modal" data-target="#tambahrhk"><i class="fas fa-edit" style="padding: unset;"></i></button></td>
-              <td rowspan="${respon.data.indikator_count}">${respon.data.jenis_rhk}</td>  
-              ${indikator_html}
-              `}else{
-                console.log('lasd')
-                {% comment %} $(`#rhk-${id_}`).after(indikator_html) {% endcomment %}
-              }
-              elemen_.html(html)
+  const on_save_rhk_indikator = () => {
+    console.log('On Save')
+    let form_id = $('#form-add-indikator')
+    let rhk_id = $('#rhk_indikator_id').val()
+    let aspek = form_id.find('select[name=aspek]').val();
+    let perspektif= form_id.find('select[name=perspektif]').val();
+    let indikator = form_id.find('input[name=indikator]').val();
+    let target = form_id.find('input[name=target]').val();
+    let csrf = form_id.find('input[name=csrfmiddlewaretoken]').val();
+
+    let formData = {
+      rhk_id: rhk_id,
+      aspek: aspek,
+      indikator: indikator,
+      perspektif: perspektif,
+      target: target,
+      csrfmiddlewaretoken: csrf
+    }
+    console.log({formData})
+    
+    $.ajax({
+      url: '{% url "admin:skp_indikator_set_indikator_rhk" %}',
+      type: 'POST',
+      data: formData,
+      success: function(response){
+        console.log({response})
+        if(response.success){
+          toastr.success('Berhasil menambahkan indikator');
+          window.location.reload();
+        }
+      },
+      error: function(error){
+        console.log({error})
+        toastr.warning("Terjadi kesalahan server");
+      }
+    })
+  }
+
+  const set_rhk_indikator = async (elem) => {
+    let rhk_id = elem.data('rhk_id')
+    console.log({rhk_id})
+    if (typeof rhk_id !== "undefined"){
+      $('#rhk_indikator_id').val(rhk_id)
+      $('#modal_add_rhk_indikator_id').modal('show');
+      // await $.ajax({
+      //   url: "{% url 'admin:skp_indikator_get_by_skp' obj.id %}",
+      //   type: 'GET',
+      //   success: function(response){
+      //     console.log({response})
+      //     if (response.length > 0){
+      //       let options = '<option value="0">Pilih Indikator Kinerja</option>';
+      //       response.map(item => {
+      //         options += `
+      //         <option value="${item.id}">${item.indikator}</option>
+      //         `
+      //       })
+      //       $('#indikatorkinerja_id').html(options)
+      //     }
+      //   }
+      // })
+      // $('#setRHKIndikator_id').modal('show');
+    }
+  }
+
+  let no = 1;
+
+  const loadDataRHKUtama = async (jenis=1) => {
+    // 1: Utama, 2: Tambahan
+    await $.ajax({
+      url: "{% url 'admin:skp_rencarahasilkerja_get_by_skp' obj.id %}",
+      type: 'GET',
+      data: {
+        jenis: jenis
+      },
+      success: function(response){
+        console.log({response})
+        if(response.length > 0){
+          let html_ = `<tr class="bg-dark">
+                        {% if obj.jenis_jabatan != 1 %}
+                        <td colspan="6">
+                        {% else %}
+                        <td colspan="5">
+                        {% endif %}
+                          <span class="font-weight-bold text-white">Utama<span>
+                        </td>
+                      </tr>`
+          response.map((item, index) => {
+            let indikator =  '';
+            if (item.indikator.length > 0){
+              item.indikator.map(item_indikator => {
+                indikator += `
+                <tr>
+                  {% if obj.jenis_jabatan == 1 %}
+                  <td>${item_indikator.perspektif ? item_indikator.perspektif : '-'}</td>
+                  {% else %}
+                  <td>${item_indikator.aspek ? item_indikator.aspek : '-'}</td>
+                  {% endif %}
+                  <td>
+                    <span>${item_indikator.indikator}</span>
+                    {% if obj.status == 1 %}
+                    <div class="d-flex justify-content-center mt-3">
+                      <a href="#" class="btn btn-icon btn-warning mr-1">
+                        <i class="flaticon2-pen"></i>
+                      </a>
+                      <a href="#" class="btn btn-icon btn-danger">
+                        <i class="flaticon-delete-1"></i>
+                      </a>
+                    </div>
+                    {% endif %}
+                  </td>
+                  <td>${item_indikator.target}</td>
+                </tr>
+                `
+              })
+            } else {
+              indikator += `
+              <tr>
+                <td colspan="3">
+                  <button class="btn btn-sm btn-light-primary btn-block" data-rhk_id="${item.id}" onclick="set_rhk_indikator($(this))">Add Indikator</button>
+                </td>
+              </tr>
+              `
             }
-						
 
-						if($('#result_list tbody tr[data-status=unload], td[data-status=unload]').length > 0){
-							if($('#result_list tbody tr[data-status=unload], td[data-status=unload]').eq(0).data('url')!= 'undefined'){
-								getData($('#result_list tbody tr[data-status=unload], td[data-status=unload]').eq(0));
-							}
-						}
-					},
-					error: function(e){
-						elemen_.attr('data-status', 'loaded')
-						count_data += 1
-						start_ = end_
-						end_ = Math.round(count_data / total_data * 100)
+            // indikator += `
+            //   <tr>
+            //     <td colspan="3"></td>
+            //     <td colspan="3">
+            //       <button class="btn btn-sm btn-primary btn-block" data-rhk_id="${item.id}" onclick="set_rhk_indikator($(this))">Pilih Indikator</button>
+            //     </td>
+            //   </tr>
+            // `
+            
+            if (item.indikator.length > 0){
+              indikator += `
+                {% if obj.status == 1 %}
+                <tr>
+                  <td colspan="3">
+                    <button class="btn btn-sm btn-light-primary btn-block" data-rhk_id="${item.id}" onclick="set_rhk_indikator($(this))">Add Indikator</button>
+                  </td>
+                </tr>
+                {% endif %}
+              `
+            }
 
-						if($('#result_list tbody tr[data-status=unload], td[data-status=unload]').length > 0){
-							if($('#result_list tbody tr[data-status=unload], td[data-status=unload]').eq(0).data('url')!= 'undefined'){
-								getData($('#result_list tbody tr[data-status=unload], td[data-status=unload]').eq(0));
-							}
-						}
-					}
-				})
-			}
-		}
+            let induk_elem = `
+                <td rowspan="${item.indikator.length+2}">
+                  ${item?.induk ? item.induk.rencana_kerja : ''}
+                  {% if obj.status == 1 %}
+                  <button type="button" class="btn btn-sm btn-block btn-light-success font-weight-bold" data-rhk_id="${item.id}" onclick="onOpenModalRHKPimpinan($(this))">Set RHK Pimpinan</button>  
+                  {% endif %}
+                </td>
+              `
 
-		if($('#result_list tbody tr[data-status=unload], td[data-status=unload]').length > 0){
-			if($('#result_list tbody tr[data-status=unload], td[data-status=unload]').eq(0).data('url')!= 'undefined'){
-				getData($('#result_list tbody tr[data-status=unload], td[data-status=unload]').eq(0));
-			}
-		}
+            html_ += `
+              <tr>
+                <td rowspan="${item.indikator.length+2}">${no}</td>
+                {% if obj.jenis_jabatan != 1 %}${induk_elem}{% endif %}
+                <td rowspan="${item.indikator.length+2}">${item.rencana_kerja}</td>
+              </tr>
+              ${indikator}
+            `
+            // <tr>
+            //     <td colspan="3"></td>
+            //     <td colspan="3"></td>
+            //   </tr>
+            no += 1;
+          })
+          $('#result_list > tbody').html(html_);
+        }
+      }
+    })
+  }
+
+  const loadDataRHKTambahan = async () => {
+    await $.ajax({
+      url: "{% url 'admin:skp_rencarahasilkerja_get_by_skp' obj.id %}",
+      type: 'GET',
+      data: {
+        jenis: 2
+      },
+      success: function(response){
+        console.log({response})
+        if(response.length > 0){
+          let html_ = `<tr class="bg-dark">
+                        {% if obj.jenis_jabatan != 1 %}
+                        <td colspan="6">
+                        {% else %}
+                        <td colspan="5">
+                        {% endif %}
+                          <span class="font-weight-bold text-white">Tambahan<span>
+                        </td>
+                      </tr>`
+          response.map((item, index) => {
+            let indikator =  '';
+            if (item.indikator.length > 0){
+              item.indikator.map(item_indikator => {
+                indikator += `
+                <tr>
+                  {% if obj.jenis_jabatan == 1 %}
+                  <td>${item_indikator.perspektif ? item_indikator.perspektif : '-'}</td>
+                  {% else %}
+                  <td>${item_indikator.aspek ? item_indikator.aspek : '-'}</td>
+                  {% endif %}
+                  <td>
+                    <span>${item_indikator.indikator}</span>
+                    {% if obj.status == 1 %}
+                    <div class="d-flex justify-content-center mt-3">
+                      <a href="#" class="btn btn-icon btn-warning mr-1">
+                        <i class="flaticon2-pen"></i>
+                      </a>
+                      <a href="#" class="btn btn-icon btn-danger">
+                        <i class="flaticon-delete-1"></i>
+                      </a>
+                    </div>
+                    {% endif %}
+                  </td>
+                  <td>${item_indikator.target}</td>
+                </tr>
+                `
+              })
+            } else {
+              indikator += `
+              <tr>
+                <td colspan="3">
+                  <button class="btn btn-sm btn-light-primary btn-block" data-rhk_id="${item.id}" onclick="set_rhk_indikator($(this))">Add Indikator</button>
+                </td>
+              </tr>
+              `
+            }
+
+            if (item.indikator.length > 0){
+              indikator += `
+                {% if obj.status == 1 %}
+                <tr>
+                  <td colspan="3">
+                    <button class="btn btn-sm btn-light-primary btn-block" data-rhk_id="${item.id}" onclick="set_rhk_indikator($(this))">Add Indikator</button>
+                  </td>
+                </tr>
+                {% endif %}
+              `
+            }
+
+            let induk_elem = `
+                <td rowspan="${item.indikator.length+2}">
+                  ${item?.induk ? item.induk.rencana_kerja : ''}
+                  {% if obj.status == 1 %}
+                  <button type="button" class="btn btn-sm btn-block btn-light-success font-weight-bold" data-rhk_id="${item.id}" onclick="onOpenModalRHKPimpinan($(this))">Set RHK Pimpinan</button>  
+                  {% endif %}
+                </td>
+              `
+
+            html_ += `
+              <tr>
+                <td rowspan="${item.indikator.length+2}">${no}</td>
+                {% if obj.jenis_jabatan != 1 %}${induk_elem}{% endif %}
+                <td rowspan="${item.indikator.length+2}">${item.rencana_kerja} ${item.penugasan_dari ? `(Penugasan dari ${item.penugasan_dari})` : ''}</td>
+              </tr>
+              ${indikator}
+            `
+            no += 1;
+          })
+          $('#result_list > tbody').append(html_);
+        }
+      }
+    });
+  }
+
+  const loadIndikatorRHKNone = async () => {
+    await $.ajax({
+      url: "{% url 'admin:skp_indikator_get_by_skp' obj.id %}",
+      type: 'GET',
+      success: function(response){
+        console.log({response})
+        if (response.length > 0){
+          let html_ = '';
+          response.map(item => {
+            html_ += `
+              <tr>
+                <td colspan="3"></td>
+                <td>${item.aspek}</td>
+                <td>${item.indikator}</td>
+                <td>${item.target}</td>
+              </tr>
+            `
+          })
+          $('#result_list > tbody').append(html_);
+        }
+      }
+    })
+  }
+
+  const onOpenModalRHKPimpinan = (elem) => {
+    console.log('modal_set_rhk_pimpinan_id')
+    let rhk_id = elem.data('rhk_id');
+    let modal = $('#modal_set_rhk_pimpinan_id')
+    
+    if(typeof rhk_id !== "undefined"){
+      modal.find('input[name=rhk_id]').val(rhk_id)
+      $.ajax({
+        url: '{% url "admin:skp_rencanahasilkerja_loadrhkpimpinan" %}',
+        type: 'GET',
+        success: function(response){
+          console.log({response})
+          if(response.length > 0){
+            let options = '<option value="0">Pilih RHK Pimpinan</option>'
+            response.map(item => {
+              options += `
+              <option value="${item.id}">${item.rencana_kerja}</option>
+              `
+            })
+            modal.find('select[name=rhk_pimpinan]').html(options);
+          }
+        }
+      })
+      modal.modal('show')
+    }
+  }
+
+  const set_rhk_pimpinan = () => {
+    let modal = $('#modal_set_rhk_pimpinan_id')
+    let rhk_id = modal.find('input[name=rhk_id]').val()
+    let rhk_pimpinan_id = modal.find('select[name=rhk_pimpinan]').val()
+    $.ajax({
+      url: '{% url "admin:skp_rencanahasilkerja_set_rhk_pimpinan" %}',
+      type: 'GET',
+      data: {
+        rhk_id: rhk_id,
+        rhk_pimpinan_id: rhk_pimpinan_id
+      },
+      success: function(response){
+        console.log({response})
+        if(response.success){
+          toastr.success('Berhasil menambahkan rhk pimpinan');
+          window.location.reload()
+        } else {
+          toastr.warning('Terjadi kesalahan');
+        }
+      }
+    })
+  }
+
+  const startLoad = () => {
+    loadDataRHKUtama().then(() => {
+      // loadIndikatorRHKNone()
+      loadDataRHKTambahan()
+    })
+  }
+
+  $(function(){
+    startLoad()
+  })
+
+
+  const handleSaveRHK = () => {
+    let modal = $('#tambahrhk');
+    klasifikasi = modal.find('select[name=klasifikasi]').val(),
+    unitkerja = modal.find('select[name=klasifikasi]').val()
+    let formData = {
+      skp_id: '{{ obj.id }}',
+      klasifikasi: klasifikasi,
+      jenis: modal.find('select[name=jenis]').val(),
+      rencana_kerja: modal.find('input[name=rencana_kerja]').val(),
+      penugasan_dari: modal.find('input[name=penugasan_dari]').val(),
+      csrfmiddlewaretoken: modal.find('input[name=csrfmiddlewaretoken]').val(),
+    }
+
+    if (klasifikasi == 1 || klasifikasi == "1"){
+      formData = {...formData, unitkerja: unitkerja}
+    }
+
+    $.ajax({
+      url: "{% url 'admin:skp_rencanahasilkerja_action_add_or_change' %}",
+      type: 'POST',
+      data: formData,
+      success: function(response){
+        console.log({response})
+        if(response.success){
+          toastr.success('Berhasil menambahkan rhk pimpinan');
+          window.location.reload()
+        }else{
+          toastr.warning('Terjadi kesalahan');
+        }
+      },
+      error: function(error){
+        console.log({error})
+        toastr.warning('Terjadi kesalahan server');
+      }
+    })
+  }
+
+  $('#btn_action_sinkron_ekinerja_id').on('click', function(){
+    $.ajax({
+      url: '{% url "admin:skp_sasarankinerja_sinkron" obj.id %}',
+      type: 'GET',
+      success: function(response){
+        console.log({response})
+        if (response.success){
+          toastr.success("Berhasil menambahkan atasan");
+          window.location.reload()
+        } else {
+          toastr.warning("Terjadi kesalahan");
+        }
+      },
+      error: function(error){
+        console.log({error})
+        toastr.warning("Terjadi kesalahan server");
+      }
+    })
   })
 </script>
 {% endblock custom_js %}
