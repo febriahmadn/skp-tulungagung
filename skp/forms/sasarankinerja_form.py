@@ -72,7 +72,9 @@ class SasaranKinerjaForm(forms.ModelForm):
 
         if user.atasan:
             self.fields["pejabat_penilai"].initial = user.atasan.id
-            self.fields["pejabat_penilai"].queryset = Account.objects.filter(id=user.atasan.id)
+            self.fields["pejabat_penilai"].queryset = Account.objects.filter(
+                id=user.atasan.id
+            )
             self.fields["pejabat_penilai"].widget = forms.HiddenInput()
 
             self.fields["nama_atasan"].initial = user.atasan.get_complete_name

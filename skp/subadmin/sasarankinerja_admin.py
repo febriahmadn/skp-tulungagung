@@ -1,16 +1,19 @@
 import requests
-from django.contrib import admin, messages
+from django.contrib import admin
 from django.utils.safestring import mark_safe
-from django.urls import resolve, path, reverse_lazy, reverse
-from django.template import loader
-from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import resolve, path, reverse_lazy
+from django.http import JsonResponse
+from django.shortcuts import render, get_object_or_404
 
 from services.models import Configurations
-from skp.forms.sasarankinerja_form import SasaranKinerjaForm, SKPForm
-from skp.forms.rhk_form import RHKJFJAForm, RHKJPTForm
-from skp.forms.indikator_kinerja_form import IndikatorForm
-from skp.models import SasaranKinerja, RencanaHasilKerja, DetailSasaranKinerja, IndikatorKinerjaIndividu, PerilakuKerja, Perspektif
+from skp.forms.sasarankinerja_form import SasaranKinerjaForm
+from skp.models import (
+    SasaranKinerja,
+    RencanaHasilKerja,
+    DetailSasaranKinerja,
+    PerilakuKerja,
+    Perspektif,
+)
 
 
 class SasaranKinerjaAdmin(admin.ModelAdmin):
@@ -149,7 +152,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
             "pegawai": obj.pegawai,
             "penilai": obj.pejabat_penilai,
             "perilaku_kerja_list": perilaku_kerja_list,
-            "perspektif_list": Perspektif.objects.all()
+            "perspektif_list": Perspektif.objects.all(),
         }
         return render(
             request, "admin/skp/sasarankinerja/detail_skp.html", extra_context
@@ -165,25 +168,25 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
             config = Configurations.get_solo()
             # print(config.ekinerja_url)
             # print(config.ekinerja_token)
-            url = '{}/api/kinerja-pegawai/'.format(config.ekinerja_url)
-            headers = {'Authorization': 'Token {}'.format(config.ekinerja_token)}
-            params = {'nip': obj.pegawai.username, 'tahun': 2022}
+            url = "{}/api/kinerja-pegawai/".format(config.ekinerja_url)
+            headers = {"Authorization": "Token {}".format(config.ekinerja_token)}
+            params = {"nip": obj.pegawai.username, "tahun": 2022}
             fetch_kinerja = requests.get(url, headers=headers, params=params)
             if fetch_kinerja.ok:
                 respon_json = fetch_kinerja.json()
                 # print(respon_json)
-                results = respon_json.get('results', [])
+                results = respon_json.get("results", [])
                 if len(results) > 0:
-                    create = 0
-                    update = 0
+                    # create = 0
+                    # update = 0
                     for item in results:
                         # print(item)
-                        uraianobj = item.get('uraianaktifitas', None)
+                        uraianobj = item.get("uraianaktifitas", None)
                         if uraianobj:
-                            uraian_id = uraianobj.get('id', None)
-                            uraian = uraianobj.get('uraian', None)
-                            satuan = uraianobj.get('satuan', None)
-                            target = uraianobj.get('target', None)
+                            uraian_id = uraianobj.get("id", None)
+                            uraian = uraianobj.get("uraian", None)
+                            # satuan = uraianobj.get("satuan", None)
+                            # target = uraianobj.get("target", None)
 
                             # indikator_list = IndikatorKinerjaIndividu.objects.filter(
                             #     skp=obj,
@@ -210,7 +213,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                             )
                             if rhk_list.exists():
                                 # update
-                                print('update')
+                                print("update")
                                 # rhk = rhk_list.last()
                                 # rhk.save()
                             else:
@@ -221,7 +224,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                                     klasifikasi=1,
                                     rencana_kerja=uraian,
                                 )
-                                print('create')
+                                print("create")
 
                             # if rhk:
                             #     indikator_obj = IndikatorKinerjaIndividu(
@@ -231,14 +234,17 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                             #     )
                             #     indikator_obj.save()
                             #     print("create")
-                        
-                    respon = {'success': True, 'message': 'Berhasil mensinkronkan dengan ekinerja'}
+
+                    respon = {
+                        "success": True,
+                        "message": "Berhasil mensinkronkan dengan ekinerja",
+                    }
         return JsonResponse(respon)
 
     def action_change_status_skp(self, request):
-        respon = {'success': False}
-        skp_id = request.GET.get('skp_id', None)
-        status = request.GET.get('status', None)
+        respon = {"success": False}
+        skp_id = request.GET.get("skp_id", None)
+        status = request.GET.get("status", None)
         try:
             obj = SasaranKinerja.objects.get(id=skp_id)
         except SasaranKinerja.DoesNotExist:
@@ -251,32 +257,52 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                 except Exception:
                     pass
                 else:
-                    respon = {'success': True}
+                    respon = {"success": True}
         return JsonResponse(respon)
 
     def view_changelist_penilaian_skp(self, request):
-        extra_context = {
-			'title': 'Penilaian SKP Pegawai'
-		}
+        extra_context = {"title": "Penilaian SKP Pegawai"}
         return super().changelist_view(request, extra_context)
 
     def view_cetak_skp_pegawai(self, request, obj_id):
         obj = get_object_or_404(SasaranKinerja, pk=obj_id)
         extra_context = {
-            'obj': obj,
-            'title': 'Cetak SKP {} [{}]'.format(obj.pegawai.username, obj.get_periode()),
-            'perilakukerja_list': PerilakuKerja.objects.filter(is_active=True)
+            "obj": obj,
+            "title": "Cetak SKP {} [{}]".format(
+                obj.pegawai.username, obj.get_periode()
+            ),
+            "perilakukerja_list": PerilakuKerja.objects.filter(is_active=True),
         }
-        return render(request, 'admin/skp/sasarankinerja/cetak.html', extra_context)
+        return render(request, "admin/skp/sasarankinerja/cetak.html", extra_context)
 
     def get_urls(self):
         admin_url = super(SasaranKinerjaAdmin, self).get_urls()
         custom_url = [
-            path('penilaian', self.admin_site.admin_view(self.view_changelist_penilaian_skp), name="skp_sasarankinerja_changelist_penilaian"),
-            path('<int:id>/detail', self.admin_site.admin_view(self.view_detail_skp), name="detail-skp"),
-            path('<int:obj_id>/cetak', self.admin_site.admin_view(self.view_cetak_skp_pegawai), name="skp_sasarankinerja_cetak"),
-            path('<int:obj_id>/sinkron', self.admin_site.admin_view(self.action_sinkron_ekinerja), name='skp_sasarankinerja_sinkron'),
-            path('change-status', self.admin_site.admin_view(self.action_change_status_skp), name='skp_sasarankinerja_changestatus'),
+            path(
+                "penilaian",
+                self.admin_site.admin_view(self.view_changelist_penilaian_skp),
+                name="skp_sasarankinerja_changelist_penilaian",
+            ),
+            path(
+                "<int:id>/detail",
+                self.admin_site.admin_view(self.view_detail_skp),
+                name="detail-skp",
+            ),
+            path(
+                "<int:obj_id>/cetak",
+                self.admin_site.admin_view(self.view_cetak_skp_pegawai),
+                name="skp_sasarankinerja_cetak",
+            ),
+            path(
+                "<int:obj_id>/sinkron",
+                self.admin_site.admin_view(self.action_sinkron_ekinerja),
+                name="skp_sasarankinerja_sinkron",
+            ),
+            path(
+                "change-status",
+                self.admin_site.admin_view(self.action_change_status_skp),
+                name="skp_sasarankinerja_changestatus",
+            ),
             # path("skpdata/", self.view_custom, name="list_skp_admin"),
             # path("skpdata/add/", self.add_skp, name="add_skp_admin"),
         ]

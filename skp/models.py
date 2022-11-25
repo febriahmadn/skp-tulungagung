@@ -56,7 +56,7 @@ class SasaranKinerja(models.Model):
 
     def get_rencanakerja_utama(self):
         return self.rencanahasilkerja_set.filter(jenis=1).order_by('id', 'induk')
-    
+
     def get_rencanakerja_tambahan(self):
         return self.rencanahasilkerja_set.filter(jenis=2).order_by('id', 'induk')
 
