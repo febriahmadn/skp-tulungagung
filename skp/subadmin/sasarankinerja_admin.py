@@ -283,9 +283,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         return custom_url + admin_url
 
     def save_model(self, request, obj, form, change):
-        print("savemodel")
         if not change:
-            print("masuk sini")
             obj.save()
             # Create
             try:
@@ -294,6 +292,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                     nama_pegawai=obj.pegawai.get_complete_name(),
                     nip_pegawai=obj.pegawai.username,
                     jabatan_pegawai=obj.pegawai.jabatan,
+                    golongan_pegawai=obj.pegawai.golongan,
                     unor_pegawai=obj.pegawai.unitkerja.unitkerja,
                     nama_pejabat=obj.pegawai.atasan.get_complete_name(),
                     nip_pejabat=obj.pegawai.atasan.username,

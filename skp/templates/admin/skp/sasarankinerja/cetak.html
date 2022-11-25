@@ -124,7 +124,14 @@
                 <th>RENCANA HASIL KERJA</th>
                 <th>INDIKATOR KINERJA INDIVIDU</th>
                 <th>TARGET</th>
-                <th>PERSPEKTIF</th>
+                <th>
+                    {% if obj.jenis_jabatan != 1 %}
+                    ASPEK
+                    {% else %}
+                    PERSPEKTIF
+                    {% endif %}
+
+                </th>
             </tr>
             {% endif %}
             <tr class="bg-blue">
