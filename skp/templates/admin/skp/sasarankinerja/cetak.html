@@ -1,4 +1,4 @@
-{% load static %}
+{% load static skp_template %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -42,7 +42,8 @@
         }
     </style>
 </head>
-<body onload="window.print();">
+<!-- <body onload="window.print();"> -->
+<body>
     <div class="contents">
         <div style="text-align: center; margin: 20px;">
             <h4 class="m-0">SASARAN KINERJA PEGAWAI</h4>
@@ -151,28 +152,63 @@
                 <th colspan="5" align="left">UTAMA</th>
                 {% endif %}
             </tr>
-            {% for utama in obj.get_rencanakerja_utama %}
-            {% with count_indikator=utama.indikatorkinerjaindividu_set.all.count|add:"1" %}
-            <tr>
-                <td rowspan="{{count_indikator}}" style="vertical-align: top; text-align: center;">{{ forloop.counter }}</td>
-                {% if obj.jenis_jabatan != 1 %}
-                <td rowspan="{{count_indikator}}" style="vertical-align: top;">{{ utama.induk.rencana_kerja }}</td>
-                {% endif %}
-                <td rowspan="{{count_indikator}}" style="vertical-align: top;">{{ utama.rencana_kerja }} {% if utama.penugasan_dari %}(Penugasan dari {{ utama.penugasan_dari|default:'-' }}){% endif %}</td>
-            </tr>
-            {% endwith %}
-            {% for indikator in utama.indikatorkinerjaindividu_set.all %}
-            <tr>
-                <td>{{ indikator.indikator }}</td>
-                <td>{{ indikator.target }}</td>
-                {% if obj.jenis_jabatan != 1 %}
-                <td>{{ indikator.aspek|default:'-' }}</td>
-                {% else %}
-                <td>{{ indikator.perspektif|default:'-' }}</td>
-                {% endif %}
-            </tr>
-            {% endfor %}
-            {% endfor %}
+
+            {% if obj.jenis_jabatan == 1 %}
+                {% for utama in obj.get_rencanakerja_utama %}
+                {% with count_indikator=utama.indikatorkinerjaindividu_set.all.count|add:"1" %}
+                <tr>
+                    <td rowspan="{{count_indikator}}" style="vertical-align: top; text-align: center;">{{ forloop.counter }}</td>
+                    {% if obj.jenis_jabatan != 1 %}
+                    <td rowspan="{{count_indikator}}" style="vertical-align: top;">{{ utama.induk.rencana_kerja }}</td>
+                    {% endif %}
+                    <td rowspan="{{count_indikator}}" style="vertical-align: top;">{{ utama.rencana_kerja }} {% if utama.penugasan_dari %}(Penugasan dari {{ utama.penugasan_dari|default:'-' }}){% endif %}</td>
+                </tr>
+                {% endwith %}
+                {% for indikator in utama.indikatorkinerjaindividu_set.all %}
+                <tr>
+                    <td>{{ indikator.indikator }}</td>
+                    <td>{{ indikator.target }}</td>
+                    {% if obj.jenis_jabatan != 1 %}
+                    <td>{{ indikator.aspek|default:'-' }}</td>
+                    {% else %}
+                    <td>{{ indikator.perspektif|default:'-' }}</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+                {% endfor %}
+            {% else %}
+                {% for utama in obj.get_rencanakerja_utama %}
+                {% with count_indikator=utama.indikatorkinerjaindividu_set.all.count|add:"1" %}
+                <tr>
+                    <td rowspan="{{count_indikator}}" style="vertical-align: top; text-align: center;">{{ forloop.counter }}</td>
+                    {% if obj.jenis_jabatan != 1 %}
+                    <td rowspan="{{count_indikator}}" style="vertical-align: top;">
+                        {% if utama.induk %}
+                        {% is_fisrt_parent obj.id utama.id utama.induk.id as fisrt_parent %}
+                        {% if fisrt_parent %}
+                        {{ utama.induk.rencana_kerja }}
+                        {% endif %}
+                        {% else %}
+                        -
+                        {% endif %}
+                    </td>
+                    {% endif %}
+                    <td rowspan="{{count_indikator}}" style="vertical-align: top;">{{ utama.rencana_kerja }} {% if utama.penugasan_dari %}(Penugasan dari {{ utama.penugasan_dari|default:'-' }}){% endif %}</td>
+                </tr>
+                {% endwith %}
+                {% for indikator in utama.indikatorkinerjaindividu_set.all %}
+                <tr>
+                    <td>{{ indikator.indikator }}</td>
+                    <td>{{ indikator.target }}</td>
+                    {% if obj.jenis_jabatan != 1 %}
+                    <td>{{ indikator.aspek|default:'-' }}</td>
+                    {% else %}
+                    <td>{{ indikator.perspektif|default:'-' }}</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+                {% endfor %}
+            {% endif %}
 
             <tr class="bg-blue">
                 {% if obj.jenis_jabatan != 1 %}
@@ -181,12 +217,22 @@
                 <th colspan="5" align="left">TAMBAHAN</th>
                 {% endif %}
             </tr>
+            
             {% for tambahan in obj.get_rencanakerja_tambahan %}
             {% with count_indikator=tambahan.indikatorkinerjaindividu_set.all.count|add:"1" %}
             <tr>
                 <td rowspan="{{count_indikator}}" style="vertical-align: top; text-align: center;">{{ forloop.counter }}</td>
                 {% if obj.jenis_jabatan != 1 %}
-                <td rowspan="{{count_indikator}}" style="vertical-align: top;">{{ tambahan.induk.rencana_kerja }}</td>
+                <td rowspan="{{count_indikator}}" style="vertical-align: top;">
+                    {% if tambahan.induk %}
+                    {% is_fisrt_parent obj.id tambahan.id tambahan.induk.id as fisrt_parent %}
+                    {% if fisrt_parent %}
+                    {{ tambahan.induk.rencana_kerja }}
+                    {% endif %}
+                    {% else %}
+                    -
+                    {% endif %}
+                </td>
                 {% endif %}
                 <td rowspan="{{count_indikator}}" style="vertical-align: top;">{{ tambahan.rencana_kerja }} {% if tambahan.penugasan_dari %}(Penugasan dari {{ tambahan.penugasan_dari|default:'-' }}){% endif %}</td>
             </tr>
