@@ -442,9 +442,8 @@
   // Action Archive SKP
   $('#action_archive_skp_id').on('click', function(){
     Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this",
-      icon: "warning",
+      title: "Apakan anda yakin ingin mengarsipkan SKP?",
+      icon: "info",
       showCancelButton: true,
       confirmButtonText: "Iya, Arsipkan!",
       cancelButtonText: "Tidak, Batalkan!",
@@ -482,8 +481,8 @@
           changeStatus(2)
           .then(() => {
             Swal.fire(
-              "Deleted!",
-              "Your file has been deleted.",
+              "Berhasil!",
+              "SKP Berhasil Diajukan",
               "success"
             )
             .then(() => {
@@ -494,8 +493,8 @@
           // "close", and "timer"
         } else if (result.dismiss === "cancel") {
           Swal.fire(
-            "Cancelled",
-            "Your imaginary file is safe :)",
+            "Batalkan",
+            "Pengajuan SKP Dibatalkan",
             "error"
           )
         }
