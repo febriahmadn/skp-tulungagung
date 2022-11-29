@@ -14,7 +14,12 @@ def view_dashboard(request):
     for i in range(2000, 2025):
         TAHUN.append({"id": i, "text": i})
     unor_list = UnitKerja.objects.filter(aktif=True)
-    extra_context = {"title": "Home", "tahun": TAHUN, "jenis": JENIS_STATISTIK, 'unitkerja':unor_list}
+    extra_context = {
+        "title": "Home",
+        "tahun": TAHUN,
+        "jenis": JENIS_STATISTIK,
+        'unitkerja': unor_list
+    }
     return render(request, "admin/dashboard.html", extra_context)
 
 
