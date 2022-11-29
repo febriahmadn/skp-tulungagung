@@ -278,6 +278,19 @@
                 {% endfor %}
             </tbody>
         </table>
+        <table>
+            <thead class="bg-blue">
+                <tr>
+                    <th colspan="5" align="left">LAMPIRAN</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in lampiran_list %}
+                <td colspan="5" class="bg-blue" >{{item.lampiran}}</td>
+                {% daftar_lampiran item.id obj.id "ya" %}
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </body>
 </html>

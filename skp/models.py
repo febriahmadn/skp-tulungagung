@@ -248,6 +248,12 @@ class Lampiran(models.Model):
 
 class DaftarLampiran(models.Model):
     lampiran = models.ForeignKey(Lampiran, on_delete=models.CASCADE)
+    skp = models.ForeignKey(
+        SasaranKinerja,
+        on_delete=models.CASCADE,
+        verbose_name="Sasaran Kinerja Pegawai",
+        null=True
+    )
     isi = models.TextField("Isi Lampiran", null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
 

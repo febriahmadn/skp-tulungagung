@@ -13,6 +13,7 @@ from skp.models import (
     DetailSasaranKinerja,
     PerilakuKerja,
     Perspektif,
+    Lampiran
 )
 
 
@@ -146,6 +147,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
     def view_detail_skp(self, request, id=None):
         obj = get_object_or_404(SasaranKinerja, pk=id)
         perilaku_kerja_list = PerilakuKerja.objects.filter(is_active=True)
+        lampiran_list = Lampiran.objects.filter(status=Lampiran.Status.ACTIVE)
         extra_context = {
             "title": "Detail SKP",
             "obj": obj,
@@ -153,6 +155,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
             "penilai": obj.pejabat_penilai,
             "perilaku_kerja_list": perilaku_kerja_list,
             "perspektif_list": Perspektif.objects.all(),
+            'lampiran': lampiran_list.order_by('id'),
         }
         return render(
             request, "admin/skp/sasarankinerja/detail_skp.html", extra_context
@@ -272,6 +275,9 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                 obj.pegawai.username, obj.get_periode()
             ),
             "perilakukerja_list": PerilakuKerja.objects.filter(is_active=True),
+            "lampiran_list": Lampiran.objects.filter(
+                status=Lampiran.Status.ACTIVE
+            ).order_by('id')
         }
         return render(request, "admin/skp/sasarankinerja/cetak.html", extra_context)
 
