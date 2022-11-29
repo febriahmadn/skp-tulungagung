@@ -151,25 +151,28 @@ class AccountAdmin(UserAdmin):
         try:
             obj = Account.objects.get(pk=id)
         except Account.DoesNotExist or Exception as e:
+            print(e)
             raise Http404
-        
+
         form = EditProfilPegawai(instance=obj)
         if request.POST:
             form = EditProfilPegawai(request.POST, instance=obj)
             if form.is_valid():
                 form.save()
-                messages.success(request,"Berhasil merubah {}".format(obj.get_complete_name()))
+                messages.success(request, "Berhasil merubah {}".format(
+                    obj.get_complete_name()
+                ))
             else:
                 print(form.errors)
                 messages.error(request, form.errors)
-                   
+
         extra_context = {
             "title": "Edit Profile ({})".format(request.user.username),
             "title_sort": "Edit Profile",
             # "golongan_list": Account.GOLONGAN,
             # "unor_list": UnitKerja.objects.filter(aktif=True),
-            'obj':obj,
-            'form':form
+            'obj': obj,
+            'form': form
         }
         return render(request, "admin/usom/account/profile_edit.html", extra_context)
 

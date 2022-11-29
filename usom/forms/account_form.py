@@ -65,11 +65,7 @@ class AccountForm(forms.ModelForm):
             )
 
 class EditProfilPegawai(forms.ModelForm):
-    # email = 
-    # unor = 
-    # jabatan = 
-    # golongan = 
-    
+
     class Meta:
         model = Account
         fields = [
