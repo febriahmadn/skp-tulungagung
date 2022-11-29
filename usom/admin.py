@@ -1,12 +1,12 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.contrib.auth.admin import UserAdmin
 from django.db.models import Q
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.shortcuts import render
 from django.urls import path, reverse
 from django.utils.safestring import mark_safe
 
-from usom.forms import AccountForm
+from usom.forms import AccountForm, EditProfilPegawai
 from usom.models import Account, UnitKerja
 
 
@@ -147,12 +147,29 @@ class AccountAdmin(UserAdmin):
         #     })
         return render(request, "admin/usom/account/profile.html", extra_context)
 
-    def view_pegawai_edit_profile(self, request):
+    def view_pegawai_edit_profile(self, request, id):
+        try:
+            obj = Account.objects.get(pk=id)
+        except Account.DoesNotExist or Exception as e:
+            raise Http404
+        
+        form = EditProfilPegawai(instance=obj)
+        if request.POST:
+            form = EditProfilPegawai(request.POST, instance=obj)
+            if form.is_valid():
+                form.save()
+                messages.success(request,"Berhasil merubah {}".format(obj.get_complete_name()))
+            else:
+                print(form.errors)
+                messages.error(request, form.errors)
+                   
         extra_context = {
             "title": "Edit Profile ({})".format(request.user.username),
             "title_sort": "Edit Profile",
-            "golongan_list": Account.GOLONGAN,
-            "unor_list": UnitKerja.objects.filter(aktif=True),
+            # "golongan_list": Account.GOLONGAN,
+            # "unor_list": UnitKerja.objects.filter(aktif=True),
+            'obj':obj,
+            'form':form
         }
         return render(request, "admin/usom/account/profile_edit.html", extra_context)
 
@@ -202,7 +219,7 @@ class AccountAdmin(UserAdmin):
                 name="usom_account_profile",
             ),
             path(
-                "profile/edit",
+                "profile/<int:id>/edit",
                 self.admin_site.admin_view(self.view_pegawai_edit_profile),
                 name="usom_account_profile_edit",
             ),

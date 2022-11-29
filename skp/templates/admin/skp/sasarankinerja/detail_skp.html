@@ -446,16 +446,16 @@
       text: "You won't be able to revert this",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Yes, delete it!",
-      cancelButtonText: "No, cancel!",
+      confirmButtonText: "Iya, Arsipkan!",
+      cancelButtonText: "Tidak, Batalkan!",
       reverseButtons: true
     }).then(function(result) {
       if (result.value) {
         changeStatus(5)
         .then(() => {
           Swal.fire(
-            "Deleted!",
-            "Your file has been deleted.",
+            "Arsipkan",
+            "Sasaran Kinerja Berhasil diarsipkan",
             "success"
           )
           .then(() => {
@@ -464,12 +464,6 @@
         })
         // result.dismiss can be "cancel", "overlay",
         // "close", and "timer"
-      } else if (result.dismiss === "cancel") {
-        Swal.fire(
-          "Cancelled",
-          "Your imaginary file is safe :)",
-          "error"
-        )
       }
     });
   })
@@ -477,12 +471,11 @@
   // Action Submit / Ajukan SKP
   $('#action_ajukan_skp_id').on('click', function(){
     Swal.fire({
-        title: "Are you sure?",
-        text: "You won't be able to revert this",
-        icon: "warning",
+        title: "Apakah Anda yakin ingin mengajukan SKP ini?",
+        icon: "info",
         showCancelButton: true,
-        confirmButtonText: "Yes, delete it!",
-        cancelButtonText: "No, cancel!",
+        confirmButtonText: "Iya, Ajukan",
+        cancelButtonText: "Tidak, Batalkal!",
         reverseButtons: true
     }).then(function(result) {
         if (result.value) {
@@ -910,13 +903,13 @@
   }
   const delete_lampiran = (url) => {
     Swal.fire({
-      title: 'Are you sure?',
-      text: "You won't be able to revert this!",
+      title: 'Apakah anda yakin ingin menghapus lampiran ini?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!'
+      confirmButtonText: "Iya, Hapus",
+      cancelButtonText: "Tidak, Batalkal!",
     }).then((result) => {
       if (result.isConfirmed) {
         $.ajax({
@@ -1033,7 +1026,7 @@
       success: function(response){
         console.log({response})
         if (response.success){
-          toastr.success("Berhasil menambahkan atasan");
+          toastr.success("berhasil sinkron dengan e-kinerja");
           window.location.reload()
         } else {
           toastr.warning("Terjadi kesalahan");
