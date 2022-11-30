@@ -30,11 +30,11 @@ def daftar_lampiran(lampiran_id, skp_id, cetak):
                 <button type="button" data-jenis="ubah" data-id="{}"
                 data-judul="{}" class="btn btn-icon btn-warning btn-sm"
                 data-toggle="modal" data-target="#modal_tambah_lampiran">
-                  <i class="fas fa-edit" ></i>
+                    <i class="flaticon2-pen"></i>
                 </button>
                 <a onclick="delete_action('{}')"
                     class="ml-2 btn btn-icon btn-danger btn-sm">
-                  <i class="fas fa-trash-alt"></i>
+                        <i class="flaticon-delete-1"></i>
                 </a>
             </div>
             '''.format(
