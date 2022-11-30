@@ -27,6 +27,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         "periode_awal",
         "periode_akhir",
         "pendekatan",
+        "keterangan",
         "status",
     )
     form = SasaranKinerjaForm
@@ -85,6 +86,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                 "pendekatan",
                 "jabatan",
                 "status",
+                "keterangan",
                 "Aksi",
             )
             self.list_filter = ("pendekatan", "status")
@@ -102,6 +104,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                 "pendekatan",
                 "jabatan",
                 "status",
+                "keterangan",
                 "Aksi",
             )
             self.list_filter = []
@@ -112,6 +115,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                 "pendekatan",
                 "jabatan",
                 "status",
+                "keterangan",
                 "Aksi",
             )
             self.list_filter = ["pendekatan", "status"]
