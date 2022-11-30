@@ -73,7 +73,7 @@ class IndikatorAdmin(admin.ModelAdmin):
         obj.aspek = aspek
         obj.indikator = indikator
         obj.target = target
-        
+
         if perspektif:
             if perspektif != "0" or perspektif != 0:
                 obj.perspektif_id = perspektif
