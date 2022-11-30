@@ -1,5 +1,5 @@
 {% extends "admin/base_site.html" %}
-{% load i18n %}
+{% load i18n widgets %}
 
 
 {% block breadcrumbs %}
@@ -20,46 +20,38 @@
 {% endblock %}
 
 {% block content %}
-<div class="container">
-  <div class="row">
+<!-- <div class="container"> -->
+  <!-- <div class="row"> -->
     <div class="col-md-8 col-sm-12">
       <div class="card">
-        <div class="card-body p-3">
-          <form>
-            <div class="form-group">
-              <label for="email_id">Email</label>
-              <input type="text" class="form-control" id="email_id">
-            </div>
-            <div class="form-group">
-              <label for="unor_id">Unor</label>
-              <select name="unor" id="unor_id" class="form-control">
-                <option value="0">Pilih Unor</option>
-                {% for item in unor_list %}
-                <option value="{{ item.pk }}">{{ item.unitkerja }}</option>
-                {% endfor %}
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="jabatan_id">Jabatan</label>
-              <input type="text" class="form-control" id="jabatan_id">
-            </div>
-            <div class="form-group">
-              <label for="golongan_id">Golongan</label>
-              <select name="golongan" id="golongan_id" class="form-control">
-                <option value="0">Pilih Golongan</option>
-                {% for item in golongan_list %}
-                <option value="{{ item.0 }}">{{ item.1 }}</option>
-                {% endfor %}
-              </select>
-            </div>
-          </form>
+        <form method="post" >
+        <div class="card-body p-5">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="mb-3 form-{{field.name}} {% if field.is_hidden %}field-hidden{% endif %}">
+                {% if field|is_bool %}
+                {{field}}
+                <label for="{{field.auto_id}}" class="form-label {% if field.field.required %}required{% endif %}">{{ field.label }}</label>
+                {% elif field|is_select %}
+                <label for="{{field.id}}" class="form-label {% if field.field.required %}required{% endif %}">{{ field.label }}</label>
+                {{ field|addcls:'form-control' }}
+                {% else %}
+                <label for="{{field.id}}" class="form-label {% if field.field.required %}required{% endif %}">{{ field.label }}</label>
+                {{ field|addcls:'form-control form-control-sm' }}
+                {% endif %}
+                {% if field.field.help_text %}
+                <div id="{{field.id}}" style="font-weight: bolder;" class="form-text">{{field.field.help_text}}</div>
+                {% endif %}
+              </div>
+        {% endfor %}
+          </div>
+          <div class="card-footer p-5">
+            <button type="submit" class="btn btn-sm btn-warning"><i class="fas fa-edit" ></i> Ubah</button>
+            <a href="{% url 'admin:usom_account_profile' %}" class="btn btn-sm btn-success"><i class="fas fa-chevron-left"></i> Kembali</a>
+          </div>
         </div>
-        <div class="card-footer p-3">
-          <button type="submit" class="btn btn-sm btn-primary">Submit</button>
-          <button type="button" class="btn btn-sm btn-secondary">Kembali</button>
-        </div>
-      </div>
+      </form>
     </div>
-  </div>
-</div>
+  <!-- </div> -->
+<!-- </div> -->
 {% endblock %}

@@ -63,3 +63,14 @@ class AccountForm(forms.ModelForm):
             self.fields["atasan"].queryset = Account.objects.all().exclude(
                 pk=self.instance.pk
             )
+
+class EditProfilPegawai(forms.ModelForm):
+
+    class Meta:
+        model = Account
+        fields = [
+            'email',
+            'unitkerja',
+            'jabatan',
+            'golongan'
+        ]

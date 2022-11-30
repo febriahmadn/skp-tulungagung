@@ -53,25 +53,47 @@ class IndikatorAdmin(admin.ModelAdmin):
 
     def action_save_indikator_rhk(self, request):
         respon = {"success": False}
+        indikator_id = request.POST.get("indikator_id", None)
         rhk_id = request.POST.get("rhk_id", None)
         aspek = request.POST.get("aspek", None)
         perspektif = request.POST.get("perspektif", None)
         indikator = request.POST.get("indikator", None)
         target = request.POST.get("target", None)
-        try:
-            obj = IndikatorKinerjaIndividu.objects.create(
+
+        if indikator_id and indikator_id != "":
+            try:
+                obj = IndikatorKinerjaIndividu.objects.get(pk=indikator_id)
+            except IndikatorKinerjaIndividu.DoesNotExist:
+                respon = {"success": False}
+                return JsonResponse(respon, safe=False)
+        else:
+            obj = IndikatorKinerjaIndividu(
                 rencana_kerja_id=rhk_id,
-                aspek=aspek,
-                indikator=indikator,
-                target=target,
             )
-            if perspektif:
-                if perspektif != "0" or perspektif != 0:
-                    obj.perspektif_id = perspektif
-                    obj.save()
-            respon = {"success": True}
+        obj.aspek = aspek
+        obj.indikator = indikator
+        obj.target = target
+
+        if perspektif:
+            if perspektif != "0" or perspektif != 0:
+                obj.perspektif_id = perspektif
+        obj.save()
+        respon = {"success": True}
+        return JsonResponse(respon, safe=False)
+
+    def indikator_delete(self, reqeust, id):
+        respon = {'success': False, 'pesan': "Terjadi kesalahan sistem"}
+        try:
+            obj = IndikatorKinerjaIndividu.objects.get(pk=id)
+        except IndikatorKinerjaIndividu.DoesNotExist:
+            respon = {'success': False, 'pesan': "Indikator Tidak Ditemukan"}
+            return JsonResponse(respon, safe=False)
         except Exception as e:
-            print(e)
+            respon = {'success': False, 'pesan': str(e)}
+            return JsonResponse(respon, safe=False)
+        else:
+            obj.delete()
+            respon = {'success': True, 'pesan': "Berhasil Menghapus Indikator"}
         return JsonResponse(respon, safe=False)
 
     def get_urls(self):
@@ -87,6 +109,11 @@ class IndikatorAdmin(admin.ModelAdmin):
                 "set-rhk",
                 self.admin_site.admin_view(self.action_save_indikator_rhk),
                 name="skp_indikator_set_indikator_rhk",
+            ),
+            path(
+                "<int:id>/hapus",
+                self.admin_site.admin_view(self.indikator_delete),
+                name="skp_indikator_hapus",
             ),
             # path("skpdata/", self.view_custom, name="list_skp_admin"),
             # path("skpdata/add/", self.add_skp, name="add_skp_admin"),

@@ -1,1 +1,1 @@
-from .account_form import AccountForm  # noqa: 401
+from .account_form import AccountForm, EditProfilPegawai  # noqa: 401

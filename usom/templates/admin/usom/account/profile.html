@@ -110,6 +110,14 @@
                       <span class="navi-text">Sinkron Data</span>
                     </a>
                   </li>
+                  <li class="navi-item">
+                    <a href="{% url 'admin:usom_account_profile_edit' id=request.user.id %}" class="navi-link">
+                      <span class="navi-icon">
+                        <i class="fas fa-edit"></i>
+                      </span>
+                      <span class="navi-text">Ubah Pegawai</span>
+                    </a>
+                  </li>
                 </ul>
                 <!--end::Navigation-->
               </div>
@@ -118,17 +126,19 @@
           <!--end::Toolbar-->
           <!--begin::User-->
           <div class="d-flex align-items-center">
-            <div class="symbol symbol-60 symbol-xxl-100 mr-5 align-self-start align-self-xxl-center">
-              <div class="symbol-label" style="background-image:url('/static/metronic/assets/media/users/300_13.jpg')"></div>
+            <div class="symbol symbol-light-success symbol-60 symbol-xxl-100 mr-5 align-self-start align-self-xxl-center">
+              <span
+              class="symbol-label font-size-h5 font-weight-bold text-uppercase">{{ request.user.nama_lengkap.0 }}</span>
+              <!-- <div class="symbol-label" style="background-image:url('/static/metronic/assets/media/users/300_13.jpg')"></div> -->
               <!-- <i class="symbol-badge bg-success"></i> -->
             </div>
             <div>
               <a href="#" class="font-weight-bold font-size-h5 text-dark-75 text-hover-primary">{{ request.user.get_complete_name }}</a>
               <div class="text-muted">{{ request.user.username }}</div>
-              <div class="mt-2">
-                <a href="{% url 'admin:usom_account_profile_edit' %}" class="btn btn-sm btn-primary font-weight-bold mr-2 py-2 px-3 px-xxl-5 my-1">Edit</a>
+              <!-- <div class="mt-2">
+                <a href="{% url 'admin:usom_account_profile_edit' id=request.user.id %}" class="btn btn-sm btn-primary font-weight-bold mr-2 py-2 px-3 px-xxl-5 my-1">Edit</a> -->
                 <!-- <a href="#" class="btn btn-sm btn-success font-weight-bold py-2 px-3 px-xxl-5 my-1">Follow</a> -->
-              </div>
+              <!-- </div> -->
             </div>
           </div>
           <!--end::User-->
@@ -270,7 +280,7 @@
   <div class="modal-dialog modal-dialog-scrollable" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Modal Title</h5>
+        <h5 class="modal-title">Informasi Data Atasan</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <i aria-hidden="true" class="ki ki-close"></i>
         </button>

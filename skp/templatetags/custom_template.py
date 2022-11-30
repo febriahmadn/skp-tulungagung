@@ -24,3 +24,10 @@ def selected_tahun(first, second):
         if str(first) == str(second.GET.get("tahun")):
             return "selected"
     return ""
+
+@register.filter
+def selected_unitkerja(first, second):
+    if second.GET.get("unit_kerja"):
+        if str(first) == str(second.GET.get("unit_kerja")):
+            return "selected"
+    return ""

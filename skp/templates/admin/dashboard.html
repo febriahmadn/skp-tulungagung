@@ -33,6 +33,16 @@
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
+                                <select name="unit_kerja" id="" class="form-control">
+                                    <option value="">-- Unit Kerja --</option>
+                                    {% for item in unitkerja %}
+                                    <option value="{{ item.id }}" {{ item.id|selected_unitkerja:request }}>{{ item.unitkerja }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
                                 <button class="btn btn-success">Cari</button>
                             </div>
                         </div>

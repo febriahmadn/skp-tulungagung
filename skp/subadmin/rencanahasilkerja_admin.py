@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, reverse_lazy
 from django.http import JsonResponse
 from skp.models import (
     RencanaHasilKerja,
@@ -79,6 +79,12 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
                         for item_indikator in indikator_list:
                             indikator.append(
                                 {
+                                    "delete_url": reverse_lazy(
+                                        'admin:skp_indikator_hapus', kwargs={
+                                            "id": item_indikator.id
+                                        }
+                                    ),
+                                    "indikator_id": item_indikator.id,
                                     "indikator": item_indikator.indikator,
                                     "target": item_indikator.target,
                                     "aspek": item_indikator.aspek,
