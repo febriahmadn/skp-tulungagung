@@ -307,7 +307,7 @@
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Tambah Indikator</h5>
+        <h5 class="modal-title" id="indikator-title">Tambah Indikator</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -315,11 +315,12 @@
       <div class="modal-body">
         <form id="form-add-indikator">
           {% csrf_token %}
+          <input type="hidden" id="indikator_id" />
           <input type="hidden" id="rhk_indikator_id" />
           {% if obj.jenis_jabatan != 1 %}
           <div class="form-group">
             <label for="">Aspek</label>
-            <select name="aspek" class="form-control">
+            <select name="aspek" id="aspek" class="form-control">
               <option value="Kualitas">Kualitas</option>
               <option value="Kuantitas">Kuantitas</option>
               <option value="Waktu">Waktu</option>
@@ -329,7 +330,7 @@
           {% else %}
           <div class="form-group">
             <label>Perspektif</label>
-            <select name="perspektif" class="form-control">
+            <select name="perspektif" id="perspektif" class="form-control">
               <option value="0">Pilih Prespektif</option>
               {% for item in perspektif_list %}
               <option value="{{ item.id }}">{{ item.perspektif }}</option>
@@ -340,12 +341,12 @@
 
           <div class="form-group">
             <label for="">Indikator Kinerja Individu</label>
-            <input name="indikator" class="form-control" />
+            <input name="indikator" id="indikator" class="form-control" />
           </div>
 
           <div class="form-group">
             <label for="">Target</label>
-            <input name="target" class="form-control" />
+            <input name="target" id="target" class="form-control" />
           </div>
         </form>
       </div>
@@ -557,6 +558,7 @@
   const on_save_rhk_indikator = () => {
     console.log('On Save')
     let form_id = $('#form-add-indikator')
+    let indikator_id = $('#indikator_id').val()
     let rhk_id = $('#rhk_indikator_id').val()
     let aspek = form_id.find('select[name=aspek]').val();
     let perspektif= form_id.find('select[name=perspektif]').val();
@@ -565,6 +567,7 @@
     let csrf = form_id.find('input[name=csrfmiddlewaretoken]').val();
 
     let formData = {
+      indikator_id: indikator_id,
       rhk_id: rhk_id,
       aspek: aspek,
       indikator: indikator,
@@ -581,7 +584,11 @@
       success: function(response){
         console.log({response})
         if(response.success){
-          toastr.success('Berhasil menambahkan indikator');
+          if(indikator_id){
+            toastr.success('Berhasil merubah indikator');
+          }else{
+            toastr.success('Berhasil menambahkan indikator');
+          }
           window.location.reload();
         }
       },
@@ -594,10 +601,28 @@
 
   const set_rhk_indikator = async (elem) => {
     let rhk_id = elem.data('rhk_id')
-    console.log({rhk_id})
+    let edit = elem.data('edit')
+    let indikator_id = elem.data('indikator_id')
+    console.log(edit, indikator_id)
     if (typeof rhk_id !== "undefined"){
       $('#rhk_indikator_id').val(rhk_id)
       $('#modal_add_rhk_indikator_id').modal('show');
+      $("#indikator-title").html("Tambah Indikator")
+      if(edit && indikator_id){
+        $("#indikator_id").val(indikator_id)
+        $("#indikator-title").html("Ubah Indikator")
+        let indikator = $(`#indikator-${indikator_id}`)
+        let target = $(`#target-${indikator_id}`)
+        $("#indikator").val(indikator.html())
+        $(`#target`).val(target.html())
+        {% if obj.jenis_jabatan == 1 %}
+        let isi = $(`#perspektif-${indikator_id}`)
+        $('#perspektif').val(isi.html()).trigger('change')
+        {% else %}
+        let isi = $(`#aspek-${indikator_id}`)
+        $('#aspek').val(isi.html()).trigger('change')
+        {% endif %}
+      }
       // await $.ajax({
       //   url: "{% url 'admin:skp_indikator_get_by_skp' obj.id %}",
       //   type: 'GET',
@@ -647,24 +672,24 @@
                 indikator += `
                 <tr>
                   {% if obj.jenis_jabatan == 1 %}
-                  <td>${item_indikator.perspektif ? item_indikator.perspektif : '-'}</td>
+                  <td id="perspektif-${item_indikator.indikator_id}">${item_indikator.perspektif ? item_indikator.perspektif : '-'}</td>
                   {% else %}
-                  <td>${item_indikator.aspek ? item_indikator.aspek : '-'}</td>
+                  <td id="aspek-${item_indikator.indikator_id}">${item_indikator.aspek ? item_indikator.aspek : '-'}</td>
                   {% endif %}
                   <td>
-                    <span>${item_indikator.indikator}</span>
+                    <span id="indikator-${item_indikator.indikator_id}" >${item_indikator.indikator}</span>
                     {% if obj.status == 1 %}
                     <div class="d-flex justify-content-center mt-3">
-                      <a href="#" class="btn btn-icon btn-warning mr-1">
+                      <button class="btn btn-icon btn-warning mr-1" data-rhk_id="${item.id}" data-edit="true" data-indikator_id="${item_indikator.indikator_id}"  onclick="set_rhk_indikator($(this))">
                         <i class="flaticon2-pen"></i>
-                      </a>
+                      </button>
                       <a href="#" class="btn btn-icon btn-danger">
                         <i class="flaticon-delete-1"></i>
                       </a>
                     </div>
                     {% endif %}
                   </td>
-                  <td>${item_indikator.target}</td>
+                  <td id="target-${item_indikator.indikator_id}">${item_indikator.target}</td>
                 </tr>
                 `
               })
@@ -672,7 +697,7 @@
               indikator += `
               <tr>
                 <td colspan="3">
-                  <button class="btn btn-sm btn-light-primary btn-block" data-rhk_id="${item.id}" onclick="set_rhk_indikator($(this))">Add Indikator</button>
+                  <button class="btn btn-sm btn-light-primary btn-block" data-rhk_id="${item.id}" data-edit="false" onclick="set_rhk_indikator($(this))">Add Indikator</button>
                 </td>
               </tr>
               `
@@ -754,24 +779,24 @@
                 indikator += `
                 <tr>
                   {% if obj.jenis_jabatan == 1 %}
-                  <td>${item_indikator.perspektif ? item_indikator.perspektif : '-'}</td>
+                  <td id="perspektif-${item_indikator.indikator_id}">${item_indikator.perspektif ? item_indikator.perspektif : '-'}</td>
                   {% else %}
-                  <td>${item_indikator.aspek ? item_indikator.aspek : '-'}</td>
+                  <td id="aspek-${item_indikator.indikator_id}">${item_indikator.aspek ? item_indikator.aspek : '-'}</td>
                   {% endif %}
                   <td>
-                    <span>${item_indikator.indikator}</span>
+                    <span id="indikator-${item_indikator.indikator_id}" >${item_indikator.indikator}</span>
                     {% if obj.status == 1 %}
                     <div class="d-flex justify-content-center mt-3">
-                      <a href="#" class="btn btn-icon btn-warning mr-1">
+                      <button class="btn btn-icon btn-warning mr-1" data-rhk_id="${item.id}" data-edit="true" data-indikator_id="${item_indikator.indikator_id}"  onclick="set_rhk_indikator($(this))">
                         <i class="flaticon2-pen"></i>
-                      </a>
-                      <a href="#" class="btn btn-icon btn-danger">
+                      </button>
+                      <a onclick="delete_action('${item_indikator.delete_url}')" class="btn btn-icon btn-danger">
                         <i class="flaticon-delete-1"></i>
                       </a>
                     </div>
                     {% endif %}
                   </td>
-                  <td>${item_indikator.target}</td>
+                  <td id="target-${item_indikator.indikator_id}">${item_indikator.target}</td>
                 </tr>
                 `
               })
@@ -779,7 +804,7 @@
               indikator += `
               <tr>
                 <td colspan="3">
-                  <button class="btn btn-sm btn-light-primary btn-block" data-rhk_id="${item.id}" onclick="set_rhk_indikator($(this))">Add Indikator</button>
+                  <button class="btn btn-sm btn-light-primary btn-block" data-rhk_id="${item.id}" data-edit="false" onclick="set_rhk_indikator($(this))">Add Indikator</button>
                 </td>
               </tr>
               `
@@ -790,7 +815,7 @@
                 {% if obj.status == 1 %}
                 <tr>
                   <td colspan="3">
-                    <button class="btn btn-sm btn-light-primary btn-block" data-rhk_id="${item.id}" onclick="set_rhk_indikator($(this))">Add Indikator</button>
+                    <button class="btn btn-sm btn-light-primary btn-block" data-rhk_id="${item.id}" data-edit="false" onclick="set_rhk_indikator($(this))">Add Indikator</button>
                   </td>
                 </tr>
                 {% endif %}
@@ -890,7 +915,6 @@
         edit: edit_lampiran
       },
       success: function(response){
-        console.log({response})
         if(response.success){
           toastr.success(response.pesan);
           window.location.reload()
@@ -900,9 +924,9 @@
       }
     })  
   }
-  const delete_lampiran = (url) => {
+  const delete_action = (url) => {
     Swal.fire({
-      title: 'Apakah anda yakin ingin menghapus lampiran ini?',
+      title: 'Apakah anda yakin ingin menghapus data ini?',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -938,11 +962,6 @@
             }
           }
         })
-        // Swal.fire(
-        //   'Deleted!',
-        //   'Your file has been deleted.',
-        //   'success'
-        // )
       }
     })
   }
