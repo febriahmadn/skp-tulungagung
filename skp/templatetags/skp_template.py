@@ -1,7 +1,7 @@
 from django import template
 from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
-from skp.models import RencanaHasilKerja, DaftarLampiran
+from skp.models import RencanaHasilKerja, DaftarLampiran, DaftarPerilakuKerjaPegawai
 
 register = template.Library()
 
@@ -59,3 +59,35 @@ def daftar_lampiran(lampiran_id, skp_id, cetak):
             )
         return mark_safe(html)
     return ""
+
+@register.simple_tag
+def daftar_ekspetasi(perilaku_id, skp_id, cetak):
+    isi = ""
+    find_ekspetasi = None
+    try:
+        find_ekspetasi = DaftarPerilakuKerjaPegawai.objects.get(skp__id=skp_id, perilaku_kerja__id=perilaku_id)
+    except DaftarPerilakuKerjaPegawai.DoesNotExist:
+        tambah = True
+    else:
+        tambah = False
+        isi = find_ekspetasi.isi
+    if cetak == "tidak":
+        html = '''
+            <span id="ekspetasi-{}">{}</span>
+            <button type="button" data-id="{}" data-ekspetasi="{}" data-tambah="{}" class="mt-3 ml-3 btn btn-{} btn-sm" data-toggle="modal" data-target="#modal_tambah_ekspetasi">
+                {} Ekspektasi
+            </button>
+        '''.format(
+            perilaku_id,
+            isi,
+            perilaku_id,
+            find_ekspetasi.id if find_ekspetasi else "",
+            tambah,
+            "primary" if tambah else "warning",
+            "Tambah" if tambah else "Edit"
+        )
+    else:
+        html = '<span>{}</span>'.format(
+            isi,
+        )
+    return mark_safe(html)

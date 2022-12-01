@@ -59,6 +59,11 @@
     <a href="{% url 'admin:skp_sasarankinerja_cetak' obj.id %}">
       <button class="btn btn-success mr-1"><i class="fas fa-print"></i> Cetak SKP</button>
     </a>
+    {% if penilai_view %}
+    <button type="button" class="btn btn-sm btn-warning mr-1" data-toggle="modal" data-target="#modal_edit_status">
+      <i class="fas fa-edit"></i> Edit Status
+    </button>
+    {% endif %}
   </div>
 </div>
 <!-- data detail perlu diganti menggunakan detailrincian skp -->
@@ -207,7 +212,13 @@
                   {% endfor %}
                 </ol>
               </td>
-              <td></td>
+              <td>
+                {% if obj.status != 3 or not penilai_view  %}
+                  {% daftar_ekspetasi item.id obj.id "tidak" %}
+                {% else %}
+                  {% daftar_ekspetasi item.id obj.id "ya" %}
+                {% endif %}
+              </td>
             </tr>
             {% endfor %}
           </table>
@@ -230,14 +241,20 @@
             <tr>
               <th colspan="2">
                 {{item.lampiran}}
+                {% if not penilai_view %}
                 <button type="button" data-id="{{item.id}}" data-judul="{{item.lampiran|title}}" class="ml-3 btn btn-primary btn-sm" data-toggle="modal" data-target="#modal_tambah_lampiran">
                   Tambah
                 </button>
+                {% endif %}
               </th>
             </tr>
           </thead>
           <tbody>
+            {% if penilai_view %}
+            {% daftar_lampiran item.id obj.id "ya" %}
+            {% else %}
             {% daftar_lampiran item.id obj.id "tidak" %}
+            {% endif %}
           </tbody>
           </table>
           {% endfor %}
@@ -411,6 +428,69 @@
   </div>
 </div>
 
+<div class="modal fade" id="modal_tambah_ekspetasi" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="lampiran_modal_ekspetasi">Tambah Perilaku</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        {% csrf_token %}
+        <input type="hidden" id="perilaku_id"/>
+        <input type="hidden" id="ekspetasi_id"/>
+        <div class="form-group">
+          <div class="form-group">
+            <label for="isi" id="label-ekspetasi">Ekspektasi</label>
+            <input type="text" class="form-control" id="ekspetasi" name="ekspetasi"></input>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="save_ekspetasi()">Submit</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="modal_edit_status" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="edit_status">Edit Status</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        {% csrf_token %}
+          <div class="form-group">
+            <label for="isi" id="label-ekspetasi">Status</label>
+            <select name="status" onchange="onchangeStatus($(this))" class="form-control" id="status">
+              <option value="0">-------</option>
+              <option value="1">Draft</option>
+              <option value="2">Pengajuan</option>
+              <option value="3">Persetujuan</option>
+            </select>
+          </div>
+          <div class="form-group field-keterangan m-0">
+            <label for="keterangan" id="label-keterangan">Keterangan</label>
+            <input type="text" class="form-control" name="keterangan" id="keterangan" >
+            <small id="small-keterangan" class="form-text" style="color: red;">
+              SKP akan dikembalikan menjadi status Draft untuk diperbaiki oleh pegawai. Anda tidak bisa membuka SKP ini sampai diajukan kembali
+            </small>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="save_status()">Submit</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock content %}
 
 {% block custom_js %}
@@ -533,7 +613,20 @@
       $("#edit_lampiran").val(false)
     }
   })
-
+  $('#modal_tambah_ekspetasi').on('show.bs.modal', function (event) {
+    let button = $(event.relatedTarget)
+    let perilaku_id = button.data('id')
+    let ekspetasi_id = button.data('ekspetasi')
+    let tambah = button.data('tambah')
+    $("#perilaku_id").val(perilaku_id)
+    if(tambah == "True"){
+      $("#lampiran_modal_ekspetasi").html("Tambah Perilaku")
+    }else{
+      $("#lampiran_modal_ekspetasi").html("Ubah Perilaku")
+      let isi = $("#ekspetasi-"+perilaku_id)
+      $("#ekspetasi").val(isi.html())
+    }
+  })
   const handleOpenAddRHK = () => {
     let modal = $('#tambahrhk')
     $.ajax({
@@ -552,6 +645,15 @@
       $('.form-unor').show()
     }else{
       $('.form-unor').hide()
+    }
+  }
+
+  $('.field-keterangan').hide()
+  const onchangeStatus = (elem) =>{
+    if(elem.val() == "1"){
+      $('.field-keterangan').show()
+    }else{
+      $('.field-keterangan').hide()
     }
   }
 
@@ -683,7 +785,7 @@
                       <button class="btn btn-icon btn-warning mr-1" data-rhk_id="${item.id}" data-edit="true" data-indikator_id="${item_indikator.indikator_id}"  onclick="set_rhk_indikator($(this))">
                         <i class="flaticon2-pen"></i>
                       </button>
-                      <a href="#" class="btn btn-icon btn-danger">
+                      <a onclick="delete_action('${item_indikator.delete_url}')" class="btn btn-icon btn-danger">
                         <i class="flaticon-delete-1"></i>
                       </a>
                     </div>
@@ -695,11 +797,13 @@
               })
             } else {
               indikator += `
+              {% if not penilai_view %}
               <tr>
                 <td colspan="3">
                   <button class="btn btn-sm btn-light-primary btn-block" data-rhk_id="${item.id}" data-edit="false" onclick="set_rhk_indikator($(this))">Add Indikator</button>
                 </td>
               </tr>
+              {% endif %}
               `
             }
 
@@ -714,7 +818,7 @@
             
             if (item.indikator.length > 0){
               indikator += `
-                {% if obj.status == 1 %}
+                {% if obj.status == 1 or not penilai_view %}
                 <tr>
                   <td colspan="3">
                     <button class="btn btn-sm btn-light-primary btn-block" data-rhk_id="${item.id}" onclick="set_rhk_indikator($(this))">Add Indikator</button>
@@ -776,6 +880,7 @@
             let indikator =  '';
             if (item.indikator.length > 0){
               item.indikator.map(item_indikator => {
+                console.log(item_indikator)
                 indikator += `
                 <tr>
                   {% if obj.jenis_jabatan == 1 %}
@@ -802,17 +907,19 @@
               })
             } else {
               indikator += `
+              {% if not penilai_view %}
               <tr>
                 <td colspan="3">
                   <button class="btn btn-sm btn-light-primary btn-block" data-rhk_id="${item.id}" data-edit="false" onclick="set_rhk_indikator($(this))">Add Indikator</button>
                 </td>
               </tr>
+              {% endif %}
               `
             }
 
             if (item.indikator.length > 0){
               indikator += `
-                {% if obj.status == 1 %}
+                {% if obj.status == 1 or not penilai_view %}
                 <tr>
                   <td colspan="3">
                     <button class="btn btn-sm btn-light-primary btn-block" data-rhk_id="${item.id}" data-edit="false" onclick="set_rhk_indikator($(this))">Add Indikator</button>
@@ -833,9 +940,15 @@
 
             html_ += `
               <tr>
+                {% if not penilaian_view %}
+                <td rowspan="${item.indikator.length+1}">${no}</td>
+                {% if obj.jenis_jabatan != 1 %}${induk_elem}{% endif %}
+                <td rowspan="${item.indikator.length+1}">${item.rencana_kerja} ${item.penugasan_dari ? `(Penugasan dari ${item.penugasan_dari})` : ''}</td>
+                {% else %}
                 <td rowspan="${item.indikator.length+2}">${no}</td>
                 {% if obj.jenis_jabatan != 1 %}${induk_elem}{% endif %}
                 <td rowspan="${item.indikator.length+2}">${item.rencana_kerja} ${item.penugasan_dari ? `(Penugasan dari ${item.penugasan_dari})` : ''}</td>
+                {% endif %}
               </tr>
               ${indikator}
             `
@@ -898,7 +1011,57 @@
     }
   }
 
-  const save_lampiran = () => {
+  const save_ekspetasi = () => {
+    let modal = $("#modal_tambah_lampiran")
+    let perilaku_id = $("#perilaku_id").val()
+    let ekspetasi_id = $("#ekspetasi_id").val()
+    let isi = $("#ekspetasi").val()
+    let csrf = modal.find('input[name=csrfmiddlewaretoken]').val();
+    $.ajax({
+      url: '{% url "admin:skp_daftarperilakuerjapegawai_post" %}',
+      type: 'POST',
+      data: {
+        csrfmiddlewaretoken: csrf,
+        skp_id: "{{obj.id}}",
+        perilaku_id: perilaku_id,
+        ekspetasi_id: ekspetasi_id,
+        isi: isi,
+      },
+      success: function(response){
+        if(response.success){
+          toastr.success(response.pesan);
+          window.location.reload()
+        } else {
+          toastr.warning(response.pesan);
+        }
+      }
+    })  
+  }
+  const save_status = () => {
+    let modal = $("#modal_edit_status")
+    let status = $("#status").val()
+    let keterangan = $("#keterangan").val()
+    let csrf = modal.find('input[name=csrfmiddlewaretoken]').val();
+    $.ajax({
+      url: '{% url "admin:skp_sasarankinerja_changestatus" %}',
+      type: 'POST',
+      data: {
+        csrfmiddlewaretoken: csrf,
+        skp_id: "{{obj.id}}",
+        status: status,
+        keterangan: keterangan
+      },
+      success: function(response){
+        if(response.success){
+          toastr.success("Berhasil Merubah Status Sasaran Kinerja");
+          window.location.reload()
+        } else {
+          toastr.warning("Terjadi kesalahan");
+        }
+      }
+    })  
+  }
+    const save_lampiran = () => {
     let modal = $("#modal_tambah_lampiran")
     let lampiran_id = $("#lampiran_id").val()
     let isi = $("#isi_lampiran").val()
