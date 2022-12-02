@@ -264,11 +264,12 @@
                 {% for item in perilakukerja_list %}
                 <tr>
                     <td>{{ forloop.counter }}</td>
-                    <td colspan="2">{{ item.perilaku_kerja }}</td>
+                    <td>{{ item.perilaku_kerja }}</td>
+                    <td>Ekspektasi Khusus Pimpinan:</td>
                 </tr>
                 <tr>
                     <td></td>
-                    <td style="padding: 0px;">
+                    <td style="padding: 0px;" >
                         <ol>
                         {% for subitem in item.daftarperilakukerja_set.all %}
                         <li>{{ subitem.keterangan }}</li>
@@ -276,7 +277,7 @@
                         </ol>
                     </td>
                     <td style="width: 15%;">
-                        Ekspektasi Khusus Pimpinan:
+                        {% daftar_ekspetasi item.id obj.id "ya" %}
                     </td>
                 </tr>
                 {% endfor %}

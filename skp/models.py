@@ -228,6 +228,33 @@ class DaftarPerilakuKerja(models.Model):
         verbose_name = "Daftar Perilaku Kerja"
         verbose_name_plural = "Daftar Perilaku Kerja"
 
+class DaftarPerilakuKerjaPegawai(models.Model):
+    # class Status(models.IntegerChoices):
+    #     ACTIVE = 1, "Aktif"
+    #     NONACTIVE = 2, "Non Aktif"
+
+    perilaku_kerja = models.ForeignKey(
+        PerilakuKerja, on_delete=models.CASCADE, verbose_name="Perilaku Kerja"
+    )
+    skp = models.ForeignKey(
+        SasaranKinerja,
+        on_delete=models.CASCADE,
+        verbose_name="Sasaran Kinerja Pegawai",
+        null=True
+    )
+    isi = models.TextField("Isi Ekspetasi", null=True, blank=True)
+    # status = models.IntegerField(choices=Status.choices, null=True, default=1)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        if self.isi:
+            return self.isi
+        return "{}".format(str(self.id))
+
+    class Meta:
+        verbose_name = "Daftar Perilaku Kerja Pegawai"
+        verbose_name_plural = "Daftar Perilaku Kerja Pegawai"
+
 
 class Lampiran(models.Model):
     class Status(models.IntegerChoices):

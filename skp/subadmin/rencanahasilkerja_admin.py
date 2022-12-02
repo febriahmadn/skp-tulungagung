@@ -108,10 +108,8 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
     def load_rhk_pimpinan(self, request):
         respon = []
         atasan_id = request.user.atasan.id if request.user.atasan else None
-        print(atasan_id)
         if atasan_id:
             rhk_list = RencanaHasilKerja.objects.filter(skp__pegawai_id=atasan_id)
-            print(rhk_list)
             if rhk_list.exists():
                 for item in rhk_list:
                     respon.append(

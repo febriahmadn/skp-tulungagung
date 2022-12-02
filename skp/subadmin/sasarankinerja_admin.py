@@ -67,7 +67,9 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
             reverse_lazy("admin:detail-skp", kwargs={"id": obj.id})
         )
         btn += '<a class="dropdown-item" href="#">Matriks Peran Hasil</a>'
-        btn += '<a class="dropdown-item" href="#">SKP Bawahan</a>'
+        btn += '<a class="dropdown-item" href="{}">SKP Bawahan</a>'.format(
+            reverse_lazy('admin:skp_sasarankinerja_bawahan', kwargs={"id": obj.id})
+        )
         btn += '<a class="dropdown-item" href="#">Penilaian</a>'
         btn += "</div>"
         btn += "</div>"
@@ -143,7 +145,6 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         func_view, func_view_args, func_view_kwargs = resolve(request.path)
         if func_view.__name__ == self.view_detail_skp.__name__:
             qs = qs
-            print(qs)
         else:
             qs = qs.filter(pegawai=request.user)
         return qs
@@ -152,6 +153,10 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         obj = get_object_or_404(SasaranKinerja, pk=id)
         perilaku_kerja_list = PerilakuKerja.objects.filter(is_active=True)
         lampiran_list = Lampiran.objects.filter(status=Lampiran.Status.ACTIVE)
+        penilai = False
+        view = request.GET.get('view',None)
+        if view == "penilai":
+            penilai = True
         extra_context = {
             "title": "Detail SKP",
             "obj": obj,
@@ -160,6 +165,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
             "perilaku_kerja_list": perilaku_kerja_list,
             "perspektif_list": Perspektif.objects.all(),
             'lampiran': lampiran_list.order_by('id'),
+            "penilai_view": penilai
         }
         return render(
             request, "admin/skp/sasarankinerja/detail_skp.html", extra_context
@@ -252,6 +258,13 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         respon = {"success": False}
         skp_id = request.GET.get("skp_id", None)
         status = request.GET.get("status", None)
+        keterangan = request.GET.get("status", None)
+        if request.POST:
+            skp_id = request.POST.get("skp_id", None)
+            status = request.POST.get("status", None)
+            keterangan = request.POST.get("keterangan", None)
+            if not keterangan and keterangan == "":
+                keterangan = None
         try:
             obj = SasaranKinerja.objects.get(id=skp_id)
         except SasaranKinerja.DoesNotExist:
@@ -260,6 +273,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
             if status:
                 try:
                     obj.status = status
+                    obj.keterangan = keterangan
                     obj.save()
                 except Exception:
                     pass
@@ -291,6 +305,21 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         }
         return render(request, "admin/skp/sasarankinerja/cetak.html", extra_context)
 
+    def view_skp_bawahan(self, request, id):
+        obj = get_object_or_404(SasaranKinerja, pk=id)
+        list_skp_bawahan = SasaranKinerja.objects.filter(pejabat_penilai=obj.pegawai.atasan, )
+        show_detail = [SasaranKinerja.Status.PENGAJUAN, SasaranKinerja.Status.PERSETUJUAN]
+        extra_context = {
+            "obj": obj,
+            "list_skp_bawahan":list_skp_bawahan,
+            "status_choices":SasaranKinerja.Status.choices,
+            "pegawai": obj.pegawai,
+            "atasan": obj.pegawai.atasan if obj.pegawai.atasan else None,
+            "title": "SKP Bawahan",
+            "show_detail": show_detail,
+        }
+        return render(request, "admin/skp/sasarankinerja/skp_bawahan.html", extra_context)
+    
     def get_urls(self):
         admin_url = super(SasaranKinerjaAdmin, self).get_urls()
         custom_url = [
@@ -313,6 +342,11 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                 "<int:obj_id>/sinkron",
                 self.admin_site.admin_view(self.action_sinkron_ekinerja),
                 name="skp_sasarankinerja_sinkron",
+            ),
+            path(
+                "<int:id>/skp-bawahan",
+                self.admin_site.admin_view(self.view_skp_bawahan),
+                name="skp_sasarankinerja_bawahan",
             ),
             path(
                 "change-status",
