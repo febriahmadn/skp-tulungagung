@@ -65,7 +65,10 @@ def daftar_ekspetasi(perilaku_id, skp_id, cetak):
     isi = ""
     find_ekspetasi = None
     try:
-        find_ekspetasi = DaftarPerilakuKerjaPegawai.objects.get(skp__id=skp_id, perilaku_kerja__id=perilaku_id)
+        find_ekspetasi = DaftarPerilakuKerjaPegawai.objects.get(
+            skp__id=skp_id,
+            perilaku_kerja__id=perilaku_id
+        )
     except DaftarPerilakuKerjaPegawai.DoesNotExist:
         tambah = True
     else:
@@ -74,7 +77,11 @@ def daftar_ekspetasi(perilaku_id, skp_id, cetak):
     if cetak == "tidak":
         html = '''
             <span id="ekspetasi-{}">{}</span>
-            <button type="button" data-id="{}" data-ekspetasi="{}" data-tambah="{}" class="mt-3 ml-3 btn btn-{} btn-sm" data-toggle="modal" data-target="#modal_tambah_ekspetasi">
+            <button type="button"
+            data-id="{}" data-ekspetasi="{}" data-tambah="{}"
+            class="mt-3 ml-3 btn btn-{} btn-sm"
+            data-toggle="modal"
+            data-target="#modal_tambah_ekspetasi">
                 {} Ekspektasi
             </button>
         '''.format(

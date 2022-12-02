@@ -291,8 +291,10 @@
             </thead>
             <tbody>
                 {% for item in lampiran_list %}
-                <td colspan="5" class="bg-blue" >{{item.lampiran}}</td>
-                {% daftar_lampiran item.id obj.id "ya" %}
+                <tr>
+                    <td colspan="5" class="bg-blue" >{{item.lampiran}}</td>
+                    {% daftar_lampiran item.id obj.id "ya" %}
+                </tr>
                 {% endfor %}
             </tbody>
         </table>

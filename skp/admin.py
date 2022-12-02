@@ -6,7 +6,8 @@ from skp.subadmin.sasarankinerja_admin import SasaranKinerjaAdmin
 # model import
 from .models import (DaftarLampiran, DaftarPerilakuKerja, DetailSasaranKinerja,
                      IndikatorKinerjaIndividu, Lampiran, PerilakuKerja,
-                     Perspektif, RencanaHasilKerja, SasaranKinerja, DaftarPerilakuKerjaPegawai)
+                     Perspektif, RencanaHasilKerja, SasaranKinerja,
+                     DaftarPerilakuKerjaPegawai)
 from .subadmin.daftarlampiran_admin import DaftarlampiranAdmin
 from .subadmin.daftarperilakukerja_admin import DaftarperilakukerjaAdmin
 from .subadmin.detailsasarankerja_admin import DetailsasarankerjaAdmin
@@ -24,6 +25,9 @@ admin.site.register(IndikatorKinerjaIndividu, IndikatorAdmin)
 admin.site.register(SasaranKinerja, SasaranKinerjaAdmin)
 admin.site.register(PerilakuKerja, PerilakukerjaAdmin)
 admin.site.register(DaftarPerilakuKerja, DaftarperilakukerjaAdmin)
-admin.site.register(DaftarPerilakuKerjaPegawai, DaftarPerilakuKerjaPegawaiAdmin)
+admin.site.register(
+    DaftarPerilakuKerjaPegawai,
+    DaftarPerilakuKerjaPegawaiAdmin
+)
 admin.site.register(Lampiran, LampiranAdmin)
 admin.site.register(DaftarLampiran, DaftarlampiranAdmin)

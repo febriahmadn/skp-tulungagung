@@ -153,7 +153,7 @@
         <h6 class="d-flex align-items-center m-0">HASIL KERJA</h6>
         <div>
           {% if obj.status == 1 %}
-          <button class="btn btn-sm btn-primary mx-2" data-toggle="modal" data-target="#tambahrhk"><i class="fas fa-plus"></i> Tambah RHK</button>
+          <button class="btn btn-sm btn-primary mx-2" data-toggle="modal" data-edit="false" data-target="#tambahrhk"><i class="fas fa-plus"></i> Tambah RHK</button>
           {% endif %}
           <!-- <button class="btn btn-sm btn-danger" data-toggle="modal" data-target="#tambahindikator"><i class="fas fa-plus"></i> Tambah Indikator</button> -->
         </div>
@@ -213,7 +213,7 @@
                 </ol>
               </td>
               <td>
-                {% if obj.status != 3 or not penilai_view  %}
+                {% if obj.status != 1 and not penilai_view  %}
                   {% daftar_ekspetasi item.id obj.id "tidak" %}
                 {% else %}
                   {% daftar_ekspetasi item.id obj.id "ya" %}
@@ -269,46 +269,46 @@
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Tambah RHK</h5>
+        <h5 class="modal-title" id="rhk-label">Tambah RHK</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
         {% csrf_token %}
+        <input type="hidden" id="rhk_id">
         <div class="form-group">
           <label for="">Klasifikasi</label>
-          <select name="klasifikasi" class="form-control" id="klasifikasi_id">
+          <select name="klasifikasi" onchange="onChangeKlasifikasi($(this))" class="form-control" id="klasifikasi_id">
             <option value="0">Pilih Klasifikasi</option>
             <option value="1">Organisasi</option>
             <option value="2">Individu</option>
           </select>
         </div>
         
-        <div class="form-group" id="field_set_unitkerja_id" style="display: none;">
+        <div class="form-group form-unor" id="field_set_unitkerja_id" style="display: none;">
           <label for="">Unit Kerja</label>
-          <select name="" class="form-control">
-            <option value="2">Individu</option>
+          <select name="unitkerja" class="form-control" id="unitkerja_id">
           </select>
         </div>
 
         <div class="form-group">
           <label for="">Jenis RHK</label>
-          <select name="jenis" class="form-control">
+          <select name="jenis" class="form-control" id="jenis_id">
             <option value="0">Pilih Jenis RHK</option>
-            <!-- <option value="1">Utama</option> -->
+            <option value="1">Utama</option>
             <option value="2">Tambahan</option>
           </select>
         </div>
 
         <div class="form-group">
           <label for="">Rencana Hasil Kerja</label>
-          <input type="text" class="form-control" name="rencana_kerja">
+          <input type="text" class="form-control" name="rencana_kerja" id="rencana_id">
         </div>
 
         <div class="form-group">
           <label for="">Penugasan Dari</label>
-          <input type="text" class="form-control" name="penugasan_dari">
+          <input type="text" class="form-control" name="penugasan_dari" id="penugasan_id">
         </div>
 
       </div>
@@ -582,18 +582,40 @@
     });
   })
 
-
-  $('#klasifikasi_id').on('change', function(e){
-    let value = e.target.value;
-    if (value == 1 || value == "1"){
-      console.log('show')
-      $('#field_set_unitkerja_id').show();
+  $('#tambahrhk').on('show.bs.modal', function (event) {
+    let button = $(event.relatedTarget)
+    let edit = button.data('edit')
+    let id = button.data('rhk_id')
+    let modal = $("#tambahrhk")
+    if(edit){
+      $('#rhk-label').html("Ubah RHK")
+      $.ajax({
+        url: '{% url "admin:load-rhk" %}',
+        type: 'GET',
+        data:{
+          id:id,
+          edit:edit
+        },
+        success: function(response){
+          if(response.success){
+            let data = response.data
+            $("#rhk_id").val(data.id)
+            $("#klasifikasi_id").val(data.klasifikasi).trigger('change')
+            if(data.klasifikasi == "1"){
+              handleLoadUnitkerja()
+              $("#unitkerja_id").val(data.unitkerja).trigger('change')
+            }
+            $("#jenis_id").val(data.jenis)
+            $("#rencana_id").val(data.rencana_hasil)
+            $("#penugasan_id").val(data.penugasan_dari)
+          }
+        }
+      })
     }else{
-      console.log('hide')
-      $('#field_set_unitkerja_id').hide();
+      $('#rhk-label').html("Tambah RHK")
     }
-  })
 
+  })
   $('#modal_tambah_lampiran').on('show.bs.modal', function (event) {
     let button = $(event.relatedTarget)
     let title = button.data('judul')
@@ -627,24 +649,32 @@
       $("#ekspetasi").val(isi.html())
     }
   })
-  const handleOpenAddRHK = () => {
-    let modal = $('#tambahrhk')
-    $.ajax({
+  const handleLoadUnitkerja = async () => {
+    await $.ajax({
       url: '{% url "admin:usom_unitkerja_loaddata" %}',
       type: 'GET',
       success: function(response){
-        console.log({response})
+        if(response.length > 0){
+          html = `<option value="" readonly >---- Pilih Unit Kerja ----</option>`
+          response.map((value, idx)=>{
+            html += `<option value="${value.id}" >${value.text}</option>`
+          })
+        }else{
+          html = "<option readonly >Unit Kerja Kosong</option>"
+        }
+        $('#unitkerja_id').html(html)
       }
     })
-    modal.modal('show')
   }
 
   $('.form-unor').hide()
   const onChangeKlasifikasi = (elem) =>{
     if(elem.val() == "1"){
+      handleLoadUnitkerja()
       $('.form-unor').show()
     }else{
       $('.form-unor').hide()
+      $('#unitkerja_id').empty()
     }
   }
 
@@ -757,6 +787,7 @@
       },
       success: function(response){
         console.log({response})
+        delete_html = ""
         if(response.length > 0){
           let html_ = `<tr class="bg-dark">
                         {% if obj.jenis_jabatan != 1 %}
@@ -769,6 +800,7 @@
                       </tr>`
           response.map((item, index) => {
             let indikator =  '';
+            console.log(item)
             if (item.indikator.length > 0){
               item.indikator.map(item_indikator => {
                 indikator += `
@@ -796,6 +828,11 @@
                 `
               })
             } else {
+              delete_html = `
+                <a onclick="delete_action('${item.delete_url}')" class="btn btn-icon btn-danger">
+                  <i class="flaticon-delete-1"></i>
+                </a>
+              `
               indikator += `
               {% if not penilai_view %}
               <tr>
@@ -829,7 +866,7 @@
             }
 
             let induk_elem = `
-                <td rowspan="${item.indikator.length+2}">
+            <td rowspan="{% if penilai_view %}${item.indikator.length+1}{% else %}${item.indikator.length+2}{% endif %}">
                   ${item?.induk ? item.induk.rencana_kerja : ''}
                   {% if obj.status == 1 %}
                   <button type="button" class="btn btn-sm btn-block btn-light-success font-weight-bold" data-rhk_id="${item.id}" onclick="onOpenModalRHKPimpinan($(this))">Set RHK Pimpinan</button>  
@@ -839,9 +876,19 @@
 
             html_ += `
               <tr>
-                <td rowspan="${item.indikator.length+2}">${no}</td>
+                <td rowspan="{% if penilai_view %}${item.indikator.length+1}{% else %}${item.indikator.length+2}{% endif %}">${no}</td>
                 {% if obj.jenis_jabatan != 1 %}${induk_elem}{% endif %}
-                <td rowspan="${item.indikator.length+2}">${item.rencana_kerja}</td>
+                <td rowspan="{% if penilai_view %}${item.indikator.length+1}{% else %}${item.indikator.length+2}{% endif %}">
+                  ${item.rencana_kerja}
+                  {% if obj.status == 1 %}
+                  <div class="mt-3">
+                    <button class="btn btn-icon btn-warning mr-1" data-rhk_id="${item.id}" data-edit="true" data-toggle="modal" data-target="#tambahrhk">
+                      <i class="flaticon2-pen"></i>
+                    </button>
+                    ${delete_html}
+                  </div>
+                  {% endif %}
+                </td>
               </tr>
               ${indikator}
             `
@@ -866,6 +913,7 @@
       },
       success: function(response){
         console.log({response})
+        delete_html = ""
         if(response.length > 0){
           let html_ = `<tr class="bg-dark">
                         {% if obj.jenis_jabatan != 1 %}
@@ -880,7 +928,6 @@
             let indikator =  '';
             if (item.indikator.length > 0){
               item.indikator.map(item_indikator => {
-                console.log(item_indikator)
                 indikator += `
                 <tr>
                   {% if obj.jenis_jabatan == 1 %}
@@ -906,6 +953,11 @@
                 `
               })
             } else {
+              delete_html = `
+              <a onclick="delete_action('${item.delete_url}')" class="btn btn-icon btn-danger">
+                <i class="flaticon-delete-1"></i>
+              </a>
+              `
               indikator += `
               {% if not penilai_view %}
               <tr>
@@ -919,10 +971,12 @@
 
             if (item.indikator.length > 0){
               indikator += `
-                {% if obj.status == 1 or not penilai_view %}
+                {% if obj.status == 1 %}
                 <tr>
                   <td colspan="3">
+                    {% if not penilai_view %}
                     <button class="btn btn-sm btn-light-primary btn-block" data-rhk_id="${item.id}" data-edit="false" onclick="set_rhk_indikator($(this))">Add Indikator</button>
+                    {% endif %}
                   </td>
                 </tr>
                 {% endif %}
@@ -930,7 +984,7 @@
             }
 
             let induk_elem = `
-                <td rowspan="${item.indikator.length+2}">
+                <td rowspan="{% if penilai_view %}${item.indikator.length+1}{% else %}${item.indikator.length+2}{% endif %}">
                   ${item?.induk ? item.induk.rencana_kerja : ''}
                   {% if obj.status == 1 %}
                   <button type="button" class="btn btn-sm btn-block btn-light-success font-weight-bold" data-rhk_id="${item.id}" onclick="onOpenModalRHKPimpinan($(this))">Set RHK Pimpinan</button>  
@@ -939,16 +993,20 @@
               `
 
             html_ += `
-              <tr>
-                {% if not penilaian_view %}
-                <td rowspan="${item.indikator.length+1}">${no}</td>
+            <tr>
+                <td rowspan="{% if penilai_view %}${item.indikator.length+1}{% else %}${item.indikator.length+2}{% endif %}">${no}</td>
                 {% if obj.jenis_jabatan != 1 %}${induk_elem}{% endif %}
-                <td rowspan="${item.indikator.length+1}">${item.rencana_kerja} ${item.penugasan_dari ? `(Penugasan dari ${item.penugasan_dari})` : ''}</td>
-                {% else %}
-                <td rowspan="${item.indikator.length+2}">${no}</td>
-                {% if obj.jenis_jabatan != 1 %}${induk_elem}{% endif %}
-                <td rowspan="${item.indikator.length+2}">${item.rencana_kerja} ${item.penugasan_dari ? `(Penugasan dari ${item.penugasan_dari})` : ''}</td>
-                {% endif %}
+                <td rowspan="{% if penilai_view %}${item.indikator.length+1}{% else %}${item.indikator.length+2}{% endif %}">
+                  ${item.rencana_kerja} ${item.penugasan_dari ? `(Penugasan dari ${item.penugasan_dari})` : ''}
+                  {% if obj.status == 1 %}
+                  <div class="mt-3">
+                    <button class="btn btn-icon btn-warning mr-1" data-rhk_id="${item.id}" data-edit="true" data-toggle="modal" data-target="#tambahrhk">
+                      <i class="flaticon2-pen"></i>
+                    </button>
+                    ${delete_html}
+                  </div>
+                  {% endif %}
+                </td>
               </tr>
               ${indikator}
             `
@@ -1061,7 +1119,7 @@
       }
     })  
   }
-    const save_lampiran = () => {
+  const save_lampiran = () => {
     let modal = $("#modal_tambah_lampiran")
     let lampiran_id = $("#lampiran_id").val()
     let isi = $("#isi_lampiran").val()
@@ -1166,9 +1224,10 @@
   const handleSaveRHK = () => {
     let modal = $('#tambahrhk');
     klasifikasi = modal.find('select[name=klasifikasi]').val(),
-    unitkerja = modal.find('select[name=klasifikasi]').val()
+    unitkerja = modal.find('select[name=unitkerja]').val()
     let formData = {
       skp_id: '{{ obj.id }}',
+      rhk_id: modal.find('#rhk_id').val(),
       klasifikasi: klasifikasi,
       jenis: modal.find('select[name=jenis]').val(),
       rencana_kerja: modal.find('input[name=rencana_kerja]').val(),
@@ -1187,7 +1246,11 @@
       success: function(response){
         console.log({response})
         if(response.success){
-          toastr.success('Berhasil menambahkan rhk pimpinan');
+          if(rhk_id && rhk_id != ""){
+            toastr.success('Berhasil merubah rhk pimpinan');
+          }else{
+            toastr.success('Berhasil menambahkan rhk pimpinan');
+          }
           window.location.reload()
         }else{
           toastr.warning('Terjadi kesalahan');
