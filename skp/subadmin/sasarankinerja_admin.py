@@ -308,7 +308,9 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
     def view_skp_bawahan(self, request, id):
         obj = get_object_or_404(SasaranKinerja, pk=id)
         list_skp_bawahan = SasaranKinerja.objects.filter(
-            pejabat_penilai=obj.pegawai.atasan
+            pejabat_penilai=obj.pegawai.atasan,
+            periode_awal__lte=obj.periode_awal,
+            periode_akhir__gte=obj.periode_akhir
         )
         show_detail = [
             SasaranKinerja.Status.PENGAJUAN,
