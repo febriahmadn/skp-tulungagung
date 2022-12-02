@@ -197,7 +197,7 @@
                         {% endif %}
                     </td>
                     {% endif %}
-                    <td rowspan="{{count_indikator}}" style="vertical-align: top;">{{ utama.rencana_kerja }} {% if utama.penugasan_dari %}(Penugasan dari {{ utama.penugasan_dari|default:'-' }}){% endif %}</td>
+                    <td rowspan="{{count_indikator}}" style="vertical-align: top;">{{ utama.rencana_kerja }}</td>
                 </tr>
                 {% endwith %}
                 {% for indikator in utama.indikatorkinerjaindividu_set.all %}

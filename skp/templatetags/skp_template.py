@@ -77,6 +77,7 @@ def daftar_ekspetasi(perilaku_id, skp_id, cetak):
     if cetak == "tidak":
         html = '''
             <span id="ekspetasi-{}">{}</span>
+            <br>
             <button type="button"
             data-id="{}" data-ekspetasi="{}" data-tambah="{}"
             class="mt-3 ml-3 btn btn-{} btn-sm"

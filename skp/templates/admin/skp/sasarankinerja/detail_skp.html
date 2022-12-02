@@ -213,7 +213,7 @@
                 </ol>
               </td>
               <td>
-                {% if obj.status != 1 and not penilai_view  %}
+                {% if obj.status != 1 and penilai_view  %}
                   {% daftar_ekspetasi item.id obj.id "tidak" %}
                 {% else %}
                   {% daftar_ekspetasi item.id obj.id "ya" %}
@@ -469,7 +469,7 @@
           <div class="form-group">
             <label for="isi" id="label-ekspetasi">Status</label>
             <select name="status" onchange="onchangeStatus($(this))" class="form-control" id="status">
-              <option value="0">-------</option>
+              <option value="0">---Pilih Status----</option>
               <option value="1">Draft</option>
               <option value="2">Pengajuan</option>
               <option value="3">Persetujuan</option>
@@ -496,6 +496,16 @@
 {% block custom_js %}
 {{ block.super }}
 <script type="text/javascript">
+  $('.field-keterangan').hide()
+  const onchangeStatus = (elem) =>{
+    console.log(elem.val())
+    if(elem.val() == "1"){
+      $('.field-keterangan').show()
+    }else{
+      $('.field-keterangan').hide()
+    }
+  }
+  $("#status").val("{{obj.status}}").trigger('change')
   const changeStatus = (status=1) => {
     return new Promise((resolve, reject) => {
       $.ajax({
@@ -641,6 +651,7 @@
     let ekspetasi_id = button.data('ekspetasi')
     let tambah = button.data('tambah')
     $("#perilaku_id").val(perilaku_id)
+    $("#ekspetasi_id").val(ekspetasi_id)
     if(tambah == "True"){
       $("#lampiran_modal_ekspetasi").html("Tambah Perilaku")
     }else{
@@ -675,15 +686,6 @@
     }else{
       $('.form-unor').hide()
       $('#unitkerja_id').empty()
-    }
-  }
-
-  $('.field-keterangan').hide()
-  const onchangeStatus = (elem) =>{
-    if(elem.val() == "1"){
-      $('.field-keterangan').show()
-    }else{
-      $('.field-keterangan').hide()
     }
   }
 
