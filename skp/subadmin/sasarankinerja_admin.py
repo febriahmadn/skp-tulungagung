@@ -70,7 +70,9 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         btn += '<a class="dropdown-item" href="{}">SKP Bawahan</a>'.format(
             reverse_lazy('admin:skp_sasarankinerja_bawahan', kwargs={"id": obj.id})
         )
-        btn += '<a class="dropdown-item" href="#">Penilaian</a>'
+        btn += '<a class="dropdown-item" href="{}">Penilaian</a>'.format(
+            reverse_lazy('admin:skp_sasarankinerja_penilaian', kwargs={"id": obj.id}) 
+        )
         btn += "</div>"
         btn += "</div>"
         return mark_safe(btn)
@@ -331,6 +333,18 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
             extra_context
         )
 
+    def view_penilaian(self, request, id):
+        obj = get_object_or_404(SasaranKinerja, pk=id)
+        extra_context = {
+            "title": "Penilaian SKP",
+            "obj": obj
+        }
+        return render(
+            request,
+            "admin/skp/sasarankinerja/penilaian.html",
+            extra_context
+        )
+        
     def get_urls(self):
         admin_url = super(SasaranKinerjaAdmin, self).get_urls()
         custom_url = [
@@ -358,6 +372,11 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                 "<int:id>/skp-bawahan",
                 self.admin_site.admin_view(self.view_skp_bawahan),
                 name="skp_sasarankinerja_bawahan",
+            ),
+            path(
+                "<int:id>/penilaian-skp",
+                self.admin_site.admin_view(self.view_penilaian),
+                name="skp_sasarankinerja_penilaian",
             ),
             path(
                 "change-status",
