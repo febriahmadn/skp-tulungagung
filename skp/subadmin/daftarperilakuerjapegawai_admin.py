@@ -33,14 +33,7 @@ class DaftarPerilakuKerjaPegawaiAdmin(admin.ModelAdmin):
             return JsonResponse(respon, safe=False)
 
         try:
-            if ekspetasi_id != "":
-                obj = DaftarPerilakuKerjaPegawai.objects.get(pk=ekspetasi_id)
-            else:
-                obj = DaftarPerilakuKerjaPegawai(
-                    skp=skp_obj,
-                    perilaku_kerja=perilaku__obj
-                )
-                tambah = True
+            obj = DaftarPerilakuKerjaPegawai.objects.get(pk=ekspetasi_id)
         except DaftarPerilakuKerjaPegawai.DoesNotExist:
             obj = DaftarPerilakuKerjaPegawai(
                 skp=skp_obj,
