@@ -154,7 +154,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         perilaku_kerja_list = PerilakuKerja.objects.filter(is_active=True)
         lampiran_list = Lampiran.objects.filter(status=Lampiran.Status.ACTIVE)
         penilai = False
-        view = request.GET.get('view',None)
+        view = request.GET.get('view', None)
         if view == "penilai":
             penilai = True
         extra_context = {
@@ -307,19 +307,30 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
 
     def view_skp_bawahan(self, request, id):
         obj = get_object_or_404(SasaranKinerja, pk=id)
-        list_skp_bawahan = SasaranKinerja.objects.filter(pejabat_penilai=obj.pegawai.atasan, )
-        show_detail = [SasaranKinerja.Status.PENGAJUAN, SasaranKinerja.Status.PERSETUJUAN]
+        list_skp_bawahan = SasaranKinerja.objects.filter(
+            pejabat_penilai=obj.pegawai.atasan,
+            periode_awal__lte=obj.periode_awal,
+            periode_akhir__gte=obj.periode_akhir
+        )
+        show_detail = [
+            SasaranKinerja.Status.PENGAJUAN,
+            SasaranKinerja.Status.PERSETUJUAN
+        ]
         extra_context = {
             "obj": obj,
-            "list_skp_bawahan":list_skp_bawahan,
-            "status_choices":SasaranKinerja.Status.choices,
+            "list_skp_bawahan": list_skp_bawahan,
+            "status_choices": SasaranKinerja.Status.choices,
             "pegawai": obj.pegawai,
             "atasan": obj.pegawai.atasan if obj.pegawai.atasan else None,
             "title": "SKP Bawahan",
             "show_detail": show_detail,
         }
-        return render(request, "admin/skp/sasarankinerja/skp_bawahan.html", extra_context)
-    
+        return render(
+            request,
+            "admin/skp/sasarankinerja/skp_bawahan.html",
+            extra_context
+        )
+
     def get_urls(self):
         admin_url = super(SasaranKinerjaAdmin, self).get_urls()
         custom_url = [
