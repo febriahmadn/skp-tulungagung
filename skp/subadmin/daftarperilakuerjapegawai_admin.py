@@ -5,14 +5,14 @@ from django.http import JsonResponse
 from skp.models import SasaranKinerja, PerilakuKerja, DaftarPerilakuKerjaPegawai
 
 class DaftarPerilakuKerjaPegawaiAdmin(admin.ModelAdmin):
-    list_display = ("pk", "skp","perilaku_kerja", "isi", "created")
+    list_display = ("pk", "skp", "perilaku_kerja", "isi", "created")
 
     def post(self, request):
         respon = {'success': False, 'pesan': "Terjadi kesalahan sistem"}
-        skp = request.POST.get('skp_id')
-        perilaku_id = request.POST.get('perilaku_id',None)
-        ekspetasi_id = request.POST.get('ekspetasi_id')
-        isi = request.POST.get('isi')
+        skp = request.POST.get('skp_id', None)
+        perilaku_id = request.POST.get('perilaku_id', None)
+        ekspetasi_id = request.POST.get('ekspetasi_id', None)
+        isi = request.POST.get('isi', None)
         tambah = False
         try:
             skp_obj = SasaranKinerja.objects.get(pk=skp)
@@ -31,25 +31,18 @@ class DaftarPerilakuKerjaPegawaiAdmin(admin.ModelAdmin):
         except Exception as e:
             respon = {'success': False, 'pesan': str(e)}
             return JsonResponse(respon, safe=False)
-        
+
         try:
-            if ekspetasi_id and ekspetasi_id != "":
-                obj = DaftarPerilakuKerjaPegawai.objects.get(pk=ekspetasi_id)        
-            else:
-                obj = DaftarPerilakuKerjaPegawai(
-                    skp = skp_obj,
-                    perilaku_kerja=perilaku__obj
-                )
-                tambah = True
+            obj = DaftarPerilakuKerjaPegawai.objects.get(pk=ekspetasi_id)
         except DaftarPerilakuKerjaPegawai.DoesNotExist:
             obj = DaftarPerilakuKerjaPegawai(
-                skp = skp_obj,
+                skp=skp_obj,
                 perilaku_kerja=perilaku__obj
             )
             tambah = True
         obj.isi = isi
         obj.save()
-        
+
         if tambah:
             respon = {'success': True, 'pesan': "Berhasil Menambah Ekspetasi"}
         else:

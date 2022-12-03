@@ -22,6 +22,7 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
 
     def load_data(self, request):
         rencana_id = request.GET.get("id", None)
+        status_edit = request.GET.get("edit", False)
         respon = {"success": False, "pesan": "Terjadi Kesalahan Sistem"}
         if rencana_id:
             try:
@@ -35,21 +36,32 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
                 respon = {"success": False, "pesan": "Error", "data": str(e)}
             else:
                 data = []
-                indikator_list = IndikatorKinerjaIndividu.objects.filter(
-                    rencana_kerja=obj
-                )
-                if obj.skp.jenis_jabatan == SasaranKinerja.JenisJabatan.JPT:
+                if status_edit == "true":
                     data = {
-                        "jenis": "rhk",
-                        "rencana_hasil": obj.rencana_kerja,
-                        "jenis_rhk": obj.get_jenis_display(),
-                        "indikator_count": indikator_list.count()
-                        if indikator_list.count() > 0
-                        else 1,
-                        "indikator_list_id": list(
-                            indikator_list.values_list("id", flat=True)
-                        ),
+                        'id': obj.id,
+                        'rencana_hasil': obj.rencana_kerja,
+                        'penugasan_dari': obj.penugasan_dari,
+                        'jenis': obj.jenis,
+                        'klasifikasi': obj.klasifikasi,
+                        'unor': obj.unor.id if obj.unor else None,
+                        'aspek': obj.aspek
                     }
+                else:
+                    indikator_list = IndikatorKinerjaIndividu.objects.filter(
+                        rencana_kerja=obj
+                    )
+                    if obj.skp.jenis_jabatan == SasaranKinerja.JenisJabatan.JPT:
+                        data = {
+                            "jenis": "rhk",
+                            "rencana_hasil": obj.rencana_kerja,
+                            "jenis_rhk": obj.get_jenis_display(),
+                            "indikator_count": indikator_list.count()
+                            if indikator_list.count() > 0
+                            else 1,
+                            "indikator_list_id": list(
+                                indikator_list.values_list("id", flat=True)
+                            ),
+                        }
                 respon = {"success": True, "data": data}
         return JsonResponse(respon, safe=False)
 
@@ -95,6 +107,11 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
                             )
                     respon.append(
                         {
+                            "delete_url": reverse_lazy(
+                                'admin:skp_rhk_hapus', kwargs={
+                                    "id": item.id
+                                }
+                            ) if len(indikator) <= 0 else "",
                             "id": item.id,
                             "induk": rencana_kerja_induk,
                             "rencana_kerja": item.rencana_kerja,
@@ -137,27 +154,54 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
 
     def action_add_or_change(self, request):
         respon = {"success": False}
+        rhk_id = request.POST.get("rhk_id", None)
         skp_id = request.POST.get("skp_id", None)
         klasifikasi = request.POST.get("klasifikasi", None)
         unitkerja = request.POST.get("unitkerja", None)
         jenis = request.POST.get("jenis", None)
         rencana_kerja = request.POST.get("rencana_kerja", None)
         penugasan_dari = request.POST.get("penugasan_dari", None)
-        try:
-            obj = RencanaHasilKerja(
-                skp_id=skp_id,
-                klasifikasi=klasifikasi,
-                unor_id=unitkerja,
-                jenis=jenis,
-                rencana_kerja=rencana_kerja,
-                penugasan_dari=penugasan_dari,
-            )
-            obj.save()
-        except Exception:
-            pass
+        if rhk_id and rhk_id != "":
+            try:
+                obj = RencanaHasilKerja.objects.get(pk=rhk_id)
+            except RencanaHasilKerja.DoesNotExist:
+                obj = RencanaHasilKerja(
+                    skp_id=skp_id
+                )
+            except Exception as e:
+                respon = {"success": False, 'pesan': str(e)}
+                return JsonResponse(respon, safe=False)
         else:
-            respon = {"success": True}
+            obj = RencanaHasilKerja(
+                skp_id=skp_id
+            )
+
+        obj.klasifikasi = klasifikasi
+        obj.unor_id = unitkerja
+        obj.jenis = int(jenis)
+        obj.rencana_kerja = rencana_kerja
+        obj.penugasan_dari = penugasan_dari
+        obj.save()
+        respon = {"success": True}
         return JsonResponse(respon, safe=True)
+
+    def rhk_delete(self, reqeust, id):
+        respon = {'success': False, 'pesan': "Terjadi kesalahan sistem"}
+        try:
+            obj = RencanaHasilKerja.objects.get(pk=id)
+        except RencanaHasilKerja.DoesNotExist:
+            respon = {'success': False, 'pesan': "Rencana Hasil Kerja Tidak Ditemukan"}
+            return JsonResponse(respon, safe=False)
+        except Exception as e:
+            respon = {'success': False, 'pesan': str(e)}
+            return JsonResponse(respon, safe=False)
+        else:
+            obj.delete()
+            respon = {
+                'success': True,
+                'pesan': "Berhasil Menghapus Rencana Hasil Kerja"
+            }
+        return JsonResponse(respon, safe=False)
 
     def get_urls(self):
         urls = super().get_urls()
@@ -182,6 +226,11 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
                 "action-add-or-create",
                 self.admin_site.admin_view(self.action_add_or_change),
                 name="skp_rencanahasilkerja_action_add_or_change",
+            ),
+            path(
+                "<int:id>/hapus",
+                self.admin_site.admin_view(self.rhk_delete),
+                name="skp_rhk_hapus",
             ),
             # path("skpdata/", self.view_custom, name="list_skp_admin"),
             # path("skpdata/add/", self.add_skp, name="add_skp_admin"),
