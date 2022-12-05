@@ -1,4 +1,5 @@
 import requests
+import calendar, datetime
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 from django.urls import resolve, path, reverse_lazy
@@ -7,6 +8,7 @@ from django.shortcuts import render, get_object_or_404
 
 from services.models import Configurations
 from skp.forms.sasarankinerja_form import SasaranKinerjaForm
+from skp.utils import FULL_BULAN
 from skp.models import (
     SasaranKinerja,
     RencanaHasilKerja,
@@ -335,16 +337,80 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
 
     def view_penilaian(self, request, id):
         obj = get_object_or_404(SasaranKinerja, pk=id)
+        config = Configurations.get_solo()
+            # if periode_awal.month == periode_akhir.month:
+            #     bulan = FULL_BULAN[periode_awal.month]
+            # else:
         extra_context = {
             "title": "Penilaian SKP",
-            "obj": obj
+            "obj": obj,
+            "batas_input":config.batas_input
         }
         return render(
             request,
             "admin/skp/sasarankinerja/penilaian.html",
             extra_context
         )
+
+    def load_penilaian(self, request):
+        sasaran_id = request.GET.get('id',None)
+        respon = {'success':False, 'pesan': "Terjadi Kesalahan Sistem"}
+        try:
+            sasaran_obj = SasaranKinerja.objects.get(pk=sasaran_id)
+        except Exception as e:
+            respon = {'success':False, 'pesan': "Terjadi Kesalahan Sistem"}
+            return JsonResponse(respon, safe=False)
         
+        periode_awal = sasaran_obj.periode_awal
+        periode_akhir = sasaran_obj.periode_akhir
+        bulan_list = []
+        if periode_awal.month == periode_akhir.month:
+            bulan_list.append({
+                'bulan':FULL_BULAN[periode_awal.month],
+                'range':"{} / {}".format(
+                    periode_awal.strftime('%Y-%m-%d'),
+                    periode_akhir.strftime('%Y-%m-%d'),
+                )
+            })
+        else:
+            for i in range(periode_awal.month, periode_akhir.month+1):
+                if i == periode_awal.month:
+                    num_days = calendar.monthrange(periode_awal.year, periode_awal.month)[1]
+                    bulan_list.append({
+                        'bulan':FULL_BULAN[i],
+                        'range':"{} / {}-{}-{}".format(
+                            periode_awal.strftime('%Y-%m-%d'),
+                            periode_awal.year,
+                            periode_awal.month if periode_awal.month > 9 else "0{}".format(periode_awal.month),
+                            num_days
+                        )
+                    })
+                elif i == periode_akhir.month:
+                    bulan_list.append({
+                        'bulan':FULL_BULAN[i],
+                        'range':"{}-{}-{} / {}".format(
+                            periode_akhir.year,
+                            periode_akhir.month if periode_awal.month > 9 else "0{}".format(periode_awal.month),
+                            "01",
+                            periode_akhir.strftime('%Y-%m-%d')
+                        )
+                    })
+                else:
+                    num_days = calendar.monthrange(periode_awal.year, periode_awal.month)[1]
+                    bulan_list.append({
+                        'bulan':FULL_BULAN[i],
+                        'range':"{}-{}-{} / {}-{}-{}".format(
+                            periode_akhir.year,
+                            i if i > 9 else "0{}".format(i),
+                            "01",
+                            periode_akhir.year,
+                            i if i > 9 else "0{}".format(i),
+                            num_days,
+                        )
+                    })
+        respon = {'success': True, "data":bulan_list}
+        return JsonResponse(respon, safe=False)      
+
     def get_urls(self):
         admin_url = super(SasaranKinerjaAdmin, self).get_urls()
         custom_url = [
@@ -352,6 +418,11 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                 "penilaian",
                 self.admin_site.admin_view(self.view_changelist_penilaian_skp),
                 name="skp_sasarankinerja_changelist_penilaian",
+            ),
+            path(
+                "load-penilaian",
+                self.admin_site.admin_view(self.load_penilaian),
+                name="skp_sasarankinerja_penilaian_load",
             ),
             path(
                 "<int:id>/detail",
