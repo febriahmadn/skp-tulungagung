@@ -20,6 +20,7 @@
 
   .table-custom th{
     background-color: #2196f3;
+    text-align: center;
   }
 </style>
 {% endblock custom_style %}
@@ -184,7 +185,6 @@
         })
     }
     $('a[data-toggle="pill"]').on('shown.bs.tab', function (e) {
-        console.log(e.target.id)
         switch (e.target.id){
             case "diri-tab":{
                 handleLoadPenilaianDiri();

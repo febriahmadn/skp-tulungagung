@@ -1,5 +1,5 @@
 import requests
-import calendar, datetime
+import calendar
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 from django.urls import resolve, path, reverse_lazy
@@ -73,7 +73,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
             reverse_lazy('admin:skp_sasarankinerja_bawahan', kwargs={"id": obj.id})
         )
         btn += '<a class="dropdown-item" href="{}">Penilaian</a>'.format(
-            reverse_lazy('admin:skp_sasarankinerja_penilaian', kwargs={"id": obj.id}) 
+            reverse_lazy('admin:skp_sasarankinerja_penilaian', kwargs={"id": obj.id})
         )
         btn += "</div>"
         btn += "</div>"
@@ -338,13 +338,10 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
     def view_penilaian(self, request, id):
         obj = get_object_or_404(SasaranKinerja, pk=id)
         config = Configurations.get_solo()
-            # if periode_awal.month == periode_akhir.month:
-            #     bulan = FULL_BULAN[periode_awal.month]
-            # else:
         extra_context = {
             "title": "Penilaian SKP",
             "obj": obj,
-            "batas_input":config.batas_input
+            "batas_input": config.batas_input
         }
         return render(
             request,
@@ -353,63 +350,70 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         )
 
     def load_penilaian(self, request):
-        sasaran_id = request.GET.get('id',None)
-        respon = {'success':False, 'pesan': "Terjadi Kesalahan Sistem"}
+        sasaran_id = request.GET.get('id', None)
+        respon = {'success': False, 'pesan': "Terjadi Kesalahan Sistem"}
         try:
             sasaran_obj = SasaranKinerja.objects.get(pk=sasaran_id)
         except Exception as e:
-            respon = {'success':False, 'pesan': "Terjadi Kesalahan Sistem"}
+            respon = {'success': False, 'pesan': str(e)}
             return JsonResponse(respon, safe=False)
-        
-        periode_awal = sasaran_obj.periode_awal
-        periode_akhir = sasaran_obj.periode_akhir
+
+        awal = sasaran_obj.periode_awal
+        akhir = sasaran_obj.periode_akhir
         bulan_list = []
-        if periode_awal.month == periode_akhir.month:
+        if awal.month == akhir.month:
             bulan_list.append({
-                'bulan':FULL_BULAN[periode_awal.month],
-                'range':"{} / {}".format(
-                    periode_awal.strftime('%Y-%m-%d'),
-                    periode_akhir.strftime('%Y-%m-%d'),
+                'bulan': FULL_BULAN[awal.month],
+                'range': "{} / {}".format(
+                    awal.strftime('%Y-%m-%d'),
+                    akhir.strftime('%Y-%m-%d'),
                 )
             })
         else:
-            for i in range(periode_awal.month, periode_akhir.month+1):
-                if i == periode_awal.month:
-                    num_days = calendar.monthrange(periode_awal.year, periode_awal.month)[1]
+            for i in range(awal.month, akhir.month+1):
+                if i == awal.month:
+                    num_days = calendar.monthrange(
+                        awal.year,
+                        awal.month
+                    )[1]
                     bulan_list.append({
-                        'bulan':FULL_BULAN[i],
-                        'range':"{} / {}-{}-{}".format(
-                            periode_awal.strftime('%Y-%m-%d'),
-                            periode_awal.year,
-                            periode_awal.month if periode_awal.month > 9 else "0{}".format(periode_awal.month),
+                        'bulan': FULL_BULAN[i],
+                        'range': "{} / {}-{}-{}".format(
+                            awal.strftime('%Y-%m-%d'),
+                            awal.year,
+                            awal.month if awal.month > 9 else "{}".format(
+                                "0"+awal.month
+                            ),
                             num_days
                         )
                     })
-                elif i == periode_akhir.month:
+                elif i == akhir.month:
                     bulan_list.append({
-                        'bulan':FULL_BULAN[i],
-                        'range':"{}-{}-{} / {}".format(
-                            periode_akhir.year,
-                            periode_akhir.month if periode_awal.month > 9 else "0{}".format(periode_awal.month),
+                        'bulan': FULL_BULAN[i],
+                        'range': "{}-{}-{} / {}".format(
+                            akhir.year,
+                            akhir.month if akhir.month > 9 else "0{}".format(
+                                awal.month
+                            ),
                             "01",
-                            periode_akhir.strftime('%Y-%m-%d')
+                            akhir.strftime('%Y-%m-%d')
                         )
                     })
                 else:
-                    num_days = calendar.monthrange(periode_awal.year, periode_awal.month)[1]
+                    num_days = calendar.monthrange(awal.year, awal.month)[1]
                     bulan_list.append({
-                        'bulan':FULL_BULAN[i],
-                        'range':"{}-{}-{} / {}-{}-{}".format(
-                            periode_akhir.year,
+                        'bulan': FULL_BULAN[i],
+                        'range': "{}-{}-{} / {}-{}-{}".format(
+                            akhir.year,
                             i if i > 9 else "0{}".format(i),
                             "01",
-                            periode_akhir.year,
+                            akhir.year,
                             i if i > 9 else "0{}".format(i),
                             num_days,
                         )
                     })
-        respon = {'success': True, "data":bulan_list}
-        return JsonResponse(respon, safe=False)      
+        respon = {'success': True, "data": bulan_list}
+        return JsonResponse(respon, safe=False)
 
     def get_urls(self):
         admin_url = super(SasaranKinerjaAdmin, self).get_urls()
