@@ -367,7 +367,11 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                 'range': "{} / {}".format(
                     awal.strftime('%Y-%m-%d'),
                     akhir.strftime('%Y-%m-%d'),
-                )
+                ),
+                'rencana_aksi_url':reverse_lazy('admin:rencana-aksi-skp',kwargs={
+                    "skp_id": sasaran_obj.id,
+                    "periode":awal.month
+                })
             })
         else:
             for i in range(awal.month, akhir.month+1):
@@ -385,7 +389,11 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                                 awal.month
                             ),
                             num_days
-                        )
+                        ),
+                        'rencana_aksi_url':reverse_lazy('admin:rencana-aksi-skp',kwargs={
+                            "skp_id": sasaran_obj.id,
+                            "periode":i
+                        })
                     })
                 elif i == akhir.month:
                     bulan_list.append({
@@ -397,7 +405,11 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                             ),
                             "01",
                             akhir.strftime('%Y-%m-%d')
-                        )
+                        ),
+                        'rencana_aksi_url':reverse_lazy('admin:rencana-aksi-skp',kwargs={
+                            "skp_id": sasaran_obj.id,
+                            "periode":i
+                        })
                     })
                 else:
                     num_days = calendar.monthrange(awal.year, awal.month)[1]
@@ -410,7 +422,11 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                             akhir.year,
                             i if i > 9 else "0{}".format(i),
                             num_days,
-                        )
+                        ),
+                        'rencana_aksi_url':reverse_lazy('admin:rencana-aksi-skp',kwargs={
+                            "skp_id": sasaran_obj.id,
+                            "periode":i
+                        })
                     })
         respon = {'success': True, "data": bulan_list}
         return JsonResponse(respon, safe=False)
