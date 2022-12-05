@@ -381,8 +381,8 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                         'range': "{} / {}-{}-{}".format(
                             awal.strftime('%Y-%m-%d'),
                             awal.year,
-                            awal.month if awal.month > 9 else "{}".format(
-                                "0"+awal.month
+                            awal.month if awal.month > 9 else "0{}".format(
+                                awal.month
                             ),
                             num_days
                         )
