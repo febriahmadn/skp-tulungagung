@@ -1,0 +1,203 @@
+{% extends 'admin/base_site.html' %}
+{% load widgets skp_template %}
+
+{% block custom_style %}
+{{ block.super }}
+<style>
+  table th{
+    font-size: 10pt;
+    color:#fdfdfd;
+  }
+  .field-hidden{
+    display: none;
+  }
+  .btn-group-xs > .btn, .btn-xs {
+    padding: .25rem .4rem;
+    font-size: .875rem;
+    line-height: .5;
+    border-radius: .2rem;
+  }
+
+  .table-custom th{
+    background-color: #2196f3;
+    text-align: center;
+  }
+</style>
+{% endblock custom_style %}
+
+{% block breadcrumbs %}
+<ul class="breadcrumb breadcrumb-transparent breadcrumb-dot font-weight-bold p-0 my-2 font-size-sm">
+  <li class="breadcrumb-item text-muted">
+    <a href="/admin" class="text-muted">Home</a>
+  </li>
+  <li class="breadcrumb-item text-muted">
+    <a href="/admin/skp" class="text-muted">Skp</a>
+  </li>
+  <li class="breadcrumb-item text-muted">
+    <a href="{% url 'admin:skp_sasarankinerja_changelist' %}" class="text-muted">Sasaran Kinerja</a>
+  </li>
+  <li class="breadcrumb-item text-muted">
+    <a href="#" class="text-muted">Penilaian Sasaran Kinerja</a>
+  </li>
+</ul>
+{% endblock breadcrumbs %}
+
+{% block content %}
+<div class="card m-0">
+    <div class="card-body p-2 m-0">
+        <ul class="nav nav-pills" id="pills-tab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="diri-tab" data-toggle="pill" href="#pills-diri" role="tab" aria-controls="pills-diri" aria-selected="true">Penilaian Diri</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="bawahan-tab" data-toggle="pill" href="#pills-bawahan" role="tab" aria-controls="pills-bawahan" aria-selected="false">Penilaian Bawahan</a>
+            </li>
+        </ul>
+    </div>
+</div>
+  <div class="card mt-2" id="card-penilaian">
+    <div class="card-body">
+        <div class="tab-content" id="pills-tabContent">
+          <div class="tab-pane fade show active" id="pills-diri" role="tabpanel" aria-labelledby="pills-diri-tab">
+            <table class="table table-bordered table-hover table-custom">
+                <thead>
+                    <tr>
+                        <th>Periode Penilaian</th>
+                        <th>Hasil Kerja</th>
+                        <th>Perilaku Kerja</th>
+                        <th>Nilai SKP</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="list-diri">
+                    <tr>
+                        <td colspan="5">Tidak Ada Data</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="tab-pane fade" id="pills-bawahan" role="tabpanel" aria-labelledby="pills-bawahan-tab">
+            <table class="table table-bordered table-hover table-custom">
+                <thead>
+                    <tr>
+                        <th>Periode Penilaian</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="list-bawahan">
+                    <tr>
+                        <td colspan="2">Tidak Ada Data</td>
+                    </tr>
+                </tbody>
+            </table>
+          </div>
+        </div>
+    </div>
+  </div>
+{% endblock content %}
+
+{% block custom_js %}
+{{ block.super }}
+<script>
+    let card_penilaian = new KTCard('card-penilaian');
+    const handleLoadPenilaianDiri = () =>{
+        $.ajax({
+            url:"{% url 'admin:skp_sasarankinerja_penilaian_load' %}",
+            type:"GET",
+            data:{
+                id:"{{obj.id}}",
+            },
+            beforeSend:function(){
+                KTApp.block(card_penilaian.getSelf(), {
+                    overlayColor: '#ffffff',
+                    type: 'loader',
+                    state: 'primary',
+                    opacity: 0.3,
+                    size: 'lg'
+                });
+            },
+            success:function(respon){
+                if(respon.success){
+                    data = respon.data
+                    var html = ""
+                    data.map((val, idx)=>{
+                        html += `
+                            <tr>
+                                <td>${val.bulan}<br>${val.range}<br>{{batas_input|date:"d-m-Y"}}</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary btn-block" >Rencana AKsi</button>
+                                    <button class="btn btn-sm btn-success btn-block" >Bukti Dukung</button>
+                                </td>
+                            </tr>
+                        `
+                    })
+                    $("#list-diri").html(html)
+                }
+            },
+            complete:function(){
+                KTApp.unblock(card_penilaian.getSelf())
+            }
+        })
+    }
+    const handleLoadPenilaianBawahan = () =>{
+        $.ajax({
+            url:"{% url 'admin:skp_sasarankinerja_penilaian_load' %}",
+            type:"GET",
+            data:{
+                id:"{{obj.id}}",
+            },
+            beforeSend:function(){
+                KTApp.block(card_penilaian.getSelf(), {
+                    overlayColor: '#ffffff',
+                    type: 'loader',
+                    state: 'primary',
+                    opacity: 0.3,
+                    size: 'lg'
+                });
+            },
+            success:function(respon){
+                if(respon.success){
+                    data = respon.data
+                    var html = ""
+                    data.map((val, idx)=>{
+                        html += `
+                            <tr>
+                                <td>${val.bulan}<br>${val.range}<br>{{batas_input|date:"d-m-Y"}}</td>
+                                <td>
+                                    <div style="display: inline-grid">
+                                        <button class="btn btn-sm btn-primary m-1" >Penilaian Bawahan</button>
+                                        <button class="btn btn-sm btn-success m-1" >Rekap Penilaian Bawahan</button>
+                                        <button class="btn btn-sm btn-info m-1" >Lihat Kurva</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `
+                    })
+                    $("#list-bawahan").html(html)
+                }
+            },
+            complete:function(){
+                KTApp.unblock(card_penilaian.getSelf())
+            }
+        })
+    }
+    $('a[data-toggle="pill"]').on('shown.bs.tab', function (e) {
+        switch (e.target.id){
+            case "diri-tab":{
+                handleLoadPenilaianDiri();
+                break;
+            }
+            case "bawahan-tab":{
+                handleLoadPenilaianBawahan();
+                break;
+            }
+        }
+    })
+    $(function(){
+        handleLoadPenilaianDiri();
+    })
+</script>
+{% endblock custom_js %}

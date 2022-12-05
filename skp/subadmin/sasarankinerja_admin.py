@@ -1,4 +1,5 @@
 import requests
+import calendar
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 from django.urls import resolve, path, reverse_lazy
@@ -7,6 +8,7 @@ from django.shortcuts import render, get_object_or_404
 
 from services.models import Configurations
 from skp.forms.sasarankinerja_form import SasaranKinerjaForm
+from skp.utils import FULL_BULAN
 from skp.models import (
     SasaranKinerja,
     RencanaHasilKerja,
@@ -70,7 +72,9 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         btn += '<a class="dropdown-item" href="{}">SKP Bawahan</a>'.format(
             reverse_lazy('admin:skp_sasarankinerja_bawahan', kwargs={"id": obj.id})
         )
-        btn += '<a class="dropdown-item" href="#">Penilaian</a>'
+        btn += '<a class="dropdown-item" href="{}">Penilaian</a>'.format(
+            reverse_lazy('admin:skp_sasarankinerja_penilaian', kwargs={"id": obj.id})
+        )
         btn += "</div>"
         btn += "</div>"
         return mark_safe(btn)
@@ -331,6 +335,86 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
             extra_context
         )
 
+    def view_penilaian(self, request, id):
+        obj = get_object_or_404(SasaranKinerja, pk=id)
+        config = Configurations.get_solo()
+        extra_context = {
+            "title": "Penilaian SKP",
+            "obj": obj,
+            "batas_input": config.batas_input
+        }
+        return render(
+            request,
+            "admin/skp/sasarankinerja/penilaian.html",
+            extra_context
+        )
+
+    def load_penilaian(self, request):
+        sasaran_id = request.GET.get('id', None)
+        respon = {'success': False, 'pesan': "Terjadi Kesalahan Sistem"}
+        try:
+            sasaran_obj = SasaranKinerja.objects.get(pk=sasaran_id)
+        except Exception as e:
+            respon = {'success': False, 'pesan': str(e)}
+            return JsonResponse(respon, safe=False)
+
+        awal = sasaran_obj.periode_awal
+        akhir = sasaran_obj.periode_akhir
+        bulan_list = []
+        if awal.month == akhir.month:
+            bulan_list.append({
+                'bulan': FULL_BULAN[awal.month],
+                'range': "{} / {}".format(
+                    awal.strftime('%Y-%m-%d'),
+                    akhir.strftime('%Y-%m-%d'),
+                )
+            })
+        else:
+            for i in range(awal.month, akhir.month+1):
+                if i == awal.month:
+                    num_days = calendar.monthrange(
+                        awal.year,
+                        awal.month
+                    )[1]
+                    bulan_list.append({
+                        'bulan': FULL_BULAN[i],
+                        'range': "{} / {}-{}-{}".format(
+                            awal.strftime('%Y-%m-%d'),
+                            awal.year,
+                            awal.month if awal.month > 9 else "0{}".format(
+                                awal.month
+                            ),
+                            num_days
+                        )
+                    })
+                elif i == akhir.month:
+                    bulan_list.append({
+                        'bulan': FULL_BULAN[i],
+                        'range': "{}-{}-{} / {}".format(
+                            akhir.year,
+                            akhir.month if akhir.month > 9 else "0{}".format(
+                                awal.month
+                            ),
+                            "01",
+                            akhir.strftime('%Y-%m-%d')
+                        )
+                    })
+                else:
+                    num_days = calendar.monthrange(awal.year, awal.month)[1]
+                    bulan_list.append({
+                        'bulan': FULL_BULAN[i],
+                        'range': "{}-{}-{} / {}-{}-{}".format(
+                            akhir.year,
+                            i if i > 9 else "0{}".format(i),
+                            "01",
+                            akhir.year,
+                            i if i > 9 else "0{}".format(i),
+                            num_days,
+                        )
+                    })
+        respon = {'success': True, "data": bulan_list}
+        return JsonResponse(respon, safe=False)
+
     def get_urls(self):
         admin_url = super(SasaranKinerjaAdmin, self).get_urls()
         custom_url = [
@@ -338,6 +422,11 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                 "penilaian",
                 self.admin_site.admin_view(self.view_changelist_penilaian_skp),
                 name="skp_sasarankinerja_changelist_penilaian",
+            ),
+            path(
+                "load-penilaian",
+                self.admin_site.admin_view(self.load_penilaian),
+                name="skp_sasarankinerja_penilaian_load",
             ),
             path(
                 "<int:id>/detail",
@@ -358,6 +447,11 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                 "<int:id>/skp-bawahan",
                 self.admin_site.admin_view(self.view_skp_bawahan),
                 name="skp_sasarankinerja_bawahan",
+            ),
+            path(
+                "<int:id>/penilaian-skp",
+                self.admin_site.admin_view(self.view_penilaian),
+                name="skp_sasarankinerja_penilaian",
             ),
             path(
                 "change-status",

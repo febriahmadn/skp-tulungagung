@@ -90,6 +90,19 @@ class SasaranKinerjaForm(forms.ModelForm):
             # )
             # self.fields["pejabat_penilai"].widget = forms.HiddenInput()
 
+    def clean(self):
+        periode_awal = self.cleaned_data.get('periode_awal', None)
+        periode_akhir = self.cleaned_data.get('periode_akhir', None)
+
+        if periode_awal.year != periode_akhir.year:
+            raise forms.ValidationError("Tahun Periode Tidak Sama".title())
+
+        if periode_awal > periode_akhir:
+            raise forms.ValidationError(
+                "periode akhir lebih dahulu dari pada tanggal awal".title()
+            )
+        return self.cleaned_data
+
     class Meta:
         model = SasaranKinerja
         fields = (
