@@ -198,6 +198,7 @@ CAS_SERVER_URL = "http://{}/cas".format(
     os.environ.get("CAS_SERVER_URL", "presensi.tulungagung.go.id")
 )
 CAS_VERIFY_SSL_CERTIFICATE = False
+CAS_CHECK_NEXT = False
 CAS_VERSION = "3"
 CAS_AUTO_CREATE_USERS = True
 
