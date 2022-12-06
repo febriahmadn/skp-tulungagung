@@ -3,6 +3,7 @@ from django.urls import path, reverse_lazy
 from django.http import JsonResponse
 from skp.models import (
     RencanaHasilKerja,
+    RencanaAksi,
     SasaranKinerja,
     IndikatorKinerjaIndividu,
 )
@@ -69,6 +70,7 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
         # kalau bisa nanti diubah ke rest api lebih bagus
         respon = []
         jenis = request.GET.get("jenis", None)
+        periode = request.GET.get("periode", None)
         try:
             obj = SasaranKinerja.objects.get(pk=obj_id)
         except SasaranKinerja.DoesNotExist:
@@ -105,6 +107,11 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
                                     else None,
                                 }
                             )
+
+                    rencana_aksi = []
+                    rencana_aksi_list = RencanaAksi.objects.filter(skp=obj, rhk=item, periode=int(periode))
+                    for rencana_item in rencana_aksi_list:
+                        rencana_aksi.append(rencana_item.rencana_aksi)
                     respon.append(
                         {
                             "delete_url": reverse_lazy(
@@ -115,6 +122,7 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
                             "id": item.id,
                             "induk": rencana_kerja_induk,
                             "rencana_kerja": item.rencana_kerja,
+                            "rencana_aksi": rencana_aksi,
                             "penugasan_dari": item.penugasan_dari,
                             "indikator": indikator,
                         }

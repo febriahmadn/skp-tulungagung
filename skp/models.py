@@ -318,3 +318,61 @@ class RencanaAksi(models.Model):
     class Meta:
         verbose_name = "Rencana Aksi"
         verbose_name_plural = "Rencana Aksi"
+
+class BuktiDukung(models.Model):
+    skp = models.ForeignKey(
+        SasaranKinerja,
+        on_delete=models.CASCADE,
+        verbose_name="Sasaran Kinerja Pegawai",
+        null=True
+    )
+    rhk = models.ForeignKey(
+        RencanaHasilKerja,
+        on_delete=models.CASCADE,
+        verbose_name="Rencana Hasil Kerja Pegawai",
+        null=True
+    )
+    periode = models.IntegerField(
+        choices=[(k, v) for k, v in FULL_BULAN.items()],
+        null=True
+    )
+    nama_bukti_dukung = models.TextField("Nama Bukti Dukung", null=True, blank=True)
+    link = models.URLField("Link", null=True, blank=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return "{}".format(str(self.id))
+
+    class Meta:
+        verbose_name = "Bukti Dukung"
+        verbose_name_plural = "Bukti Dukung"
+
+class Realisasi(models.Model):
+    skp = models.ForeignKey(
+        SasaranKinerja,
+        on_delete=models.CASCADE,
+        verbose_name="Sasaran Kinerja Pegawai",
+        null=True
+    )
+    rhk = models.ForeignKey(
+        RencanaHasilKerja,
+        on_delete=models.CASCADE,
+        verbose_name="Rencana Hasil Kerja Pegawai",
+        null=True
+    )
+    periode = models.IntegerField(
+        choices=[(k, v) for k, v in FULL_BULAN.items()],
+        null=True
+    )
+    realisasi = models.CharField("Realisasi", max_length=255, null=True, blank=True)
+    sumber = models.CharField("Sumber Data", max_length=255, null=True, blank=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return "{}".format(str(self.id))
+
+    class Meta:
+        verbose_name = "Realisasi"
+        verbose_name_plural = "Realisasi"
+
+
