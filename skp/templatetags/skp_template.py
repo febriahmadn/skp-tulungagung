@@ -130,7 +130,6 @@ def daftar_rencana_aksi(counter, skp_id, rhk_id, periode, cetak="tidak"):
     else:
         if rencana_list.count() > 0:
             for i in rencana_list:
-                
                 aksi = '''
                 <div style="display: flex" >
                     <button type="button" data-jenis="ubah" data-id="{}"
@@ -203,9 +202,22 @@ def daftar_rencana_aksi(counter, skp_id, rhk_id, periode, cetak="tidak"):
 def get_complete_periode(awal, akhir):
     if awal.month == akhir.month:
         if awal.day == akhir.day:
-            return "{} {} TAHUN {}".format(awal.day, FULL_BULAN[awal.month].upper(), awal.year)
-        return "{} SD {} {} TAHUN {}".format(awal.day, akhir.day, FULL_BULAN[awal.month].upper(), awal.year)
+            return "{} {} TAHUN {}".format(
+                awal.day,
+                FULL_BULAN[awal.month].upper(),
+                awal.year
+            )
+        return "{} SD {} {} TAHUN {}".format(
+            awal.day, akhir.day,
+            FULL_BULAN[awal.month].upper(),
+            awal.year
+        )
     else:
-        return "{} {} SD {} {} TAHUN {}".format(awal.day, FULL_BULAN[awal.month].upper(), akhir.day, FULL_BULAN[akhir.month], awal.year)
-    # {{obj.periode_awal|date:"j"}} {{obj.periode_awal|date:"n"|add:0|get_bulan}} SD {{obj.periode_akhir|date:"j"}} {{obj.periode_akhir|date:"n"|add:0|get_bulan}}
+        return "{} {} SD {} {} TAHUN {}".format(
+            awal.day,
+            FULL_BULAN[awal.month].upper(),
+            akhir.day,
+            FULL_BULAN[akhir.month],
+            awal.year
+        )
     return ""

@@ -108,6 +108,7 @@ class RencanaAksiAdmin(admin.ModelAdmin):
         try:
             nama_pegawai = obj.detailsasarankinerja.nama_pegawai
         except Exception as e:
+            print(e)
             nama_pegawai = obj.pegawai.get_complete_name()
         extra_context = {
             "obj": obj,
@@ -118,7 +119,7 @@ class RencanaAksiAdmin(admin.ModelAdmin):
             ),
             "rhk_list": rhk_list,
             "show_ttd": show_ttd,
-            "periode":periode
+            "periode": periode
         }
         return render(request, "admin/skp/rencanaaksi/cetak.html", extra_context)
 
