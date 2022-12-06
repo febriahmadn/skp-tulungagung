@@ -1,0 +1,205 @@
+{% load static skp_template %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'favicon_io' %}/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon_io' %}/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon_io' %}/favicon-16x16.png">
+    <link rel="manifest" href="{% static 'favicon_io' %}/site.webmanifest">
+    <style>
+        * {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        .no-border td, .no-border th {
+            border: unset !important;
+            padding: 8px;
+        }
+        table td, table th {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        .t-c {
+            text-align: center;
+        }
+        
+        .bg-blue {
+            background-color: #86caff;
+        }
+
+        .m-0 {
+            margin: 0;
+        }
+
+        .contents {
+            padding: 10px 30px 10px 30px;
+        }
+        .w-50{
+            width: 50%;
+        }
+    </style>
+</head>
+<!-- <body onload="window.print();"> -->
+<body>
+    <div class="contents">
+        <div style="text-align: center; margin: 20px;">
+            <h4 class="m-0">SASARAN KINERJA PEGAWAI</h4>
+        </div>
+        <h5>PERIODE: {{periode|get_bulan|upper}}</h5>
+        <div style="display: flex;">
+            <div class="w-50">
+                <h5 class="m-0">
+                    {{obj.unor.unitkerja}} 
+                </h5>
+            </div>
+            <div class="w-50">
+                <h5 class="m-0">
+                    PERIODE PENILAIAN: {% get_complete_periode obj.periode_awal obj.periode_akhir %} </h5>
+                </h5>
+            </div>
+        </div>
+        <table style="margin-top: 10px;">
+            <thead class="bg-blue">
+                <tr>
+                    <th style="width: 5%;">NO</th>
+                    <th colspan="2">PEGAWAI YANG DINILAI</th>
+                    <th style="width: 5%;">NO</th>
+                    <th colspan="2">PEJABAT PENILAI KINERJA</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if obj.detailsasarankinerja %}
+                <tr>
+                    <td class="t-c">1</td>
+                    <td style="width: 15%;">NAMA</td>
+                    <td>{{ obj.detailsasarankinerja.nama_pegawai }}</td>
+                    <td class="t-c">1</td>
+                    <td style="width: 15%;">NAMA</td>
+                    <td>{{ obj.detailsasarankinerja.nama_pejabat }}</td>
+                </tr>
+                <tr>
+                    <td class="t-c">2</td>
+                    <td>NIP</td>
+                    <td>{{ obj.detailsasarankinerja.nip_pegawai }}</td>
+                    <td class="t-c">2</td>
+                    <td>NIP</td>
+                    <td>{{ obj.detailsasarankinerja.nip_pejabat }}</td>
+                </tr>
+                <tr>
+                    <td class="t-c">3</td>
+                    <td>PANGKAT / GOL. RUANG</td>
+                    <td>{{ obj.detailsasarankinerja.golongan_pegawai|default:'-' }}</td>
+                    <td class="t-c">3</td>
+                    <td>PANGKAT / GOL. RUANG</td>
+                    <td>{{ obj.detailsasarankinerja.golongan_pejabat|default:'-' }}</td>
+                </tr>
+                <tr>
+                    <td class="t-c">4</td>
+                    <td>JABATAN</td>
+                    <td>{{ obj.detailsasarankinerja.jabatan_pegawai|default:'-' }}</td>
+                    <td class="t-c">4</td>
+                    <td>JABATAN</td>
+                    <td>{{ obj.detailsasarankinerja.jabatan_pejabat|default:'-' }}</td>
+                </tr>
+                <tr>
+                    <td class="t-c">5</td>
+                    <td>UNIT KERJA</td>
+                    <td>{{ obj.detailsasarankinerja.unor_pegawai }}</td>
+                    <td class="t-c">5</td>
+                    <td>UNIT KERJA</td>
+                    <td>{{ obj.detailsasarankinerja.unor_pejabat }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td class="t-c">1</td>
+                    <td style="width: 15%;">NAMA</td>
+                    <td>{{ obj.pegawai.get_complete_name }}</td>
+                    <td class="t-c">1</td>
+                    <td style="width: 15%;">NAMA</td>
+                    <td>{{ obj.pegawai.atasan.get_complete_name }}</td>
+                  </tr>
+                  <tr>
+                    <td class="t-c">2</td>
+                    <td>NIP</td>
+                    <td>{{ obj.pegawai.username }}</td>
+                    <td class="t-c">2</td>
+                    <td>NIP</td>
+                    <td>{{ obj.pegawai.atasan.username }}</td>
+                  </tr>
+                  <tr>
+                    <td class="t-c">3</td>
+                    <td>PANGKAT / GOL. RUANG</td>
+                    <td>{{ obj.pegawai.golongan|default:'-' }}</td>
+                    <td class="t-c">3</td>
+                    <td>PANGKAT / GOL. RUANG</td>
+                    <td>{{ obj.pegawai.atasan.golongan|default:'-' }}</td>
+                  </tr>
+                  <tr>
+                    <td class="t-c">4</td>
+                    <td>JABATAN</td>
+                    <td>{{ obj.pegawai.jabatan|default:'-' }}</td>
+                    <td class="t-c">4</td>
+                    <td>JABATAN</td>
+                    <td>{{ obj.pegawai.atasan.jabatan|default:'-' }}</td>
+                  </tr>
+                  <tr>
+                    <td class="t-c">5</td>
+                    <td>UNIT KERJA</td>
+                    <td>{{ obj.pegawai.unitkerja.unitkerja }}</td>
+                    <td class="t-c">5</td>
+                    <td>UNIT KERJA</td>
+                    <td>{{ obj.pegawai.atasan.unitkerja.unitkerja }}</td>
+                  </tr>
+                {% endif %}
+            </tbody>
+        </table>
+        <table>
+            <tr class="bg-blue">
+                <th colspan="3" align="left">Rencana Aksi</th>
+            </tr>
+            <tr class="bg-blue">
+                <th>NO</th>
+                <th>RENCANA HASIL KERJA</th>
+                <th>RENCANA AKSI</th>
+            </tr>
+            {% for item in rhk_list %}
+            <tr>
+                <td>{{forloop.counter}}</td>
+                <td>{{item.rencana_kerja}}</td>
+                <td>
+                    {% daftar_rencana_aksi 1 obj item periode "ya" %}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        {% if show_ttd %}
+        <div style="padding-top: 20px;">
+            <table class="no-border">
+                <tr>
+                    <td valign="bottom" style="text-align: center;">Pegawai yang Dinilai</td>
+                    <td valign="bottom" style="text-align: center;">Tulungagung, {% now "d F Y" %}<br>Pejabat Penilai Kinerja</td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="height: 30px;" ></td>
+                </tr>
+                <tr>
+                    <td style="text-align: center;">{{pegawai.get_complete_name}}<br>NIP. {{pegawai.username}}</td>
+                    <td style="text-align: center;">{% if atasan %}{{atasan.get_complete_name}}<br>NIP. {{atasan.username}}{% else %}---{% endif %}</td>
+                </tr>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

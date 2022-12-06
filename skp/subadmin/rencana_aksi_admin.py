@@ -97,6 +97,31 @@ class RencanaAksiAdmin(admin.ModelAdmin):
             }
         return JsonResponse(respon, safe=False)
 
+    def view_cetak_rencana_aksi_pegawai(self, request, obj_id, periode):
+        obj = get_object_or_404(SasaranKinerja, pk=obj_id)
+        rhk_list = RencanaHasilKerja.objects.filter(
+            skp=obj,
+        )
+        show_ttd = True
+        if obj.status in [SasaranKinerja.Status.DRAFT, SasaranKinerja.Status.PENGAJUAN]:
+            show_ttd = False
+        try:
+            nama_pegawai = obj.detailsasarankinerja.nama_pegawai
+        except Exception as e:
+            nama_pegawai = obj.pegawai.get_complete_name()
+        extra_context = {
+            "obj": obj,
+            "pegawai": obj.pegawai,
+            "penilai": obj.pejabat_penilai,
+            "title": "Cetak Rencana Aksi {} [{}]".format(
+                nama_pegawai, obj.get_periode()
+            ),
+            "rhk_list": rhk_list,
+            "show_ttd": show_ttd,
+            "periode":periode
+        }
+        return render(request, "admin/skp/rencanaaksi/cetak.html", extra_context)
+
     def get_urls(self):
         admin_url = super(RencanaAksiAdmin, self).get_urls()
         custom_url = [
@@ -114,6 +139,11 @@ class RencanaAksiAdmin(admin.ModelAdmin):
                 "<int:id>/hapus",
                 self.admin_site.admin_view(self.rencana_delete),
                 name="skp_rencanaaksi_hapus",
+            ),
+            path(
+                "<int:obj_id>/cetak/<int:periode>",
+                self.admin_site.admin_view(self.view_cetak_rencana_aksi_pegawai),
+                name="skp_rencanaaksi_cetak",
             ),
         ]
         return custom_url + admin_url
