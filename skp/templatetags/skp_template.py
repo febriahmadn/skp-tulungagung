@@ -112,11 +112,15 @@ def daftar_ekspetasi(perilaku_id, skp_id, cetak):
 
 @register.simple_tag
 def daftar_rencana_aksi(counter, skp_id, rhk_id, periode):
-    find_rencana_aksi = RencanaAksi.objects.filter(skp=skp_id, rhk=rhk_id, periode=periode)
+    rencana_list = RencanaAksi.objects.filter(
+        skp=skp_id,
+        rhk=rhk_id,
+        periode=periode
+    )
     isi = ""
     isi_luar = ""
-    if find_rencana_aksi.count() > 0:
-        for i in find_rencana_aksi:
+    if rencana_list.count() > 0:
+        for i in rencana_list:
             aksi = '''
             <div style="display: flex" >
                 <button type="button" data-jenis="ubah" data-id="{}"
@@ -142,7 +146,9 @@ def daftar_rencana_aksi(counter, skp_id, rhk_id, periode):
         isi_luar = '''
         <tr>
             <td>
-                <button type="button" data-rhk="{}" class="btn btn-sm btn-primary btn-block" data-toggle="modal" data-target="#modal_rencana_aksi">
+                <button type="button" data-rhk="{}"
+                class="btn btn-sm btn-primary btn-block"
+                data-toggle="modal" data-target="#modal_rencana_aksi">
                     <i class="fas fa-plus"></i> Tambah Rencana Aksi
                 </button>
             </td>
@@ -153,7 +159,9 @@ def daftar_rencana_aksi(counter, skp_id, rhk_id, periode):
     else:
         isi = '''
             <td>
-                <button type="button" data-rhk="{}" class="btn btn-sm btn-primary btn-block" data-toggle="modal" data-target="#modal_rencana_aksi">
+                <button type="button" data-rhk="{}"
+                class="btn btn-sm btn-primary btn-block"
+                data-toggle="modal" data-target="#modal_rencana_aksi">
                     <i class="fas fa-plus"></i> Tambah Rencana Aksi
                 </button>
             </td>
@@ -169,14 +177,14 @@ def daftar_rencana_aksi(counter, skp_id, rhk_id, periode):
         {}
 
     '''.format(
-        find_rencana_aksi.count()+2 if find_rencana_aksi.exists() and find_rencana_aksi.count() > 0 else 2,
+        rencana_list.count()+2 if rencana_list.count() > 0 else 2,
         counter,
 
-        find_rencana_aksi.count()+2 if find_rencana_aksi.exists() and find_rencana_aksi.count() > 0 else 2,
+        rencana_list.count()+2 if rencana_list.count() > 0 else 2,
         rhk_id.rencana_kerja,
 
         isi,
-        
+
         isi_luar
     )
     return mark_safe(html)

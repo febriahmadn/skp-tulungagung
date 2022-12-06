@@ -305,7 +305,10 @@ class RencanaAksi(models.Model):
         verbose_name="Rencana Hasil Kerja Pegawai",
         null=True
     )
-    periode = models.IntegerField(choices=[(k, v) for k, v in FULL_BULAN.items()], null=True)
+    periode = models.IntegerField(
+        choices=[(k, v) for k, v in FULL_BULAN.items()],
+        null=True
+    )
     rencana_aksi = models.TextField("Rencana Aksi", null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
 
