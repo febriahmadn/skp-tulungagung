@@ -1,0 +1,283 @@
+{% extends 'admin/base_site.html' %}
+{% load widgets skp_template %}
+
+{% block custom_style %}
+{{ block.super }}
+<style>
+  table th{
+    font-size: 10pt;
+    color:#fdfdfd;
+  }
+  .field-hidden{
+    display: none;
+  }
+  .btn-group-xs > .btn, .btn-xs {
+    padding: .25rem .4rem;
+    font-size: .875rem;
+    line-height: .5;
+    border-radius: .2rem;
+  }
+
+  .table-custom th{
+    background-color: #2196f3;
+  }
+</style>
+{% endblock custom_style %}
+
+{% block breadcrumbs %}
+<ul class="breadcrumb breadcrumb-transparent breadcrumb-dot font-weight-bold p-0 my-2 font-size-sm">
+  <li class="breadcrumb-item text-muted">
+    <a href="/admin" class="text-muted">Home</a>
+  </li>
+  <li class="breadcrumb-item text-muted">
+    <a href="/admin/skp" class="text-muted">Skp</a>
+  </li>
+  <li class="breadcrumb-item text-muted">
+    <a href="{% url 'admin:skp_sasarankinerja_changelist' %}" class="text-muted">Sasaran Kinerja</a>
+  </li>
+  <li class="breadcrumb-item text-muted">
+    <a href="#" class="text-muted">Detail Sasaran Kinerja</a>
+  </li>
+</ul>
+{% endblock breadcrumbs %}
+
+{% block content %}
+<div class="row px-4 pb-3">
+  <div class="col-md-4">
+    <div class="d-flex">
+      <label class="mx-1 py-2" style="min-width: 100px;">Status SKP</label>
+      <input type="text" readonly class="form-control form-control-sm" id="staticEmail" value="{{obj.get_status_display}}">
+    </div>
+  </div>
+
+  <div class="col-md-8 d-flex flex-row-reverse">
+    <!-- <a href="{% url 'admin:skp_sasarankinerja_cetak' obj.id %}"> -->
+    <a href="#">
+      <button class="btn btn-success mr-1"><i class="fas fa-print"></i> Cetak</button>
+    </a>
+  </div>
+</div>
+<!-- data detail perlu diganti menggunakan detailrincian skp -->
+<div class="row">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header bg-success text-white p-5">
+          <h6 class="m-0">PEGAWAI YANG DINILAI</h6>
+      </div>
+      <div class="card-body p-0">
+        <table class="table">
+          <tr>
+            <td style="width: 30%;">Nama</td>
+            <td style="width: 5%;">:</td>
+            <td>{{pegawai.get_complete_name}}</td>
+          </tr>
+          <tr>
+            <td>NIP</td>
+            <td>:</td>
+            <td>{{pegawai.username}}</td>
+          </tr>
+          <tr>
+            <td>Pangkat / Gol. Ruang</td>
+            <td>:</td>
+            <td>{{pegawai.get_golongan_display|default_if_none:"---"}}</td>
+          </tr>
+          <tr>
+            <td>Jabatan</td>
+            <td>:</td>
+            <td>{{pegawai.jabatan|default_if_none:"---"}}</td>
+          </tr>
+          <tr>
+            <td>Unit Kerja</td>
+            <td>:</td>
+            <td>{% if pegawai.unitkerja %}{{pegawai.unitkerja.unitkerja}}{% else %}---{% endif %}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header bg-primary text-white p-5">
+          <h6 class="m-0">PEJABAT PENILAI KINERJA</h6>
+      </div>
+      <div class="card-body p-0">
+        <table class="table">
+          <tr>
+            <td style="width: 30%;">Nama</td>
+            <td style="width: 5%;">:</td>
+            <td>{{penilai.get_complete_name|default_if_none:"---"}}</td>
+          </tr>
+          <tr>
+            <td>NIP</td>
+            <td>:</td>
+            <td>{{penilai.username|default_if_none:"---"}}</td>
+          </tr>
+          <tr>
+            <td>Pangkat / Gol. Ruang</td>
+            <td>:</td>
+            <td>{{penilai.get_golongan_display|default_if_none:"---"}}</td>
+          </tr>
+          <tr>
+            <td>Jabatan</td>
+            <td>:</td>
+            <td>{{penilai.jabatan|default_if_none:"---"}}</td>
+          </tr>
+          <tr>
+            <td>Unit Kerja</td>
+            <td>:</td>
+            <td>{% if penilai.unitkerja %}{{penilai.unitkerja.unitkerja}}{% else %}---{% endif %}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="d-flex justify-content-between mt-3 pr-4" style="padding: unset;">
+  <h4 style="margin: unset;">Periode: {{periode|get_bulan|upper}}</h4>
+  <h4 style="margin: unset;">Periode Penilaian: {{obj.get_periode}}</h4>
+</div>
+
+<div class="row">
+  <div class="col-md-12 pt-3">
+    <div class="card">
+      <div class="d-flex justify-content-start card-header py-4 px-5">
+        <h6 class="d-flex align-items-center m-0">Rencana Aksi</h6>
+      </div>
+      <div class="card-body p-2">
+        <div class="table-responsive" style="border-radius: 5px;">
+          <table class="table table-bordered mb-0" id="result_list">
+            <thead style="background: #2196f3;">
+              <tr>
+                <th valign="center" style="width: 20px">No</th>
+                <th valign="center">Rencana Hasil Kerja</th>
+                <th valign="center">Rencana Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in rhk_list %}
+                {% daftar_rencana_aksi forloop.counter obj item periode %}
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+ 
+<div class="modal fade" id="modal_rencana_aksi" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="rencana_aksi_title">Tambah Rencana Aksi</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        {% csrf_token %}
+        <input type="hidden" name="rencana_id" id="rencana_id">
+        <input type="hidden" name="rhk_id" id="rhk_id">
+        <div class="form-group m-0">
+          <label for="rencana_aksi">Rencana Aksi</label>
+          <input type="text" class="form-control" id="rencana_aksi">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="save_rencana_aksi()">Submit</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
+
+{% block custom_js %}
+{{ block.super }}
+<script type="text/javascript">
+  $("#modal_rencana_aksi").on('show.bs.modal', function (event) {
+    let button = $(event.relatedTarget)
+    let rhk = button.data('rhk')
+    let jenis = button.data('jenis')
+    let id = button.data('id')
+    $("#rhk_id").val(rhk)
+    if(jenis == "ubah"){
+      let isi = $("#rencana-aksi-"+id)
+      $("#rencana_aksi").val(isi.html())
+    }else{
+      $("#rencana_aksi").val("")
+    }
+  })
+  const save_rencana_aksi = () => {
+    let modal = $("#modal_rencana_aksi")
+    let rencana_id = $("#rencana_id").val()
+    let rhk_id = $("#rhk_id").val()
+    let rencana_aksi = $("#rencana_aksi").val()
+    let csrf = modal.find('input[name=csrfmiddlewaretoken]').val();
+    if(rencana_aksi != ""){
+      $.ajax({
+        url: '{% url "admin:rencana-aksi-create" %}',
+        type: 'POST',
+        data: {
+          csrfmiddlewaretoken: csrf,
+          skp_id: "{{obj.id}}",
+          periode: "{{periode}}",
+          rencana_id: rencana_id,
+          rhk_id: rhk_id,
+          rencana_aksi: rencana_aksi,
+        },
+        success: function(response){
+          if(response.success){
+            toastr.success(response.pesan);
+            window.location.reload()
+          } else {
+            toastr.warning(response.pesan);
+          }
+        }
+      })  
+    }
+  }
+  const delete_action = (url) => {
+    Swal.fire({
+      title: 'Apakah anda yakin ingin menghapus data ini?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: "Iya, Hapus",
+      cancelButtonText: "Tidak, batalkan!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        $.ajax({
+          url: url,
+          type: 'GET',
+          success: function(response){
+            if(response.success){
+              Swal.fire({
+                icon: 'success',
+                title: 'Berhasil',
+                text: response.pesan,
+                timer: 1500,
+                showCancelButton: false,
+                showConfirmButton: false
+              }).then(function() {
+                window.location.reload()
+              });
+            } else {
+              Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: response.pesan,
+                timer: 1500,
+                showCancelButton: false,
+                showConfirmButton: false
+              })
+            }
+          }
+        })
+      }
+    })
+  }
+</script>
+{% endblock custom_js %}

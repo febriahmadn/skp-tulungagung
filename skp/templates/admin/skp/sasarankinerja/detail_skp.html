@@ -385,17 +385,17 @@
         </button>
       </div>
       <div class="modal-body">
-        <input type="hidden" name="rhk_id" />
-        <div class="form-group">
-          <select name="rhk_pimpinan" class="form-control">
-            <option value="0">Pilih RHK Pimpinan</option>
-          </select>
+          <input type="hidden" name="rhk_id" />
+          <div class="form-group">
+            <select name="rhk_pimpinan" class="form-control">
+              <option value="0">Pilih RHK Pimpinan</option>
+            </select>
+          </div>
         </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" onclick="set_rhk_pimpinan()">Submit</button>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-      </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" onclick="set_rhk_pimpinan()">Submit</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
     </div>
   </div>
 </div>
@@ -410,14 +410,12 @@
         </button>
       </div>
       <div class="modal-body">
-        {% csrf_token %}
-        <input type="hidden" id="edit_lampiran"/>
-        <input type="hidden" id="lampiran_id"/>
-        <div class="form-group">
+          {% csrf_token %}
+          <input type="hidden" id="edit_lampiran"/>
+          <input type="hidden" id="lampiran_id"/>
           <div class="form-group">
-            <label for="isi" id="label-jenis-lampiran"></label>
+            <label for="isi_lampiran" id="label-jenis-lampiran"></label>
             <textarea class="form-control" id="isi_lampiran" name="isi_lampiran" rows="3"></textarea>
-          </div>
         </div>
       </div>
       <div class="modal-footer">
@@ -438,9 +436,9 @@
         </button>
       </div>
       <div class="modal-body">
-        {% csrf_token %}
-        <input type="hidden" id="perilaku_id"/>
-        <input type="hidden" id="ekspetasi_id"/>
+          {% csrf_token %}
+          <input type="hidden" id="perilaku_id"/>
+          <input type="hidden" id="ekspetasi_id"/>
         <div class="form-group">
           <div class="form-group">
             <label for="isi" id="label-ekspetasi">Ekspektasi</label>
@@ -465,7 +463,7 @@
         </button>
       </div>
       <div class="modal-body">
-        {% csrf_token %}
+          {% csrf_token %}
           <div class="form-group">
             <label for="isi" id="label-ekspetasi">Status</label>
             <select name="status" onchange="onchangeStatus($(this))" class="form-control" id="status">
@@ -596,7 +594,13 @@
     let button = $(event.relatedTarget)
     let edit = button.data('edit')
     let id = button.data('rhk_id')
-    let modal = $("#tambahrhk")
+    var modal = $("#tambahrhk")
+    $("#rhk_id").val("")
+    $("#klasifikasi_id").val("").trigger('change')
+    $("#unitkerja_id").val("").trigger('change')
+    $("#jenis_id").val("")
+    $("#rencana_id").val("")
+    $("#penugasan_id").val("")
     if(edit){
       $('#rhk-label').html("Ubah RHK")
       $.ajax({
@@ -624,13 +628,13 @@
     }else{
       $('#rhk-label').html("Tambah RHK")
     }
-
   })
   $('#modal_tambah_lampiran').on('show.bs.modal', function (event) {
     let button = $(event.relatedTarget)
     let title = button.data('judul')
     let jenis = button.data('jenis')
     let lampiran_id = button.data('id')
+    $("#isi_lampiran").val("")
     if(jenis == "ubah"){
       $("#label-jenis-lampiran").html(title)
       $("#lampiran_id").val(lampiran_id)
@@ -652,6 +656,7 @@
     let tambah = button.data('tambah')
     $("#perilaku_id").val(perilaku_id)
     $("#ekspetasi_id").val(ekspetasi_id)
+    $("#ekspetasi").val("")
     if(tambah == "True"){
       $("#lampiran_modal_ekspetasi").html("Tambah Perilaku")
     }else{
@@ -737,7 +742,13 @@
     let rhk_id = elem.data('rhk_id')
     let edit = elem.data('edit')
     let indikator_id = elem.data('indikator_id')
-    console.log(edit, indikator_id)
+    $("#indikator_id").val("")
+    $('#rhk_indikator_id').val("")
+    $("#indikator").val("")
+    $(`#target`).val("")
+    $('#perspektif').val("").trigger('change')
+    $('#aspek').val("").trigger('change')
+
     if (typeof rhk_id !== "undefined"){
       $('#rhk_indikator_id').val(rhk_id)
       $('#modal_add_rhk_indikator_id').modal('show');
@@ -1072,7 +1083,7 @@
   }
 
   const save_ekspetasi = () => {
-    let modal = $("#modal_tambah_lampiran")
+    let modal = $("#modal_tambah_ekspetasi")
     let perilaku_id = $("#perilaku_id").val()
     let ekspetasi_id = $("#ekspetasi_id").val()
     let isi = $("#ekspetasi").val()

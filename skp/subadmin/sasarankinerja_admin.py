@@ -313,8 +313,8 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         obj = get_object_or_404(SasaranKinerja, pk=id)
         list_skp_bawahan = SasaranKinerja.objects.filter(
             pejabat_penilai=obj.pegawai.atasan,
-            periode_awal__lte=obj.periode_awal,
-            periode_akhir__gte=obj.periode_akhir
+            periode_awal__gte=obj.periode_awal,
+            periode_akhir__lte=obj.periode_akhir
         )
         show_detail = [
             SasaranKinerja.Status.PENGAJUAN,
@@ -367,7 +367,11 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                 'range': "{} / {}".format(
                     awal.strftime('%Y-%m-%d'),
                     akhir.strftime('%Y-%m-%d'),
-                )
+                ),
+                'rencana_aksi_url': reverse_lazy('admin:rencana-aksi-skp', kwargs={
+                    "skp_id": sasaran_obj.id,
+                    "periode": awal.month
+                })
             })
         else:
             for i in range(awal.month, akhir.month+1):
@@ -385,6 +389,12 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                                 awal.month
                             ),
                             num_days
+                        ),
+                        'rencana_aksi_url': reverse_lazy(
+                            'admin:rencana-aksi-skp', kwargs={
+                                "skp_id": sasaran_obj.id,
+                                "periode": i
+                            }
                         )
                     })
                 elif i == akhir.month:
@@ -397,6 +407,12 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                             ),
                             "01",
                             akhir.strftime('%Y-%m-%d')
+                        ),
+                        'rencana_aksi_url': reverse_lazy(
+                            'admin:rencana-aksi-skp', kwargs={
+                                "skp_id": sasaran_obj.id,
+                                "periode": i
+                            }
                         )
                     })
                 else:
@@ -410,6 +426,12 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                             akhir.year,
                             i if i > 9 else "0{}".format(i),
                             num_days,
+                        ),
+                        'rencana_aksi_url': reverse_lazy(
+                            'admin:rencana-aksi-skp', kwargs={
+                                "skp_id": sasaran_obj.id,
+                                "periode": i
+                            }
                         )
                     })
         respon = {'success': True, "data": bulan_list}
