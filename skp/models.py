@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+from skp.utils import FULL_BULAN
 from usom.models import Account, UnitKerja
 
 
@@ -317,3 +318,29 @@ def handler_sasarankinerja_save(instance, created, **kwargs):
         if skp_atasan:
             instance.induk = skp_atasan
             instance.save()
+class RencanaAksi(models.Model):
+    skp = models.ForeignKey(
+        SasaranKinerja,
+        on_delete=models.CASCADE,
+        verbose_name="Sasaran Kinerja Pegawai",
+        null=True
+    )
+    rhk = models.ForeignKey(
+        RencanaHasilKerja,
+        on_delete=models.CASCADE,
+        verbose_name="Rencana Hasil Kerja Pegawai",
+        null=True
+    )
+    periode = models.IntegerField(
+        choices=[(k, v) for k, v in FULL_BULAN.items()],
+        null=True
+    )
+    rencana_aksi = models.TextField("Rencana Aksi", null=True, blank=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return "{}".format(str(self.id))
+
+    class Meta:
+        verbose_name = "Rencana Aksi"
+        verbose_name_plural = "Rencana Aksi"

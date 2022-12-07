@@ -3,7 +3,8 @@ from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 
 from skp.models import (DaftarLampiran, DaftarPerilakuKerjaPegawai,
-                        RencanaHasilKerja)
+                        RencanaAksi, RencanaHasilKerja)
+from skp.utils import FULL_BULAN
 
 register = template.Library()
 
@@ -18,6 +19,10 @@ def is_fisrt_parent(skp_id, rhk_id, rhk_parent_id):
         if fisrt_data.id == rhk_id:
             return True
     return False
+
+@register.filter
+def get_bulan(int_bulan):
+    return FULL_BULAN[int_bulan]
 
 @register.simple_tag
 def daftar_lampiran(lampiran_id, skp_id, cetak):
@@ -101,3 +106,115 @@ def daftar_ekspetasi(perilaku_id, skp_id, cetak):
             isi,
         )
     return mark_safe(html)
+
+@register.simple_tag
+def daftar_rencana_aksi(counter, skp_id, rhk_id, periode, cetak="tidak"):
+    rencana_list = RencanaAksi.objects.filter(
+        skp=skp_id,
+        rhk=rhk_id,
+        periode=periode
+    )
+    isi = ""
+    isi_luar = ""
+    if cetak == "ya":
+        if rencana_list.count() > 0:
+            html = '''<ol style="margin: unset;">'''
+            for i in rencana_list:
+                html += '''<li style="margin: unset;">{}</li>'''.format(i.rencana_aksi)
+            html += "</ol>"
+        else:
+            html = ""
+    else:
+        if rencana_list.count() > 0:
+            for i in rencana_list:
+                aksi = '''
+                <div style="display: flex" >
+                    <button type="button" data-jenis="ubah" data-id="{}"
+                    class="btn btn-icon btn-warning btn-sm"
+                    data-toggle="modal" data-target="#modal_rencana_aksi">
+                        <i class="flaticon2-pen"></i>
+                    </button>
+                    <a onclick="delete_action('{}')"
+                        class="ml-2 btn btn-icon btn-danger btn-sm">
+                            <i class="flaticon-delete-1"></i>
+                    </a>
+                </div>
+                '''.format(
+                    i.id,
+                    # value.id,
+                    reverse_lazy('admin:skp_rencanaaksi_hapus', kwargs={"id": i.id})
+                )
+                isi += '''
+                <tr>
+                <td><span id="rencana-aksi-{}">{}</span>{}</td>
+                </tr>
+                '''.format(i.id, i.rencana_aksi, aksi)
+            isi_luar = '''
+            <tr>
+                <td>
+                    <button type="button" data-rhk="{}"
+                    class="btn btn-sm btn-primary btn-block"
+                    data-toggle="modal" data-target="#modal_rencana_aksi">
+                        <i class="fas fa-plus"></i> Tambah Rencana Aksi
+                    </button>
+                </td>
+            </tr>
+            '''.format(
+                rhk_id.id
+            )
+        else:
+            isi = '''
+                <td>
+                    <button type="button" data-rhk="{}"
+                    class="btn btn-sm btn-primary btn-block"
+                    data-toggle="modal" data-target="#modal_rencana_aksi">
+                        <i class="fas fa-plus"></i> Tambah Rencana Aksi
+                    </button>
+                </td>
+            '''.format(
+                rhk_id.id
+            )
+        html = '''
+            <tr>
+                <td rowspan="{}" style="width: 20px">{}</td>
+                <td rowspan="{}">{}</td>
+            </tr>
+            {}
+            {}
+
+        '''.format(
+            rencana_list.count()+2 if rencana_list.count() > 0 else 2,
+            counter,
+
+            rencana_list.count()+2 if rencana_list.count() > 0 else 2,
+            rhk_id.rencana_kerja,
+
+            isi,
+
+            isi_luar
+        )
+    return mark_safe(html)
+
+@register.simple_tag
+def get_complete_periode(awal, akhir):
+    if awal.month == akhir.month:
+        if awal.day == akhir.day:
+            return "{} {} TAHUN {}".format(
+                awal.day,
+                FULL_BULAN[awal.month].upper(),
+                awal.year
+            )
+        return "{} SD {} {} TAHUN {}".format(
+            awal.day, akhir.day,
+            FULL_BULAN[awal.month].upper(),
+            awal.year
+        )
+    else:
+        return "{} {} SD {} {} TAHUN {}".format(
+            awal.day,
+            FULL_BULAN[awal.month].upper(),
+            akhir.day,
+            FULL_BULAN[akhir.month],
+            awal.year
+        )
+    return ""

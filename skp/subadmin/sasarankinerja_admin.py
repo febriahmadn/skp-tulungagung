@@ -9,13 +9,8 @@ from django.utils.safestring import mark_safe
 
 from services.models import Configurations
 from skp.forms.sasarankinerja_form import SasaranKinerjaForm
-from skp.models import (
-    Lampiran,
-    PerilakuKerja,
-    Perspektif,
-    RencanaHasilKerja,
-    SasaranKinerja,
-)
+from skp.models import (Lampiran, PerilakuKerja, Perspektif, RencanaHasilKerja,
+                        SasaranKinerja)
 from skp.utils import FULL_BULAN
 
 
@@ -317,8 +312,8 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         obj = get_object_or_404(SasaranKinerja, pk=id)
         list_skp_bawahan = SasaranKinerja.objects.filter(
             pejabat_penilai=obj.pegawai.atasan,
-            periode_awal__lte=obj.periode_awal,
-            periode_akhir__gte=obj.periode_akhir,
+            periode_awal__gte=obj.periode_awal,
+            periode_akhir__lte=obj.periode_akhir
         )
         show_detail = [
             SasaranKinerja.Status.PENGAJUAN,
@@ -360,15 +355,17 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         akhir = sasaran_obj.periode_akhir
         bulan_list = []
         if awal.month == akhir.month:
-            bulan_list.append(
-                {
-                    "bulan": FULL_BULAN[awal.month],
-                    "range": "{} / {}".format(
-                        awal.strftime("%Y-%m-%d"),
-                        akhir.strftime("%Y-%m-%d"),
-                    ),
-                }
-            )
+            bulan_list.append({
+                'bulan': FULL_BULAN[awal.month],
+                'range': "{} / {}".format(
+                    awal.strftime('%Y-%m-%d'),
+                    akhir.strftime('%Y-%m-%d'),
+                ),
+                'rencana_aksi_url': reverse_lazy('admin:rencana-aksi-skp', kwargs={
+                    "skp_id": sasaran_obj.id,
+                    "periode": awal.month
+                })
+            })
         else:
             for i in range(awal.month, akhir.month + 1):
                 if i == awal.month:
@@ -384,6 +381,12 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                                 else "0{}".format(awal.month),
                                 num_days,
                             ),
+                            'rencana_aksi_url': reverse_lazy(
+                                'admin:rencana-aksi-skp', kwargs={
+                                    "skp_id": sasaran_obj.id,
+                                    "periode": i
+                                }
+                            )
                         }
                     )
                 elif i == akhir.month:
@@ -398,6 +401,12 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                                 "01",
                                 akhir.strftime("%Y-%m-%d"),
                             ),
+                            'rencana_aksi_url': reverse_lazy(
+                                'admin:rencana-aksi-skp', kwargs={
+                                    "skp_id": sasaran_obj.id,
+                                    "periode": i
+                                }
+                            )
                         }
                     )
                 else:
