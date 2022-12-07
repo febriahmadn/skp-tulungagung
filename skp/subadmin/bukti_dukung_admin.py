@@ -1,14 +1,11 @@
 from django.contrib import admin
-from django.utils.safestring import mark_safe
-from django.urls import path
 from django.http import JsonResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404, render
+from django.urls import path
+from django.utils.safestring import mark_safe
 
-from skp.models import (
-    SasaranKinerja,
-    RencanaHasilKerja,
-    BuktiDukung,
-)
+from skp.models import BuktiDukung, RencanaHasilKerja, SasaranKinerja
+
 
 class BuktiDukungAdmin(admin.ModelAdmin):
     list_display = ("pk", "skp", "rhk", "periode", "get_bukti_dukung", "created")
