@@ -7,20 +7,10 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("skp", "0018_rencanaaksi"),
+        ("skp", "0019_sasarankinerja_induk"),
     ]
 
     operations = [
-        migrations.AddField(
-            model_name="sasarankinerja",
-            name="induk",
-            field=models.ForeignKey(
-                blank=True,
-                null=True,
-                on_delete=django.db.models.deletion.SET_NULL,
-                to="skp.sasarankinerja",
-            ),
-        ),
         migrations.CreateModel(
             name="Realisasi",
             fields=[

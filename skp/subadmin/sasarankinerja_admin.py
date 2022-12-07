@@ -385,19 +385,20 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                                 else "0{}".format(awal.month),
                                 num_days,
                             ),
-                        'rencana_aksi_url': reverse_lazy(
-                            'admin:rencana-aksi-skp', kwargs={
-                                "skp_id": sasaran_obj.id,
-                                "periode": i
-                            }
-                        ),
-                        'bukti_dukung_url': reverse_lazy(
-                            'admin:bukti-dukung-skp', kwargs={
-                                "skp_id": sasaran_obj.id,
-                                "periode": awal.month
-                            }
-                        ) if sasaran_obj.status == 3 else "#"
-                    })
+                            'rencana_aksi_url': reverse_lazy(
+                                'admin:rencana-aksi-skp', kwargs={
+                                    "skp_id": sasaran_obj.id,
+                                    "periode": i
+                                }
+                            ),
+                            'bukti_dukung_url': reverse_lazy(
+                                'admin:bukti-dukung-skp', kwargs={
+                                    "skp_id": sasaran_obj.id,
+                                    "periode": awal.month
+                                }
+                            ) if sasaran_obj.status == 3 else "#"
+                        }
+                    )
                 elif i == akhir.month:
                     bulan_list.append(
                         {
@@ -410,19 +411,20 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                                 "01",
                                 akhir.strftime("%Y-%m-%d"),
                             ),
-                        'rencana_aksi_url': reverse_lazy(
-                            'admin:rencana-aksi-skp', kwargs={
-                                "skp_id": sasaran_obj.id,
-                                "periode": i
-                            }
-                        ),
-                        'bukti_dukung_url': reverse_lazy(
-                            'admin:bukti-dukung-skp', kwargs={
-                                "skp_id": sasaran_obj.id,
-                                "periode": awal.month
-                            }
-                        ) if sasaran_obj.status == 3 else "#"
-                    })
+                            'rencana_aksi_url': reverse_lazy(
+                                'admin:rencana-aksi-skp', kwargs={
+                                    "skp_id": sasaran_obj.id,
+                                    "periode": i
+                                }
+                            ),
+                            'bukti_dukung_url': reverse_lazy(
+                                'admin:bukti-dukung-skp', kwargs={
+                                    "skp_id": sasaran_obj.id,
+                                    "periode": awal.month
+                                }
+                            ) if sasaran_obj.status == 3 else "#"
+                        }
+                    )
                 else:
                     num_days = calendar.monthrange(awal.year, awal.month)[1]
                     bulan_list.append({

@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.http import JsonResponse
 from django.urls import path, reverse_lazy
 
-from skp.models import (BuktiDukung, IndikatorKinerjaIndividu,  # Realisasi
+from skp.models import (BuktiDukung, IndikatorKinerjaIndividu, Realisasi,
                         RencanaAksi, RencanaHasilKerja, SasaranKinerja)
 
 
@@ -63,7 +63,7 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
                 respon = {"success": True, "data": data}
         return JsonResponse(respon, safe=False)
 
-    def get_data_by_skp(self, request, obj_id):
+    def get_data_by_skp(self, request, obj_id):  # noqa: C901
         # kalau bisa nanti diubah ke rest api lebih bagus
         respon = []
         jenis = request.GET.get("jenis", None)
@@ -107,24 +107,44 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
 
                     rencana_aksi = []
                     bukti_dukung = []
-                    if periode and periode != "": 
-                        rencana_aksi_list = RencanaAksi.objects.filter(skp=obj, rhk=item, periode=int(periode))
+                    realisasi = []
+                    if periode and periode != "":
+                        rencana_aksi_list = RencanaAksi.objects.filter(
+                            skp=obj, rhk=item, periode=int(periode)
+                        )
                         for rencana_item in rencana_aksi_list:
                             rencana_aksi.append(rencana_item.rencana_aksi)
 
-                        bukti_dukung_list = BuktiDukung.objects.filter(skp=obj, rhk=item, periode=int(periode))
+                        bukti_dukung_list = BuktiDukung.objects.filter(
+                            skp=obj, rhk=item, periode=int(periode)
+                        )
                         for bukti_item in bukti_dukung_list:
                             bukti_dukung.append({
-                                "delete_url":reverse_lazy(
+                                "delete_url": reverse_lazy(
                                     "admin:skp_buktidukung_hapus", kwargs={
                                         "id": bukti_item.id
                                     }
                                 ),
-                                "id":bukti_item.id,
-                                "nama":bukti_item.nama_bukti_dukung,
-                                "link":bukti_item.link,
+                                "id": bukti_item.id,
+                                "nama": bukti_item.nama_bukti_dukung,
+                                "link": bukti_item.link,
                             })
-                            
+
+                        realisasi_list = Realisasi.objects.filter(
+                            skp=obj, rhk=item, periode=int(periode)
+                        )
+                        for realisasi_item in realisasi_list:
+                            realisasi.append({
+                                "delete_url": reverse_lazy(
+                                    "admin:skp_realisasi_hapus", kwargs={
+                                        "id": realisasi_item.id
+                                    }
+                                ),
+                                "id": realisasi_item.id,
+                                "realisasi": realisasi_item.realisasi,
+                                "sumber": realisasi_item.sumber,
+                            })
+
                     respon.append(
                         {
                             "delete_url": reverse_lazy(
@@ -136,6 +156,7 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
                             "induk": rencana_kerja_induk,
                             "rencana_kerja": item.rencana_kerja,
                             "rencana_aksi": rencana_aksi,
+                            "realisasi": realisasi,
                             "penugasan_dari": item.penugasan_dari,
                             "indikator": indikator,
                             "bukti_dukung": bukti_dukung,

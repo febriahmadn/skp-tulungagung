@@ -21,6 +21,7 @@ from .subadmin.perilakukerja_admin import PerilakukerjaAdmin
 from .subadmin.perspektif_admin import PerspektifAdmin
 from .subadmin.rencana_aksi_admin import RencanaAksiAdmin
 from .subadmin.rencanahasilkerja_admin import RencanahasilkerjaAdmin
+from .subadmin.realisasi_admin import RealisasiAdmin
 
 admin.site.register(DetailSasaranKinerja, DetailsasarankerjaAdmin)
 admin.site.register(RencanaHasilKerja, RencanahasilkerjaAdmin)
@@ -35,5 +36,6 @@ admin.site.register(
 )
 admin.site.register(BuktiDukung, BuktiDukungAdmin)
 admin.site.register(RencanaAksi, RencanaAksiAdmin)
+admin.site.register(Realisasi, RealisasiAdmin)
 admin.site.register(Lampiran, LampiranAdmin)
 admin.site.register(DaftarLampiran, DaftarlampiranAdmin)

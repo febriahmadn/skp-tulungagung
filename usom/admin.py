@@ -11,7 +11,7 @@ from usom.models import Account, UnitKerja
 
 
 class UnitKerjaAdmin(admin.ModelAdmin):
-    list_display = ("id", "unitkerja")
+    list_display = ("id", "unitkerja", "id_sipo", "aktif")
 
     def load_data_json(self, request):
         respon = []
@@ -42,6 +42,8 @@ admin.site.register(UnitKerja, UnitKerjaAdmin)
 class AccountAdmin(UserAdmin):
     list_display = ("username", "nama_lengkap", "email")
     readonly_fields = ("last_login", "date_joined")
+    search_fields = ('username', 'nama_lengkap', 'jabatan')
+    ordering = ('-id',)
     form = AccountForm
     fieldsets = (
         (

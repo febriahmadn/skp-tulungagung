@@ -3,6 +3,9 @@ from django.db import models
 
 
 class UnitKerja(models.Model):
+    id_sipo = models.CharField(
+        'ID SIPO', null=True, blank=True, max_length=50
+    )
     unitkerja = models.CharField(
         max_length=200, null=True, verbose_name="Nama Unit Kerja"
     )
@@ -143,6 +146,9 @@ class Account(AbstractUser):
     tangggal_nonaktif = models.DateField(
         null=True, blank=True, verbose_name="Tanggal Nonaktif"
     )
+    id_sipo = models.CharField(
+        'ID SIPO', null=True, blank=True, max_length=50
+    )
 
     objects = AccountManager()
     USERNAME_FIELD = "username"
@@ -165,6 +171,9 @@ class Account(AbstractUser):
             nama = nama + ", " + gelar_belakang
         # print(nama)
         return nama
+
+    def __str__(self):
+        return '{} - {}'.format(self.username, self.get_complete_name())
 
     class Meta:
         ordering = ["id"]

@@ -400,5 +400,3 @@ class Realisasi(models.Model):
     class Meta:
         verbose_name = "Realisasi"
         verbose_name_plural = "Realisasi"
-
-

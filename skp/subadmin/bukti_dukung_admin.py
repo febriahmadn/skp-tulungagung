@@ -12,7 +12,9 @@ class BuktiDukungAdmin(admin.ModelAdmin):
 
     def get_bukti_dukung(self, obj):
         if self.obj.link and self.obj.link != "":
-            return mark_safe('''<a href="{}" target="_blank" >{}</a>'''.format(self.obj.link, self.obj.nama_bukti_dukung))
+            return mark_safe('''<a href="{}" target="_blank" >{}</a>'''.format(
+                self.obj.link,
+                self.obj.nama_bukti_dukung))
         return "---"
     get_bukti_dukung.short_description = "Bukti Dukung"
 
