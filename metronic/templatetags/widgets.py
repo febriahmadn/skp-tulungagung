@@ -1,5 +1,4 @@
-from django import forms
-from django import template
+from django import forms, template
 
 # from django.utils.html import format_html
 # from django.utils.safestring import mark_safe

@@ -1,7 +1,9 @@
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
-from usom.models import Account, UnitKerja
 from skp.utils import FULL_BULAN
+from usom.models import Account, UnitKerja
 
 
 class SasaranKinerja(models.Model):
@@ -21,6 +23,7 @@ class SasaranKinerja(models.Model):
         JF = 2, "Jabatan Fungsional"
         JA = 3, "Jabatan Administrator"
 
+    induk = models.ForeignKey("self", on_delete=models.SET_NULL, null=True, blank=True)
     pegawai = models.ForeignKey(Account, null=True, on_delete=models.SET_NULL)
     unor = models.ForeignKey(UnitKerja, null=True, on_delete=models.SET_NULL)
     unor_text = models.CharField("Unor Text", max_length=255, null=True, blank=True)
@@ -292,6 +295,29 @@ class DaftarLampiran(models.Model):
         verbose_name = "Daftar Lampiran"
         verbose_name_plural = "Daftar Lampiran"
 
+
+@receiver(post_save, sender=SasaranKinerja)
+def handler_sasarankinerja_save(instance, created, **kwargs):
+    if created:
+        detail = DetailSasaranKinerja(
+            skp=instance,
+            nama_pegawai=instance.pegawai.get_complete_name(),
+            nip_pegawai=instance.pegawai.username,
+            jabatan_pegawai=instance.pegawai.jabatan,
+            golongan_pegawai=instance.pegawai.golongan,
+            unor_pegawai=instance.pegawai.unitkerja.unitkerja,
+            nama_pejabat=instance.pejabat_penilai.get_complete_name(),
+            nip_pejabat=instance.pejabat_penilai.username,
+            jabatan_pejabat=instance.pejabat_penilai.jabatan,
+            golongan_pejabat=instance.pejabat_penilai.golongan,
+            unor_pejabat=instance.pejabat_penilai.unitkerja.unitkerja,
+        )
+        detail.save()
+
+        skp_atasan = instance.pejabat_penilai.sasarankinerja_set.last()
+        if skp_atasan:
+            instance.induk = skp_atasan
+            instance.save()
 class RencanaAksi(models.Model):
     skp = models.ForeignKey(
         SasaranKinerja,

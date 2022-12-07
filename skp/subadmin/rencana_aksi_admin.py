@@ -1,13 +1,10 @@
 from django.contrib import admin
-from django.urls import path
 from django.http import JsonResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404, render
+from django.urls import path
 
-from skp.models import (
-    SasaranKinerja,
-    RencanaHasilKerja,
-    RencanaAksi
-)
+from skp.models import RencanaAksi, RencanaHasilKerja, SasaranKinerja
+
 
 class RencanaAksiAdmin(admin.ModelAdmin):
     list_display = ("pk", "skp", "rhk", "periode", "rencana_aksi", "created")

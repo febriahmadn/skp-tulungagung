@@ -1,13 +1,13 @@
 from django.contrib import admin
-from django.urls import path, reverse_lazy
 from django.http import JsonResponse
+from django.urls import path, reverse_lazy
 from skp.models import (
     RencanaHasilKerja,
     RencanaAksi,
     SasaranKinerja,
     IndikatorKinerjaIndividu,
     BuktiDukung,
-    Realisasi
+    # Realisasi
 )
 
 

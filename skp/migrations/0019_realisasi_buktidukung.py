@@ -11,6 +11,16 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.AddField(
+            model_name="sasarankinerja",
+            name="induk",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="skp.sasarankinerja",
+            ),
+        ),
         migrations.CreateModel(
             name="Realisasi",
             fields=[

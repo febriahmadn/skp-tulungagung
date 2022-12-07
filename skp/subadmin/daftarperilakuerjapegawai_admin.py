@@ -1,8 +1,10 @@
 from django.contrib import admin
-from django.urls import path
 from django.http import JsonResponse
+from django.urls import path
 
-from skp.models import SasaranKinerja, PerilakuKerja, DaftarPerilakuKerjaPegawai
+from skp.models import (DaftarPerilakuKerjaPegawai, PerilakuKerja,
+                        SasaranKinerja)
+
 
 class DaftarPerilakuKerjaPegawaiAdmin(admin.ModelAdmin):
     list_display = ("pk", "skp", "perilaku_kerja", "isi", "created")

@@ -4,21 +4,23 @@ from django.contrib import admin
 from skp.subadmin.sasarankinerja_admin import SasaranKinerjaAdmin
 
 # model import
-from .models import (DaftarLampiran, DaftarPerilakuKerja, DetailSasaranKinerja,
+from .models import (DaftarLampiran, DaftarPerilakuKerja,
+                     DaftarPerilakuKerjaPegawai, DetailSasaranKinerja,
                      IndikatorKinerjaIndividu, Lampiran, PerilakuKerja,
                      Perspektif, RencanaHasilKerja, SasaranKinerja,
                      DaftarPerilakuKerjaPegawai, RencanaAksi, BuktiDukung, Realisasi)
 from .subadmin.daftarlampiran_admin import DaftarlampiranAdmin
+from .subadmin.daftarperilakuerjapegawai_admin import \
+    DaftarPerilakuKerjaPegawaiAdmin
 from .subadmin.daftarperilakukerja_admin import DaftarperilakukerjaAdmin
 from .subadmin.detailsasarankerja_admin import DetailsasarankerjaAdmin
 from .subadmin.indikator_admin import IndikatorAdmin
 from .subadmin.lampiran_admin import LampiranAdmin
 from .subadmin.perilakukerja_admin import PerilakukerjaAdmin
 from .subadmin.perspektif_admin import PerspektifAdmin
-from .subadmin.rencanahasilkerja_admin import RencanahasilkerjaAdmin
-from .subadmin.daftarperilakuerjapegawai_admin import DaftarPerilakuKerjaPegawaiAdmin
 from .subadmin.rencana_aksi_admin import RencanaAksiAdmin
 from .subadmin.bukti_dukung_admin import BuktiDukungAdmin
+from .subadmin.rencanahasilkerja_admin import RencanahasilkerjaAdmin
 
 admin.site.register(DetailSasaranKinerja, DetailsasarankerjaAdmin)
 admin.site.register(RencanaHasilKerja, RencanahasilkerjaAdmin)
