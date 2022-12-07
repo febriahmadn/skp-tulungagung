@@ -12,6 +12,12 @@ class Configurations(SingletonModel):
     sipo_token = models.CharField(
         "SIPO Token API", null=True, blank=True, max_length=255
     )
+    sipo_username = models.CharField(
+        "SIPO Username API", null=True, blank=True, max_length=255,
+    )
+    sipo_password = models.CharField(
+        "SIPO Password API", null=True, blank=True, max_length=255,
+    )
     batas_input = models.DateField(
         default=timezone.now,
         null=True,
