@@ -1,12 +1,9 @@
 from django import template
 from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
-from skp.models import (
-    RencanaHasilKerja,
-    DaftarLampiran,
-    DaftarPerilakuKerjaPegawai,
-    RencanaAksi
-)
+
+from skp.models import (DaftarLampiran, DaftarPerilakuKerjaPegawai,
+                        RencanaAksi, RencanaHasilKerja)
 from skp.utils import FULL_BULAN
 
 register = template.Library()

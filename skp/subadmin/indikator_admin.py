@@ -1,6 +1,7 @@
 from django.contrib import admin
-from django.urls import path
 from django.http import JsonResponse
+from django.urls import path
+
 from skp.models import IndikatorKinerjaIndividu, SasaranKinerja
 
 
