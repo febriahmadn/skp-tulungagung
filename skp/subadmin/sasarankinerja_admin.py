@@ -61,14 +61,16 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         btn = '<div class="btn-group" role="group">'
         btn += """
             <button id="btnGroupDrop1" type="button"
-                class="btn btn-warning dropdown-toggle"
+                class="btn btn-warning btn-sm dropdown-toggle"
                 data-toggle="dropdown" aria-haspopup="true"
                 aria-expanded="false">Aksi</button>"""
         btn += '<div class="dropdown-menu" aria-labelledby="btnGroupDrop1">'
         btn += '<a class="dropdown-item" href="{}">Detail SKP</a>'.format(
             reverse_lazy("admin:detail-skp", kwargs={"id": obj.id})
         )
-        btn += '<a class="dropdown-item" href="#">Matriks Peran Hasil</a>'
+        btn += '<a class="dropdown-item" href="{}">Matriks Peran Hasil</a>'.format(
+            reverse_lazy("admin:skp_sasarankerja_matrikshasilperan", kwargs={"obj_id": obj.id})
+        )
         btn += '<a class="dropdown-item" href="{}">SKP Bawahan</a>'.format(
             reverse_lazy('admin:skp_sasarankinerja_bawahan', kwargs={"id": obj.id})
         )
@@ -415,6 +417,45 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         respon = {'success': True, "data": bulan_list}
         return JsonResponse(respon, safe=False)
 
+    def view_matriks_hasil_peran(self, request, obj_id):
+        obj = get_object_or_404(SasaranKinerja, pk=obj_id)
+        show = request.GET.get('show', None)
+
+        skp_childs = SasaranKinerja.objects.filter(induk_id=obj.id)
+        extra_context = {
+            'title': 'Matriks Hasil Peran',
+            'obj': obj,
+            'rhk_list': obj.rencanahasilkerja_set.all(),
+            'skp_childs': skp_childs,
+            'show': True if show == 'true' else False
+        }
+        return render(request, 'admin/skp/sasarankinerja/matriks_hasil_peran.html', extra_context)
+
+    def get_rhk_by_skp_parent(self, request, obj_id):
+        obj = get_object_or_404(SasaranKinerja, pk=obj_id)
+        respon = {'success': False}
+        if obj.induk:
+            rhk_parent_list = obj.induk.rencanahasilkerja_set.all()
+            if rhk_parent_list.exists():
+                results = []
+                terbesar = 0
+                for item in rhk_parent_list:
+                    childs = []
+                    list_childs = RencanaHasilKerja.objects.filter(induk_id=item.id)
+                    if list_childs.count() > terbesar:
+                        terbesar = list_childs.count()
+                    for child in list_childs:
+                        childs.append({
+                            'text': child.rencana_kerja
+                        })
+
+                    results.append({
+                        'id': item.id,
+                        'childs': childs
+                    })
+                respon = {'success': True, 'results': results, 'terbesar': terbesar}
+        return JsonResponse(respon)
+
     def get_urls(self):
         admin_url = super(SasaranKinerjaAdmin, self).get_urls()
         custom_url = [
@@ -427,6 +468,11 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                 "load-penilaian",
                 self.admin_site.admin_view(self.load_penilaian),
                 name="skp_sasarankinerja_penilaian_load",
+            ),
+            path(
+                "<int:obj_id>/matriks-hasil-peran",
+                self.admin_site.admin_view(self.view_matriks_hasil_peran),
+                name="skp_sasarankerja_matrikshasilperan",
             ),
             path(
                 "<int:id>/detail",
@@ -454,6 +500,11 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                 name="skp_sasarankinerja_penilaian",
             ),
             path(
+                "<int:obj_id>/get-rhk-childs",
+                self.admin_site.admin_view(self.get_rhk_by_skp_parent),
+                name="skp_sasarankinerja_get_child_rhk",
+            ),
+            path(
                 "change-status",
                 self.admin_site.admin_view(self.action_change_status_skp),
                 name="skp_sasarankinerja_changestatus",
@@ -463,25 +514,25 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         ]
         return custom_url + admin_url
 
-    def save_model(self, request, obj, form, change):
-        if not change:
-            obj.save()
-            # Create
-            try:
-                detail = DetailSasaranKinerja(
-                    skp=obj,
-                    nama_pegawai=obj.pegawai.get_complete_name(),
-                    nip_pegawai=obj.pegawai.username,
-                    jabatan_pegawai=obj.pegawai.jabatan,
-                    golongan_pegawai=obj.pegawai.golongan,
-                    unor_pegawai=obj.pegawai.unitkerja.unitkerja,
-                    nama_pejabat=obj.pegawai.atasan.get_complete_name(),
-                    nip_pejabat=obj.pegawai.atasan.username,
-                    jabatan_pejabat=obj.pegawai.atasan.jabatan,
-                    golongan_pejabat=obj.pegawai.atasan.golongan,
-                    unor_pejabat=obj.pegawai.atasan.unitkerja.unitkerja,
-                )
-                detail.save()
-            except Exception as e:
-                print(e)
-        return super().save_model(request, obj, form, change)
+    # def save_model(self, request, obj, form, change):
+    #     if not change:
+    #         obj.save()
+    #         # Create
+    #         try:
+    #             detail = DetailSasaranKinerja(
+    #                 skp=obj,
+    #                 nama_pegawai=obj.pegawai.get_complete_name(),
+    #                 nip_pegawai=obj.pegawai.username,
+    #                 jabatan_pegawai=obj.pegawai.jabatan,
+    #                 golongan_pegawai=obj.pegawai.golongan,
+    #                 unor_pegawai=obj.pegawai.unitkerja.unitkerja,
+    #                 nama_pejabat=obj.pegawai.atasan.get_complete_name(),
+    #                 nip_pejabat=obj.pegawai.atasan.username,
+    #                 jabatan_pejabat=obj.pegawai.atasan.jabatan,
+    #                 golongan_pejabat=obj.pegawai.atasan.golongan,
+    #                 unor_pejabat=obj.pegawai.atasan.unitkerja.unitkerja,
+    #             )
+    #             detail.save()
+    #         except Exception as e:
+    #             print(e)
+    #     return super().save_model(request, obj, form, change)
