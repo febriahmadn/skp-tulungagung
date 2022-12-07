@@ -9,8 +9,8 @@ class Configurations(SingletonModel):
         "Ekinerja Token API", null=True, blank=True, max_length=255
     )
     sipo_url = models.URLField("SIPO URL", null=True, blank=True)
-    sipo_token = models.CharField(
-        "SIPO Token API", null=True, blank=True, max_length=255
+    sipo_token = models.TextField(
+        "SIPO Token API", null=True, blank=True
     )
     sipo_username = models.CharField(
         "SIPO Username API", null=True, blank=True, max_length=255,
