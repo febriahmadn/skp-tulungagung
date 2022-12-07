@@ -1,11 +1,9 @@
 from django.contrib import admin
-from django.urls import path, reverse_lazy
 from django.http import JsonResponse
-from skp.models import (
-    RencanaHasilKerja,
-    SasaranKinerja,
-    IndikatorKinerjaIndividu,
-)
+from django.urls import path, reverse_lazy
+
+from skp.models import (IndikatorKinerjaIndividu, RencanaHasilKerja,
+                        SasaranKinerja)
 
 
 class RencanahasilkerjaAdmin(admin.ModelAdmin):

@@ -67,30 +67,6 @@ class SasaranKinerja(models.Model):
         verbose_name = "Sasaran Kinerja Pegawai"
         verbose_name_plural = "Sasaran Kinerja Pegawai"
 
-@receiver(post_save, sender=SasaranKinerja)
-def handler_sasarankinerja_save(instance, created, **kwargs):
-    print(instance)
-    print(kwargs)
-    if created:
-        detail = DetailSasaranKinerja(
-            skp=instance,
-            nama_pegawai=instance.pegawai.get_complete_name(),
-            nip_pegawai=instance.pegawai.username,
-            jabatan_pegawai=instance.pegawai.jabatan,
-            golongan_pegawai=instance.pegawai.golongan,
-            unor_pegawai=instance.pegawai.unitkerja.unitkerja,
-            nama_pejabat=instance.pejabat_penilai.get_complete_name(),
-            nip_pejabat=instance.pejabat_penilai.username,
-            jabatan_pejabat=instance.pejabat_penilai.jabatan,
-            golongan_pejabat=instance.pejabat_penilai.golongan,
-            unor_pejabat=instance.pejabat_penilai.unitkerja.unitkerja,
-        )
-        detail.save()
-        
-        skp_atasan = instance.pejabat_penilai.sasarankinerja_set.last()
-        if skp_atasan:
-            instance.induk = skp_atasan
-            instance.save()
 
 class DetailSasaranKinerja(models.Model):
     skp = models.OneToOneField(SasaranKinerja, on_delete=models.CASCADE)
@@ -317,3 +293,27 @@ class DaftarLampiran(models.Model):
     class Meta:
         verbose_name = "Daftar Lampiran"
         verbose_name_plural = "Daftar Lampiran"
+
+
+@receiver(post_save, sender=SasaranKinerja)
+def handler_sasarankinerja_save(instance, created, **kwargs):
+    if created:
+        detail = DetailSasaranKinerja(
+            skp=instance,
+            nama_pegawai=instance.pegawai.get_complete_name(),
+            nip_pegawai=instance.pegawai.username,
+            jabatan_pegawai=instance.pegawai.jabatan,
+            golongan_pegawai=instance.pegawai.golongan,
+            unor_pegawai=instance.pegawai.unitkerja.unitkerja,
+            nama_pejabat=instance.pejabat_penilai.get_complete_name(),
+            nip_pejabat=instance.pejabat_penilai.username,
+            jabatan_pejabat=instance.pejabat_penilai.jabatan,
+            golongan_pejabat=instance.pejabat_penilai.golongan,
+            unor_pejabat=instance.pejabat_penilai.unitkerja.unitkerja,
+        )
+        detail.save()
+
+        skp_atasan = instance.pejabat_penilai.sasarankinerja_set.last()
+        if skp_atasan:
+            instance.induk = skp_atasan
+            instance.save()

@@ -1,12 +1,8 @@
+from django.contrib.admin.views.main import \
+    PAGE_VAR  # ALL_VAR,; ORDER_VAR,; SEARCH_VAR,
+from django.template import Library
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
-from django.template import Library
-from django.contrib.admin.views.main import (
-    PAGE_VAR,
-    # ALL_VAR,
-    # ORDER_VAR,
-    # SEARCH_VAR,
-)
 
 register = Library()
 DOT = "."
