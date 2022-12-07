@@ -6,6 +6,8 @@ from skp.models import (
     RencanaAksi,
     SasaranKinerja,
     IndikatorKinerjaIndividu,
+    BuktiDukung,
+    Realisasi
 )
 
 
@@ -109,9 +111,25 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
                             )
 
                     rencana_aksi = []
-                    rencana_aksi_list = RencanaAksi.objects.filter(skp=obj, rhk=item, periode=int(periode))
-                    for rencana_item in rencana_aksi_list:
-                        rencana_aksi.append(rencana_item.rencana_aksi)
+                    bukti_dukung = []
+                    if periode and periode != "": 
+                        rencana_aksi_list = RencanaAksi.objects.filter(skp=obj, rhk=item, periode=int(periode))
+                        for rencana_item in rencana_aksi_list:
+                            rencana_aksi.append(rencana_item.rencana_aksi)
+
+                        bukti_dukung_list = BuktiDukung.objects.filter(skp=obj, rhk=item, periode=int(periode))
+                        for bukti_item in bukti_dukung_list:
+                            bukti_dukung.append({
+                                "delete_url":reverse_lazy(
+                                    "admin:skp_buktidukung_hapus", kwargs={
+                                        "id": bukti_item.id
+                                    }
+                                ),
+                                "id":bukti_item.id,
+                                "nama":bukti_item.nama_bukti_dukung,
+                                "link":bukti_item.link,
+                            })
+                            
                     respon.append(
                         {
                             "delete_url": reverse_lazy(
@@ -125,6 +143,7 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
                             "rencana_aksi": rencana_aksi,
                             "penugasan_dari": item.penugasan_dari,
                             "indikator": indikator,
+                            "bukti_dukung": bukti_dukung,
                         }
                     )
 

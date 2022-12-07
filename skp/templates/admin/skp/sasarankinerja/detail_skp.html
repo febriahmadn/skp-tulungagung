@@ -813,7 +813,6 @@
                       </tr>`
           response.map((item, index) => {
             let indikator =  '';
-            console.log(item)
             if (item.indikator.length > 0){
               item.indikator.map(item_indikator => {
                 indikator += `
@@ -847,10 +846,12 @@
                 </a>
               `
               indikator += `
-              {% if not penilai_view %}
+              {% if obj.status == 1 %}
               <tr>
                 <td colspan="3">
+                  {% if not penilai_view %}
                   <button class="btn btn-sm btn-light-primary btn-block" data-rhk_id="${item.id}" data-edit="false" onclick="set_rhk_indikator($(this))">Add Indikator</button>
+                  {% endif %}
                 </td>
               </tr>
               {% endif %}
@@ -868,10 +869,12 @@
             
             if (item.indikator.length > 0){
               indikator += `
-                {% if obj.status == 1 or not penilai_view %}
+                {% if obj.status == 1 %}
                 <tr>
                   <td colspan="3">
+                    {% if not penilai_view %}
                     <button class="btn btn-sm btn-light-primary btn-block" data-rhk_id="${item.id}" onclick="set_rhk_indikator($(this))">Add Indikator</button>
+                    {% endif %}
                   </td>
                 </tr>
                 {% endif %}
@@ -889,7 +892,11 @@
 
             html_ += `
               <tr>
+                {% if obj.status != 1 %}
+                <td rowspan="${item.indikator.length+1}">${no}</td>
+                {% else %}
                 <td rowspan="{% if penilai_view %}${item.indikator.length+1}{% else %}${item.indikator.length+2}{% endif %}">${no}</td>
+                {% endif %}
                 {% if obj.jenis_jabatan != 1 %}${induk_elem}{% endif %}
                 <td rowspan="{% if penilai_view %}${item.indikator.length+1}{% else %}${item.indikator.length+2}{% endif %}">
                   ${item.rencana_kerja}
@@ -972,10 +979,12 @@
               </a>
               `
               indikator += `
-              {% if not penilai_view %}
+              {% if obj.status == 1 %}
               <tr>
                 <td colspan="3">
+                  {% if not penilai_view %}
                   <button class="btn btn-sm btn-light-primary btn-block" data-rhk_id="${item.id}" data-edit="false" onclick="set_rhk_indikator($(this))">Add Indikator</button>
+                  {% endif %}
                 </td>
               </tr>
               {% endif %}
@@ -1003,11 +1012,15 @@
                   <button type="button" class="btn btn-sm btn-block btn-light-success font-weight-bold" data-rhk_id="${item.id}" onclick="onOpenModalRHKPimpinan($(this))">Set RHK Pimpinan</button>  
                   {% endif %}
                 </td>
-              `
-
-            html_ += `
-            <tr>
+                `
+                
+              html_ += `
+              <tr>
+                {% if obj.status != 1 %}
+                <td rowspan="${item.indikator.length+1}">${no}</td>
+                {% else %}
                 <td rowspan="{% if penilai_view %}${item.indikator.length+1}{% else %}${item.indikator.length+2}{% endif %}">${no}</td>
+                {% endif %}
                 {% if obj.jenis_jabatan != 1 %}${induk_elem}{% endif %}
                 <td rowspan="{% if penilai_view %}${item.indikator.length+1}{% else %}${item.indikator.length+2}{% endif %}">
                   ${item.rencana_kerja} ${item.penugasan_dari ? `(Penugasan dari ${item.penugasan_dari})` : ''}

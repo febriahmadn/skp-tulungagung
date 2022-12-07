@@ -172,8 +172,8 @@
                 <th valign="center">Indikator Kinerja Individu</th>
                 <th valign="center">Target</th>
                 {% endif %}
-                <th valign="center">Bukti Dukung</th>
-                <th valign="center">Realisasi</th>
+                <th valign="center" style="min-width: 250px;">Bukti Dukung</th>
+                <th valign="center" style="min-width: 250px;">Realisasi</th>
               </tr>
             </thead>
             <tbody>
@@ -187,26 +187,61 @@
     </div>
   </div>
  
-<div class="modal fade" id="modal_rencana_aksi" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="tambahbuktidukung" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="rencana_aksi_title">Tambah Rencana Aksi</h5>
+        <h5 class="modal-title" id="bukti_dukung_title">Tambah Bukti Dukung</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
         {% csrf_token %}
-        <input type="hidden" name="rencana_id" id="rencana_id">
+        <input type="hidden" name="bukti_id" id="bukti_id">
         <input type="hidden" name="rhk_id" id="rhk_id">
         <div class="form-group m-0">
-          <label for="rencana_aksi">Rencana Aksi</label>
-          <input type="text" class="form-control" id="rencana_aksi">
+          <label for="rencana_aksi">Nama Bukti Dukung</label>
+          <input type="text" class="form-control" id="bukti_dukung">
+        </div>
+        <div class="form-group mt-2">
+          <label for="rencana_aksi">Bukti Dukung (Link ke file google drive/dropbox/etc)</label>
+          <input type="url" class="form-control" id="url_bukti_dukung">
+          <span class="text-muted" >Contoh: http://bit.ly/contoh</span>
         </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" onclick="save_bukti_dukung()">Submit</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="tambahrealisasi" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="bukti_dukung_title">Tambah Realisasi</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        {% csrf_token %}
+        <input type="hidden" name="realisasi_id" id="realisasi_id">
+        <input type="hidden" name="rhk_id" id="rhk_id">
+        <div class="form-group m-0">
+          <label for="rencana_aksi">Realisasi</label>
+          <input type="text" class="form-control" id="realisasi">
+        </div>
+        <div class="form-group mt-2">
+          <label for="rencana_aksi">Sumber Data</label>
+          <input type="url" class="form-control" id="sumber_data">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="save_sumber_data()">Submit</button>
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
       </div>
     </div>
@@ -218,17 +253,34 @@
 {% block custom_js %}
 {{ block.super }}
 <script type="text/javascript">
-  $("#modal_rencana_aksi").on('show.bs.modal', function (event) {
+  const validURL = (myURL) => {
+    //regular expression for URL
+    let pattern = /(?:^|[ \t])((https?:\/\/)?(?:localhost|[\w-]+(?:\.[\w-]+)+)(:\d+)?(\/\S*)?)/;
+    
+    if(pattern.test(myURL)){
+        return true;
+    } else {
+        return false;
+    }
+  };
+  
+  $("#tambahbuktidukung").on('show.bs.modal', function (event) {
     let button = $(event.relatedTarget)
-    let rhk = button.data('rhk')
-    let jenis = button.data('jenis')
+    let rhk = button.data('rhk_id')
+    let edit = button.data('edit')
     let id = button.data('id')
     $("#rhk_id").val(rhk)
-    if(jenis == "ubah"){
-      let isi = $("#rencana-aksi-"+id)
-      $("#rencana_aksi").val(isi.html())
+    $("#bukti_dukung_title").html("Tambah Bukti Dukung")
+    if(edit){
+      $("#bukti_dukung_title").html("Ubah Bukti Dukung")
+      let isi = $("#bukti-"+id)
+      $("#bukti_dukung").val(isi.html())
+      $("#bukti_id").val(id)
+      $("#url_bukti_dukung").val(isi.attr('href'))
     }else{
-      $("#rencana_aksi").val("")
+      $("#bukti_dukung").val("")
+      $("#url_bukti_dukung").val("")
+      $("#bukti_id").val("")
     }
   })
   let no = 1;
@@ -258,20 +310,58 @@
                       </tr>`
           response.map((item, index) => {
             let indikator =  '';
-            console.log(item)
+            let bukti_dukung =  '';
+            var tambahan = 0;
+            let button_bukti = `
+            <td>
+              <button class="btn btn-sm btn-block btn-primary mr-1" data-rhk_id="${item.id}" data-edit="false" data-toggle="modal" data-target="#tambahbuktidukung">
+                Tambah
+              </button>
+            </td>
+            `
+            if (item.bukti_dukung.length > 0){
+              item.bukti_dukung.map(item_bukti_dukung =>{
+                bukti_dukung += `
+                <tr>
+                  <td>
+                      <a href="${item_bukti_dukung.link}" target="_blank" id="bukti-${item_bukti_dukung.id}">${item_bukti_dukung.nama}</a>
+                      <div class="d-flex">
+                        <button class="btn btn-sm btn-warning mr-1" data-id="${item_bukti_dukung.id}" data-rhk_id="${item.id}" data-edit="true" data-toggle="modal" data-target="#tambahbuktidukung">
+                          <i class="flaticon2-pen"></i>
+                        </button>
+                        <a onclick="delete_action('${item_bukti_dukung.delete_url}')" class="btn btn-icon btn-danger">
+                          <i class="flaticon-delete-1"></i>
+                        </a>
+                      </div>
+                  </td>
+                </tr>
+                `
+              })
+              bukti_dukung += `
+                <tr>
+                  ${button_bukti}
+                </tr>
+                `
+              }else{
+                bukti_dukung += `
+                <tr>
+                  ${button_bukti}
+                </tr>
+              `
+            }
             if (item.indikator.length > 0){
               item.indikator.map(item_indikator => {
                 indikator += `
                 <tr>
                   {% if obj.jenis_jabatan == 1 %}
-                  <td id="perspektif-${item_indikator.indikator_id}">${item_indikator.perspektif ? item_indikator.perspektif : '-'}</td>
+                  <td rowspan="${item.bukti_dukung.length+2}" id="perspektif-${item_indikator.indikator_id}">${item_indikator.perspektif ? item_indikator.perspektif : '-'}</td>
                   {% else %}
-                  <td id="aspek-${item_indikator.indikator_id}">${item_indikator.aspek ? item_indikator.aspek : '-'}</td>
+                  <td rowspan="${item.bukti_dukung.length+2}" id="aspek-${item_indikator.indikator_id}">${item_indikator.aspek ? item_indikator.aspek : '-'}</td>
                   {% endif %}
-                  <td>
+                  <td rowspan="${item.bukti_dukung.length+2}">
                     <span id="indikator-${item_indikator.indikator_id}" >${item_indikator.indikator}</span>
                   </td>
-                  <td id="target-${item_indikator.indikator_id}">${item_indikator.target}</td>
+                  <td rowspan="${item.bukti_dukung.length+2}" id="target-${item_indikator.indikator_id}">${item_indikator.target}</td>
                 </tr>
                 `
               })
@@ -279,7 +369,14 @@
               delete_html = `
 
               `
+              tambahan += 1
               indikator += `
+              <tr>
+                <td rowspan="${item.bukti_dukung.length+2}"></td>
+                <td rowspan="${item.bukti_dukung.length+2}"></td>
+                <td rowspan="${item.bukti_dukung.length+2}"></td>
+                ${item.bukti_dukung.length < 0 ? button_bukti : ""}
+              </tr>
               `
             }
 
@@ -294,12 +391,11 @@
             
             if (item.indikator.length > 0){
               indikator += `
-
               `
             }
 
             let induk_elem = `
-            <td rowspan="${item.indikator.length+1}">
+            <td rowspan="${item.indikator.length+2+item.bukti_dukung.length+tambahan}">
                   ${item?.induk ? item.induk.rencana_kerja : ''}
                 </td>
               `
@@ -310,16 +406,17 @@
             ol += "</ol>"
             html_ += `
               <tr>
-                <td rowspan="${item.indikator.length+1}">${no}</td>
+                <td rowspan="${item.indikator.length+2+item.bukti_dukung.length+tambahan}">${no}</td>
                 {% if obj.jenis_jabatan != 1 %}${induk_elem}{% endif %}
-                <td rowspan="${item.indikator.length+1}">
+                <td rowspan="${item.indikator.length+2+item.bukti_dukung.length+tambahan}">
                   ${item.rencana_kerja}
                 </td>
-                <td rowspan="${item.indikator.length+1}">
+                <td rowspan="${item.indikator.length+2+item.bukti_dukung.length+tambahan}">
                   ${ol}
                 </td>
               </tr>
               ${indikator}
+              ${bukti_dukung}
             `
             // <tr>
             //     <td colspan="3"></td>
@@ -357,36 +454,84 @@
                       </tr>`
           response.map((item, index) => {
             let indikator =  '';
+            let bukti_dukung =  '';
+            var tambahan = 0;
+            let button_bukti = `
+            <td>
+              <button class="btn btn-sm btn-block btn-primary mr-1" data-rhk_id="${item.id}" data-edit="false" data-toggle="modal" data-target="#tambahbuktidukung">
+                Tambah
+              </button>
+            </td>
+            `
+            if (item.bukti_dukung.length > 0){
+              item.bukti_dukung.map(item_bukti_dukung =>{
+                bukti_dukung += `
+                <tr>
+                  <td>
+                      <a href="${item_bukti_dukung.link}" target="_blank" id="bukti-${item_bukti_dukung.id}">${item_bukti_dukung.nama}</a>
+                      <div class="d-flex">
+                        <button class="btn btn-sm btn-warning mr-1" data-id="${item_bukti_dukung.id}" data-rhk_id="${item.id}" data-edit="true" data-toggle="modal" data-target="#tambahbuktidukung">
+                          <i class="flaticon2-pen"></i>
+                        </button>
+                        <a onclick="delete_action('${item_bukti_dukung.delete_url}')" class="btn btn-icon btn-danger">
+                          <i class="flaticon-delete-1"></i>
+                        </a>
+                      </div>
+                  </td>
+                </tr>
+                `
+              })
+              bukti_dukung += `
+                <tr>
+                  ${button_bukti}
+                </tr>
+                `
+              }else{
+                bukti_dukung += `
+                <tr>
+                  ${button_bukti}
+                </tr>
+                `
+            }
             if (item.indikator.length > 0){
               item.indikator.map(item_indikator => {
                 indikator += `
                 <tr>
                   {% if obj.jenis_jabatan == 1 %}
-                  <td id="perspektif-${item_indikator.indikator_id}">${item_indikator.perspektif ? item_indikator.perspektif : '-'}</td>
+                  <td rowspan="${item.bukti_dukung.length+2}" id="perspektif-${item_indikator.indikator_id}">${item_indikator.perspektif ? item_indikator.perspektif : '-'}</td>
                   {% else %}
-                  <td id="aspek-${item_indikator.indikator_id}">${item_indikator.aspek ? item_indikator.aspek : '-'}</td>
+                  <td rowspan="${item.bukti_dukung.length+2}" id="aspek-${item_indikator.indikator_id}">${item_indikator.aspek ? item_indikator.aspek : '-'}</td>
                   {% endif %}
                   <td>
-                    <span id="indikator-${item_indikator.indikator_id}" >${item_indikator.indikator}</span>
+                    <span rowspan="${item.bukti_dukung.length+2}" id="indikator-${item_indikator.indikator_id}" >${item_indikator.indikator}</span>
                   </td>
-                  <td id="target-${item_indikator.indikator_id}">${item_indikator.target}</td>
+                  <td rowspan="${item.bukti_dukung.length+2}" id="target-${item_indikator.indikator_id}">${item_indikator.target}</td>
                 </tr>
                 `
               })
             } else {
               delete_html = `
               `
+              tambahan = 1
               indikator += `
+              <tr>
+                <td rowspan="${item.bukti_dukung.length+2}"></td>
+                <td rowspan="${item.bukti_dukung.length+2}"></td>
+                <td rowspan="${item.bukti_dukung.length+2}"></td>
+                ${item.bukti_dukung.length < 0 ? button_bukti : ""}
+              </tr>
+
               `
             }
 
             if (item.indikator.length > 0){
               indikator += `
+
               `
             }
 
             let induk_elem = `
-                <td rowspan="${item.indikator.length+1}">
+                <td rowspan="${item.indikator.length+2+item.bukti_dukung.length+tambahan}">
                   ${item?.induk ? item.induk.rencana_kerja : ''}
                 </td>
               `
@@ -397,16 +542,17 @@
             ol += "</ol>"
             html_ += `
             <tr>
-                <td rowspan="${item.indikator.length+1}">${no}</td>
+                <td rowspan="${item.indikator.length+2+item.bukti_dukung.length+tambahan}">${no}</td>
                 {% if obj.jenis_jabatan != 1 %}${induk_elem}{% endif %}
-                <td rowspan="${item.indikator.length+1}">
+                <td rowspan="${item.indikator.length+2+item.bukti_dukung.length+tambahan}">
                   ${item.rencana_kerja} ${item.penugasan_dari ? `(Penugasan dari ${item.penugasan_dari})` : ''}
                 </td>
-                <td rowspan="${item.indikator.length+1}">
+                <td rowspan="${item.indikator.length+2+item.bukti_dukung.length+tambahan}">
                   ${ol}
                 </td>
               </tr>
               ${indikator}
+              ${bukti_dukung}
             `
             no += 1;
           })
@@ -415,6 +561,7 @@
       }
     });
   }
+
   const startLoad = () => {
     loadDataRHKUtama().then(() => {
       // loadIndikatorRHKNone()
@@ -426,22 +573,24 @@
     startLoad()
   })
   const save_bukti_dukung = () => {
-    let modal = $("#modal_rencana_aksi")
-    let rencana_id = $("#rencana_id").val()
+    let modal = $("#tambahbuktidukung")
+    let bukti_id = $("#bukti_id").val()
     let rhk_id = $("#rhk_id").val()
-    let rencana_aksi = $("#rencana_aksi").val()
+    let bukti_dukung = $("#bukti_dukung").val()
+    let link = $("#url_bukti_dukung").val()
     let csrf = modal.find('input[name=csrfmiddlewaretoken]').val();
-    if(rencana_aksi != ""){
+    if(validURL(link)){
       $.ajax({
         url: '{% url "admin:bukti-dukung-create" %}',
         type: 'POST',
         data: {
           csrfmiddlewaretoken: csrf,
           skp_id: "{{obj.id}}",
-          periode: "{{periode}}",
-          rencana_id: rencana_id,
           rhk_id: rhk_id,
-          rencana_aksi: rencana_aksi,
+          periode: "{{periode}}",
+          bukti_id: bukti_id,
+          nama: bukti_dukung,
+          link: link,
         },
         success: function(response){
           if(response.success){
