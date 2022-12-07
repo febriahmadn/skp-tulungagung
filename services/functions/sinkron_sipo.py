@@ -13,15 +13,15 @@ class ServiceSipo:
         self.token = self.config.sipo_token
 
     def auth_login(self):
-        payload={
-            'LoginForm[username]': self.config.sipo_username,
-            'LoginForm[password]': self.config.sipo_password
+        payload = {
+            "LoginForm[username]": self.config.sipo_username,
+            "LoginForm[password]": self.config.sipo_password,
         }
-        url = self.config.sipo_url+'?r=auth/login'
+        url = self.config.sipo_url + "?r=auth/login"
         response = requests.request("POST", url, data=payload)
         if response.ok:
             results = response.json()
-            token = results.get('token', None)
+            token = results.get("token", None)
             self.token = token
             self.config.sipo_token = token
             self.config.save()
@@ -29,16 +29,11 @@ class ServiceSipo:
 
     def sinkron_pegawai_by_nip(self, nip=None):
         if nip:
-            if self.token is None or self.token == '':
+            if self.token is None or self.token == "":
                 self.auth_login()
             url = self.config.sipo_url
-            params = {
-                'r': 'api/pns',
-                'nip': nip
-            }
-            headers = {
-                'Authorization': 'Bearer {}'.format(self.token)
-            }
+            params = {"r": "api/pns", "nip": nip}
+            headers = {"Authorization": "Bearer {}".format(self.token)}
             response = requests.request("GET", url, params=params, headers=headers)
             if response.ok:
                 results = response.json()
@@ -51,40 +46,34 @@ class ServiceSipo:
         if payload:
             # print(payload)
             data = {
-                'id_sipo': payload.get('id', None),
-                'username': payload.get('nip', None),
-                'nama_lengkap': payload.get('nama', None),
-                'gelar_depan': payload.get('glrdpn', None),
-                'gelar_belakang': payload.get('glrblk', None),
-                'is_staff': True,
-                'is_active': True,
+                "id_sipo": payload.get("id", None),
+                "username": payload.get("nip", None),
+                "nama_lengkap": payload.get("nama", None),
+                "gelar_depan": payload.get("glrdpn", None),
+                "gelar_belakang": payload.get("glrblk", None),
+                "is_staff": True,
+                "is_active": True,
             }
-            
-            jabatan = payload.get('nama_jabatan', None)
-            if jabatan:
-                data.update({
-                    'jabatan': re.sub(' +', ' ', jabatan)
-                })
 
-            nama_unitkerja = payload.get('unit_tugas', None)
-            kode_unitkerja = payload.get('unit_tugas_kode', None)
+            jabatan = payload.get("nama_jabatan", None)
+            if jabatan:
+                data.update({"jabatan": re.sub(" +", " ", jabatan)})
+
+            nama_unitkerja = payload.get("unit_tugas", None)
+            kode_unitkerja = payload.get("unit_tugas_kode", None)
 
             unitkerja_obj, created = UnitKerja.objects.get_or_create(
-                id_sipo=kode_unitkerja,
-                unitkerja=nama_unitkerja
+                id_sipo=kode_unitkerja, unitkerja=nama_unitkerja
             )
 
             if unitkerja_obj:
-                data.update({
-                    'unitkerja_id': unitkerja_obj.id
-                })
+                data.update({"unitkerja_id": unitkerja_obj.id})
 
             account_obj, created = Account.objects.get_or_create(
-                username=payload.get('nip', None)
+                username=payload.get("nip", None)
             )
-            
+
             for key, value in data.items():
                 setattr(account_obj, key, value)
             account_obj.save()
             print(data)
-
