@@ -1,5 +1,6 @@
 import re
 import requests
+from django.contrib.auth.models import Group
 from services.models import Configurations
 from usom.models import Account, UnitKerja
 
@@ -45,35 +46,75 @@ class ServiceSipo:
     def handler_save(self, payload={}):
         if payload:
             # print(payload)
-            data = {
-                "id_sipo": payload.get("id", None),
-                "username": payload.get("nip", None),
-                "nama_lengkap": payload.get("nama", None),
-                "gelar_depan": payload.get("glrdpn", None),
-                "gelar_belakang": payload.get("glrblk", None),
-                "is_staff": True,
-                "is_active": True,
-            }
+            try:
+                data = {
+                    "id_sipo": payload.get("id", None),
+                    "username": payload.get("nip", None),
+                    "nama_lengkap": payload.get("nama", None),
+                    "gelar_depan": payload.get("glrdpn", None),
+                    "gelar_belakang": payload.get("glrblk", None),
+                    "is_staff": True,
+                    "is_active": True,
+                }
 
-            jabatan = payload.get("nama_jabatan", None)
-            if jabatan:
-                data.update({"jabatan": re.sub(" +", " ", jabatan)})
+                jabatan = payload.get("nama_jabatan", None)
+                if jabatan:
+                    data.update({"jabatan": re.sub(" +", " ", jabatan)})
 
-            nama_unitkerja = payload.get("unit_tugas", None)
-            kode_unitkerja = payload.get("unit_tugas_kode", None)
+                nama_unitkerja = payload.get("unit_tugas", None)
+                kode_unitkerja = payload.get("unit_tugas_kode", None)
 
-            unitkerja_obj, created = UnitKerja.objects.get_or_create(
-                id_sipo=kode_unitkerja, unitkerja=nama_unitkerja
-            )
+                unitkerja_obj, created = UnitKerja.objects.get_or_create(
+                    id_sipo=kode_unitkerja, unitkerja=nama_unitkerja
+                )
 
-            if unitkerja_obj:
-                data.update({"unitkerja_id": unitkerja_obj.id})
+                if unitkerja_obj:
+                    data.update({"unitkerja_id": unitkerja_obj.id})
 
-            account_obj, created = Account.objects.get_or_create(
-                username=payload.get("nip", None)
-            )
 
-            for key, value in data.items():
-                setattr(account_obj, key, value)
-            account_obj.save()
-            print(data)
+                golongan = payload.get("gol_ruang", None)
+                if golongan:
+                    if golongan.find('-') < 0:
+                        
+                        data.update({
+                            'golongan': golongan.upper()
+                        })
+
+                eselon = payload.get("eselon", None)
+                if eselon:
+                    if eselon.find('-') < 0:
+                        eselon = eselon.replace('.', '-')
+                        
+                        data.update({
+                            'eselon': eselon.upper()
+                        })
+                
+
+                account_obj, created = Account.objects.get_or_create(
+                    username=payload.get("nip", None)
+                )
+
+                if created:
+                    account_obj.set_password('tulungagung2022')
+                account_obj.save()
+
+                for key, value in data.items():
+                    setattr(account_obj, key, value)
+                
+                try:
+                    group_input = Group.objects.get(name="Input")
+                except Group.DoesNotExist:
+                    pass
+                else:
+                    account_obj.groups.add(group_input)
+                    account_obj.save()
+                return True
+            except Exception as e:
+                print(e)
+        return False
+
+    def get_golongan(self, gol_ruang=None):
+        if gol_ruang:
+            golongan_list = Account.GOLONGAN
+            print(golongan_list)
+        return None
