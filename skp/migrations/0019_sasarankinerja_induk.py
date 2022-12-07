@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("skp", "0017_daftarperilakukerjapegawai"),
+        ("skp", "0018_rencanaaksi"),
     ]
 
     operations = [

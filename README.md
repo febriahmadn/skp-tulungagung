@@ -35,3 +35,8 @@ ALTER ROLE skp_user SET timezone TO 'Asia/Jakarta';
 ALTER ROLE skp_user WITH PASSWORD '5o4wr1515jua8my6xx36';
 GRANT ALL PRIVILEGES ON DATABASE skp TO skp_user;
 ```
+
+
+JPT: ESELON II
+JF/JA: III / IV
+JF: PPPK
