@@ -1,22 +1,17 @@
-import requests
 import calendar
+
+import requests
 from django.contrib import admin
-from django.utils.safestring import mark_safe
-from django.urls import resolve, path, reverse_lazy
 from django.http import JsonResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404, render
+from django.urls import path, resolve, reverse_lazy
+from django.utils.safestring import mark_safe
 
 from services.models import Configurations
 from skp.forms.sasarankinerja_form import SasaranKinerjaForm
+from skp.models import (Lampiran, PerilakuKerja, Perspektif, RencanaHasilKerja,
+                        SasaranKinerja)
 from skp.utils import FULL_BULAN
-from skp.models import (
-    SasaranKinerja,
-    RencanaHasilKerja,
-    DetailSasaranKinerja,
-    PerilakuKerja,
-    Perspektif,
-    Lampiran
-)
 
 
 class SasaranKinerjaAdmin(admin.ModelAdmin):
@@ -61,19 +56,23 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         btn = '<div class="btn-group" role="group">'
         btn += """
             <button id="btnGroupDrop1" type="button"
-                class="btn btn-warning dropdown-toggle"
+                class="btn btn-warning btn-sm dropdown-toggle"
                 data-toggle="dropdown" aria-haspopup="true"
                 aria-expanded="false">Aksi</button>"""
         btn += '<div class="dropdown-menu" aria-labelledby="btnGroupDrop1">'
         btn += '<a class="dropdown-item" href="{}">Detail SKP</a>'.format(
             reverse_lazy("admin:detail-skp", kwargs={"id": obj.id})
         )
-        btn += '<a class="dropdown-item" href="#">Matriks Peran Hasil</a>'
+        btn += '<a class="dropdown-item" href="{}">Matriks Peran Hasil</a>'.format(
+            reverse_lazy(
+                "admin:skp_sasarankerja_matrikshasilperan", kwargs={"obj_id": obj.id}
+            )
+        )
         btn += '<a class="dropdown-item" href="{}">SKP Bawahan</a>'.format(
-            reverse_lazy('admin:skp_sasarankinerja_bawahan', kwargs={"id": obj.id})
+            reverse_lazy("admin:skp_sasarankinerja_bawahan", kwargs={"id": obj.id})
         )
         btn += '<a class="dropdown-item" href="{}">Penilaian</a>'.format(
-            reverse_lazy('admin:skp_sasarankinerja_penilaian', kwargs={"id": obj.id})
+            reverse_lazy("admin:skp_sasarankinerja_penilaian", kwargs={"id": obj.id})
         )
         btn += "</div>"
         btn += "</div>"
@@ -158,7 +157,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         perilaku_kerja_list = PerilakuKerja.objects.filter(is_active=True)
         lampiran_list = Lampiran.objects.filter(status=Lampiran.Status.ACTIVE)
         penilai = False
-        view = request.GET.get('view', None)
+        view = request.GET.get("view", None)
         if view == "penilai":
             penilai = True
         extra_context = {
@@ -168,8 +167,8 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
             "penilai": obj.pejabat_penilai,
             "perilaku_kerja_list": perilaku_kerja_list,
             "perspektif_list": Perspektif.objects.all(),
-            'lampiran': lampiran_list.order_by('id'),
-            "penilai_view": penilai
+            "lampiran": lampiran_list.order_by("id"),
+            "penilai_view": penilai,
         }
         return render(
             request, "admin/skp/sasarankinerja/detail_skp.html", extra_context
@@ -304,8 +303,8 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
             "perilakukerja_list": PerilakuKerja.objects.filter(is_active=True),
             "lampiran_list": Lampiran.objects.filter(
                 status=Lampiran.Status.ACTIVE
-            ).order_by('id'),
-            "show_ttd": show_ttd
+            ).order_by("id"),
+            "show_ttd": show_ttd,
         }
         return render(request, "admin/skp/sasarankinerja/cetak.html", extra_context)
 
@@ -318,7 +317,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         )
         show_detail = [
             SasaranKinerja.Status.PENGAJUAN,
-            SasaranKinerja.Status.PERSETUJUAN
+            SasaranKinerja.Status.PERSETUJUAN,
         ]
         extra_context = {
             "obj": obj,
@@ -330,9 +329,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
             "show_detail": show_detail,
         }
         return render(
-            request,
-            "admin/skp/sasarankinerja/skp_bawahan.html",
-            extra_context
+            request, "admin/skp/sasarankinerja/skp_bawahan.html", extra_context
         )
 
     def view_penilaian(self, request, id):
@@ -341,21 +338,17 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         extra_context = {
             "title": "Penilaian SKP",
             "obj": obj,
-            "batas_input": config.batas_input
+            "batas_input": config.batas_input,
         }
-        return render(
-            request,
-            "admin/skp/sasarankinerja/penilaian.html",
-            extra_context
-        )
+        return render(request, "admin/skp/sasarankinerja/penilaian.html", extra_context)
 
     def load_penilaian(self, request):
-        sasaran_id = request.GET.get('id', None)
-        respon = {'success': False, 'pesan': "Terjadi Kesalahan Sistem"}
+        sasaran_id = request.GET.get("id", None)
+        respon = {"success": False, "pesan": "Terjadi Kesalahan Sistem"}
         try:
             sasaran_obj = SasaranKinerja.objects.get(pk=sasaran_id)
         except Exception as e:
-            respon = {'success': False, 'pesan': str(e)}
+            respon = {"success": False, "pesan": str(e)}
             return JsonResponse(respon, safe=False)
 
         awal = sasaran_obj.periode_awal
@@ -374,68 +367,103 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                 })
             })
         else:
-            for i in range(awal.month, akhir.month+1):
+            for i in range(awal.month, akhir.month + 1):
                 if i == awal.month:
-                    num_days = calendar.monthrange(
-                        awal.year,
-                        awal.month
-                    )[1]
-                    bulan_list.append({
-                        'bulan': FULL_BULAN[i],
-                        'range': "{} / {}-{}-{}".format(
-                            awal.strftime('%Y-%m-%d'),
-                            awal.year,
-                            awal.month if awal.month > 9 else "0{}".format(
+                    num_days = calendar.monthrange(awal.year, awal.month)[1]
+                    bulan_list.append(
+                        {
+                            "bulan": FULL_BULAN[i],
+                            "range": "{} / {}-{}-{}".format(
+                                awal.strftime("%Y-%m-%d"),
+                                awal.year,
                                 awal.month
+                                if awal.month > 9
+                                else "0{}".format(awal.month),
+                                num_days,
                             ),
-                            num_days
-                        ),
-                        'rencana_aksi_url': reverse_lazy(
-                            'admin:rencana-aksi-skp', kwargs={
-                                "skp_id": sasaran_obj.id,
-                                "periode": i
-                            }
-                        )
-                    })
+                            'rencana_aksi_url': reverse_lazy(
+                                'admin:rencana-aksi-skp', kwargs={
+                                    "skp_id": sasaran_obj.id,
+                                    "periode": i
+                                }
+                            )
+                        }
+                    )
                 elif i == akhir.month:
-                    bulan_list.append({
-                        'bulan': FULL_BULAN[i],
-                        'range': "{}-{}-{} / {}".format(
-                            akhir.year,
-                            akhir.month if akhir.month > 9 else "0{}".format(
-                                awal.month
+                    bulan_list.append(
+                        {
+                            "bulan": FULL_BULAN[i],
+                            "range": "{}-{}-{} / {}".format(
+                                akhir.year,
+                                akhir.month
+                                if akhir.month > 9
+                                else "0{}".format(awal.month),
+                                "01",
+                                akhir.strftime("%Y-%m-%d"),
                             ),
-                            "01",
-                            akhir.strftime('%Y-%m-%d')
-                        ),
-                        'rencana_aksi_url': reverse_lazy(
-                            'admin:rencana-aksi-skp', kwargs={
-                                "skp_id": sasaran_obj.id,
-                                "periode": i
-                            }
-                        )
-                    })
+                            'rencana_aksi_url': reverse_lazy(
+                                'admin:rencana-aksi-skp', kwargs={
+                                    "skp_id": sasaran_obj.id,
+                                    "periode": i
+                                }
+                            )
+                        }
+                    )
                 else:
                     num_days = calendar.monthrange(awal.year, awal.month)[1]
-                    bulan_list.append({
-                        'bulan': FULL_BULAN[i],
-                        'range': "{}-{}-{} / {}-{}-{}".format(
-                            akhir.year,
-                            i if i > 9 else "0{}".format(i),
-                            "01",
-                            akhir.year,
-                            i if i > 9 else "0{}".format(i),
-                            num_days,
-                        ),
-                        'rencana_aksi_url': reverse_lazy(
-                            'admin:rencana-aksi-skp', kwargs={
-                                "skp_id": sasaran_obj.id,
-                                "periode": i
-                            }
-                        )
-                    })
-        respon = {'success': True, "data": bulan_list}
+                    bulan_list.append(
+                        {
+                            "bulan": FULL_BULAN[i],
+                            "range": "{}-{}-{} / {}-{}-{}".format(
+                                akhir.year,
+                                i if i > 9 else "0{}".format(i),
+                                "01",
+                                akhir.year,
+                                i if i > 9 else "0{}".format(i),
+                                num_days,
+                            ),
+                        }
+                    )
+        respon = {"success": True, "data": bulan_list}
         return JsonResponse(respon, safe=False)
+
+    def view_matriks_hasil_peran(self, request, obj_id):
+        obj = get_object_or_404(SasaranKinerja, pk=obj_id)
+        show = request.GET.get("show", None)
+
+        skp_childs = SasaranKinerja.objects.filter(induk_id=obj.id)
+        extra_context = {
+            "title": "Matriks Hasil Peran",
+            "obj": obj,
+            "rhk_list": obj.rencanahasilkerja_set.all(),
+            "skp_childs": skp_childs,
+            "show": True if show == "true" else False,
+        }
+        return render(
+            request, "admin/skp/sasarankinerja/matriks_hasil_peran.html", extra_context
+        )
+
+    def get_rhk_by_skp_parent(self, request, obj_id):
+        obj = get_object_or_404(SasaranKinerja, pk=obj_id)
+        respon = {"success": False}
+        if obj.induk:
+            rhk_parent_list = obj.induk.rencanahasilkerja_set.all()
+            if rhk_parent_list.exists():
+                results = []
+                terbesar = 0
+                for item in rhk_parent_list:
+                    childs = []
+                    list_childs = RencanaHasilKerja.objects.filter(
+                        induk_id=item.id, skp=obj
+                    )
+                    if list_childs.count() > terbesar:
+                        terbesar = list_childs.count()
+                    for child in list_childs:
+                        childs.append({"text": child.rencana_kerja})
+
+                    results.append({"id": item.id, "childs": childs})
+                respon = {"success": True, "results": results, "terbesar": terbesar}
+        return JsonResponse(respon)
 
     def get_urls(self):
         admin_url = super(SasaranKinerjaAdmin, self).get_urls()
@@ -449,6 +477,11 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                 "load-penilaian",
                 self.admin_site.admin_view(self.load_penilaian),
                 name="skp_sasarankinerja_penilaian_load",
+            ),
+            path(
+                "<int:obj_id>/matriks-hasil-peran",
+                self.admin_site.admin_view(self.view_matriks_hasil_peran),
+                name="skp_sasarankerja_matrikshasilperan",
             ),
             path(
                 "<int:id>/detail",
@@ -476,6 +509,11 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                 name="skp_sasarankinerja_penilaian",
             ),
             path(
+                "<int:obj_id>/get-rhk-childs",
+                self.admin_site.admin_view(self.get_rhk_by_skp_parent),
+                name="skp_sasarankinerja_get_child_rhk",
+            ),
+            path(
                 "change-status",
                 self.admin_site.admin_view(self.action_change_status_skp),
                 name="skp_sasarankinerja_changestatus",
@@ -485,25 +523,25 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         ]
         return custom_url + admin_url
 
-    def save_model(self, request, obj, form, change):
-        if not change:
-            obj.save()
-            # Create
-            try:
-                detail = DetailSasaranKinerja(
-                    skp=obj,
-                    nama_pegawai=obj.pegawai.get_complete_name(),
-                    nip_pegawai=obj.pegawai.username,
-                    jabatan_pegawai=obj.pegawai.jabatan,
-                    golongan_pegawai=obj.pegawai.golongan,
-                    unor_pegawai=obj.pegawai.unitkerja.unitkerja,
-                    nama_pejabat=obj.pegawai.atasan.get_complete_name(),
-                    nip_pejabat=obj.pegawai.atasan.username,
-                    jabatan_pejabat=obj.pegawai.atasan.jabatan,
-                    golongan_pejabat=obj.pegawai.atasan.golongan,
-                    unor_pejabat=obj.pegawai.atasan.unitkerja.unitkerja,
-                )
-                detail.save()
-            except Exception as e:
-                print(e)
-        return super().save_model(request, obj, form, change)
+    # def save_model(self, request, obj, form, change):
+    #     if not change:
+    #         obj.save()
+    #         # Create
+    #         try:
+    #             detail = DetailSasaranKinerja(
+    #                 skp=obj,
+    #                 nama_pegawai=obj.pegawai.get_complete_name(),
+    #                 nip_pegawai=obj.pegawai.username,
+    #                 jabatan_pegawai=obj.pegawai.jabatan,
+    #                 golongan_pegawai=obj.pegawai.golongan,
+    #                 unor_pegawai=obj.pegawai.unitkerja.unitkerja,
+    #                 nama_pejabat=obj.pegawai.atasan.get_complete_name(),
+    #                 nip_pejabat=obj.pegawai.atasan.username,
+    #                 jabatan_pejabat=obj.pegawai.atasan.jabatan,
+    #                 golongan_pejabat=obj.pegawai.atasan.golongan,
+    #                 unor_pejabat=obj.pegawai.atasan.unitkerja.unitkerja,
+    #             )
+    #             detail.save()
+    #         except Exception as e:
+    #             print(e)
+    #     return super().save_model(request, obj, form, change)

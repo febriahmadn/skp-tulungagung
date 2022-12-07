@@ -3,6 +3,8 @@ from django.http import JsonResponse
 from django.urls import path
 
 from skp.models import DaftarLampiran, Lampiran, SasaranKinerja
+
+
 class DaftarlampiranAdmin(admin.ModelAdmin):
     list_display = ("pk", "lampiran", "isi", "created")
 

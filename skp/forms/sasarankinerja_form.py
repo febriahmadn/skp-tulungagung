@@ -1,7 +1,8 @@
 from django import forms
+
 from skp.models import SasaranKinerja
-from usom.models import Account, UnitKerja
 from skp.utils import string_to_int
+from usom.models import Account, UnitKerja
 
 
 class SasaranKinerjaForm(forms.ModelForm):

@@ -1,5 +1,4 @@
 from django import template
-
 # from master.models import Settings
 from django.utils.safestring import mark_safe
 

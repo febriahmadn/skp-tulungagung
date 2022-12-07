@@ -1,6 +1,6 @@
 from django import forms
-from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.contrib.admin.widgets import FilteredSelectMultiple
+from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.contrib.auth.models import Group
 from django.utils.translation import gettext_lazy as _
 
