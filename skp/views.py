@@ -3,6 +3,7 @@ from django.shortcuts import render
 
 from usom.models import UnitKerja
 
+
 @login_required
 def view_dashboard(request):
     JENIS_STATISTIK = [
