@@ -121,8 +121,6 @@ class BuktiDukungAdmin(admin.ModelAdmin):
             nama_pegawai = obj.pegawai.get_complete_name()
         extra_context = {
             "obj": obj,
-            "pegawai": obj.pegawai,
-            "penilai": obj.pejabat_penilai,
             "title": "Cetak Bukti Dukung {} [{}]".format(
                 nama_pegawai, obj.get_periode()
             ),

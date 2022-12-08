@@ -91,10 +91,10 @@
             <tbody>
                 {% for item in list_skp_bawahan %}
                 <tr>
-                    <td>{{item.pegawai.unitkerja.unitkerja}}</td>
-                    <td>{{item.pegawai.username}}</td>
-                    <td>{{item.pegawai.get_complete_name}}</td>
-                    <td>{{item.pegawai.jabatan}}</td>
+                    <td>{{item.detailsasarankinerja.unor_pegawai}}</td>
+                    <td>{{item.detailsasarankinerja.nip_pegawai}}</td>
+                    <td>{{item.detailsasarankinerja.nama_pegawai}}</td>
+                    <td>{{item.detailsasarankinerja.jabatan_pegawai}}</td>
                     <td>{{item.keterangan|default_if_none:"---"}}</td>
                     <td>{{item.get_status_display}}</td>
                     <td>
