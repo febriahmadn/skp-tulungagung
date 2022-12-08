@@ -50,21 +50,21 @@
     </div>
     <div class="d-flex">
       <label class="mx-1 py-2" style="min-width: 100px;">Keterangan</label>
-      <input type="text" readonly class="form-control form-control-sm" id="staticEmail" value="{{obj.keterangan}}">
+      <input type="text" readonly class="form-control form-control-sm" id="staticEmail" value="{{obj.keterangan|default_if_none:"-"}}">
     </div>
   </div>
 
   <div class="col-md-8 d-flex flex-row-reverse">
     {% if obj.status == 1 %}
-    <button class="btn btn-sm btn-warning" id="btn_action_sinkron_ekinerja_id"><i class="fas fa-sync-alt"></i> Sinkron dengan e-kinerja</button>
-    <button class="btn btn-sm btn-primary mr-1" id="action_ajukan_skp_id"><i class="fas fa-paper-plane"></i> Ajukan SKP</button>
-    <button class="btn btn-sm btn-danger mr-1" id="action_archive_skp_id"><i class="flaticon2-trash"></i> Archivekan SKP</button>
+    <button style="align-self: center;" class="btn btn-sm btn-warning" id="btn_action_sinkron_ekinerja_id"><i class="fas fa-sync-alt"></i> Sinkron dengan e-kinerja</button>
+    <button style="align-self: center;" class="btn btn-sm btn-primary mr-1" id="action_ajukan_skp_id"><i class="fas fa-paper-plane"></i> Ajukan SKP</button>
+    <button style="align-self: center;" class="btn btn-sm btn-danger mr-1" id="action_archive_skp_id"><i class="flaticon2-trash"></i> Archivekan SKP</button>
     {% endif %}
-    <a href="{% url 'admin:skp_sasarankinerja_cetak' obj.id %}">
-      <button class="btn btn-success mr-1"><i class="fas fa-print"></i> Cetak SKP</button>
+    <a style="align-self: center;" class="btn btn-success btn-sm mr-1" href="{% url 'admin:skp_sasarankinerja_cetak' obj.id %}">
+      <i class="fas fa-print"></i> Cetak SKP
     </a>
     {% if penilai_view %}
-    <button type="button" class="btn btn-sm btn-warning mr-1" data-toggle="modal" data-target="#modal_edit_status">
+    <button style="align-self: center;" type="button" class="btn btn-sm btn-warning mr-1" data-toggle="modal" data-target="#modal_edit_status">
       <i class="fas fa-edit"></i> Edit Status
     </button>
     {% endif %}
@@ -216,10 +216,14 @@
                 </ol>
               </td>
               <td>
-                {% if obj.status != 1 and penilai_view  %}
-                  {% daftar_ekspetasi item.id obj.id "tidak" %}
+                {% if penilai_view %}
+                {% daftar_ekspetasi item.id obj.id "tidak" %}
                 {% else %}
-                  {% daftar_ekspetasi item.id obj.id "ya" %}
+                {% if obj.status == 2  %}
+                {% daftar_ekspetasi item.id obj.id "tidak" %}
+                {% else %}
+                {% daftar_ekspetasi item.id obj.id "ya" %}
+                {% endif %}
                 {% endif %}
               </td>
             </tr>
@@ -244,7 +248,7 @@
             <tr>
               <th colspan="2">
                 {{item.lampiran}}
-                {% if not penilai_view %}
+                {% if not penilai_view and obj.status == 1 %}
                 <button type="button" data-id="{{item.id}}" data-judul="{{item.lampiran|title}}" class="ml-3 btn btn-primary btn-sm" data-toggle="modal" data-target="#modal_tambah_lampiran">
                   Tambah
                 </button>
@@ -256,7 +260,11 @@
             {% if penilai_view %}
             {% daftar_lampiran item.id obj.id "ya" %}
             {% else %}
+            {% if obj.status != 1 %}
+            {% daftar_lampiran item.id obj.id "ya" %}
+            {% else %}
             {% daftar_lampiran item.id obj.id "tidak" %}
+            {% endif %}
             {% endif %}
           </tbody>
           </table>
@@ -619,8 +627,7 @@
             $("#rhk_id").val(data.id)
             $("#klasifikasi_id").val(data.klasifikasi).trigger('change')
             if(data.klasifikasi == "1"){
-              handleLoadUnitkerja()
-              $("#unitkerja_id").val(data.unitkerja).trigger('change')
+              handleLoadUnitkerja(data.unor)
             }
             $("#jenis_id").val(data.jenis)
             $("#rencana_id").val(data.rencana_hasil)
@@ -668,7 +675,7 @@
       $("#ekspetasi").val(isi.html())
     }
   })
-  const handleLoadUnitkerja = async () => {
+  const handleLoadUnitkerja = async (id=null) => {
     await $.ajax({
       url: '{% url "admin:usom_unitkerja_loaddata" %}',
       type: 'GET',
@@ -676,7 +683,11 @@
         if(response.length > 0){
           html = `<option value="" readonly >---- Pilih Unit Kerja ----</option>`
           response.map((value, idx)=>{
-            html += `<option value="${value.id}" >${value.text}</option>`
+            selected = "selected"
+            if(value.id != id){
+              selected = ""
+            }
+            html += `<option ${selected} value="${value.id}" >${value.text}</option>`
           })
         }else{
           html = "<option readonly >Unit Kerja Kosong</option>"
@@ -853,7 +864,7 @@
               <tr>
                 <td colspan="3">
                   {% if not penilai_view %}
-                  <button class="btn btn-sm btn-light-primary btn-block" data-rhk_id="${item.id}" data-edit="false" onclick="set_rhk_indikator($(this))">Add Indikator</button>
+                  <button class="btn btn-sm btn-light-primary btn-block" data-rhk_id="${item.id}" data-edit="false" onclick="set_rhk_indikator($(this))">Tambah Indikator</button>
                   {% endif %}
                 </td>
               </tr>
@@ -876,7 +887,7 @@
                 <tr>
                   <td colspan="3">
                     {% if not penilai_view %}
-                    <button class="btn btn-sm btn-light-primary btn-block" data-rhk_id="${item.id}" onclick="set_rhk_indikator($(this))">Add Indikator</button>
+                    <button class="btn btn-sm btn-light-primary btn-block" data-rhk_id="${item.id}" onclick="set_rhk_indikator($(this))">Tambah Indikator</button>
                     {% endif %}
                   </td>
                 </tr>
@@ -986,7 +997,7 @@
               <tr>
                 <td colspan="3">
                   {% if not penilai_view %}
-                  <button class="btn btn-sm btn-light-primary btn-block" data-rhk_id="${item.id}" data-edit="false" onclick="set_rhk_indikator($(this))">Add Indikator</button>
+                  <button class="btn btn-sm btn-light-primary btn-block" data-rhk_id="${item.id}" data-edit="false" onclick="set_rhk_indikator($(this))">Tambah Indikator</button>
                   {% endif %}
                 </td>
               </tr>
@@ -1000,7 +1011,7 @@
                 <tr>
                   <td colspan="3">
                     {% if not penilai_view %}
-                    <button class="btn btn-sm btn-light-primary btn-block" data-rhk_id="${item.id}" data-edit="false" onclick="set_rhk_indikator($(this))">Add Indikator</button>
+                    <button class="btn btn-sm btn-light-primary btn-block" data-rhk_id="${item.id}" data-edit="false" onclick="set_rhk_indikator($(this))">Tambah Indikator</button>
                     {% endif %}
                   </td>
                 </tr>

@@ -71,9 +71,10 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         btn += '<a class="dropdown-item" href="{}">SKP Bawahan</a>'.format(
             reverse_lazy("admin:skp_sasarankinerja_bawahan", kwargs={"id": obj.id})
         )
-        btn += '<a class="dropdown-item" href="{}">Penilaian</a>'.format(
-            reverse_lazy("admin:skp_sasarankinerja_penilaian", kwargs={"id": obj.id})
-        )
+        if obj.status == 3:
+            btn += '<a class="dropdown-item" href="{}">Penilaian</a>'.format(
+                reverse_lazy("admin:skp_sasarankinerja_penilaian", kwargs={"id": obj.id})
+            )
         btn += "</div>"
         btn += "</div>"
         return mark_safe(btn)
@@ -459,7 +460,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
 
         skp_childs = SasaranKinerja.objects.filter(induk_id=obj.id)
         extra_context = {
-            "title": "Matriks Hasil Peran",
+            "title": "Matrik Peran Hasil",
             "obj": obj,
             "rhk_list": obj.rencanahasilkerja_set.all(),
             "skp_childs": skp_childs,
