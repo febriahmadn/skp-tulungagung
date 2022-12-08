@@ -19,9 +19,9 @@ from .subadmin.indikator_admin import IndikatorAdmin
 from .subadmin.lampiran_admin import LampiranAdmin
 from .subadmin.perilakukerja_admin import PerilakukerjaAdmin
 from .subadmin.perspektif_admin import PerspektifAdmin
+from .subadmin.realisasi_admin import RealisasiAdmin
 from .subadmin.rencana_aksi_admin import RencanaAksiAdmin
 from .subadmin.rencanahasilkerja_admin import RencanahasilkerjaAdmin
-from .subadmin.realisasi_admin import RealisasiAdmin
 
 admin.site.register(DetailSasaranKinerja, DetailsasarankerjaAdmin)
 admin.site.register(RencanaHasilKerja, RencanahasilkerjaAdmin)

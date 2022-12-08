@@ -5,6 +5,7 @@ from django.urls import path, reverse_lazy
 from skp.models import (BuktiDukung, IndikatorKinerjaIndividu, Realisasi,
                         RencanaAksi, RencanaHasilKerja, SasaranKinerja)
 
+
 def rencana_aksi_list(skp_obj, rhk_obj, periode):
     rencana_aksi = []
     if periode and periode != "":
