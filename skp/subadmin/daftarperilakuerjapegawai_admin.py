@@ -36,7 +36,8 @@ class DaftarPerilakuKerjaPegawaiAdmin(admin.ModelAdmin):
 
         try:
             obj = DaftarPerilakuKerjaPegawai.objects.get(pk=ekspetasi_id)
-        except DaftarPerilakuKerjaPegawai.DoesNotExist:
+        except Exception as e:
+            print(e)
             obj = DaftarPerilakuKerjaPegawai(
                 skp=skp_obj,
                 perilaku_kerja=perilaku__obj

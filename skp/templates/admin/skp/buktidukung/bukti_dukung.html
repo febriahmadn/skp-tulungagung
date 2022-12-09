@@ -198,7 +198,7 @@
       <div class="modal-body">
         {% csrf_token %}
         <input type="hidden" name="bukti_id" id="bukti_id">
-        <input type="hidden" name="rhk_id_bukti" id="rhk_id_bukti">
+        <input type="hidden" name="indikator_id" id="indikator_id">
         <div class="form-group m-0">
           <label for="rencana_aksi">Nama Bukti Dukung</label>
           <input type="text" class="form-control" id="bukti_dukung">
@@ -229,7 +229,7 @@
       <div class="modal-body">
         {% csrf_token %}
         <input type="hidden" name="realisasi_id" id="realisasi_id">
-        <input type="hidden" name="rhk_id_realisasi" id="rhk_id_realisasi">
+        <input type="hidden" name="indikator_id_realisasi" id="indikator_id_realisasi">
         <div class="form-group m-0">
           <label for="rencana_aksi">Realisasi</label>
           <input type="text" class="form-control" id="realisasi">
@@ -266,10 +266,10 @@
   $("#tambahbuktidukung").on('show.bs.modal', function (event) {
     let modal = $("#tambahbuktidukung")
     let button = $(event.relatedTarget)
-    let rhk = button.data('rhk_id')
+    let indikator = button.data('indikator_id')
     let edit = button.data('edit')
     let id = button.data('id')
-    $("#rhk_id_bukti").val(rhk)
+    $("#indikator_id").val(indikator)
     $("#bukti_dukung_title").html("Tambah Bukti Dukung")
     if(edit){
       $("#bukti_dukung_title").html("Ubah Bukti Dukung")
@@ -286,10 +286,10 @@
   $("#tambahrealisasi").on('show.bs.modal', function (event) {
     let modal = $("#tambahrealisasi")
     let button = $(event.relatedTarget)
-    let rhk = button.data('rhk_id')
+    let indikator_id = button.data('indikator_id')
     let edit = button.data('edit')
     let id = button.data('id')
-    $("#rhk_id_realisasi").val(rhk)
+    $("#indikator_id_realisasi").val(indikator_id)
     $("#realisasi_title").html("Tambah Realisasi")
     if(edit){
       $("#realisasi_title").html("Ubah Realisasi")
@@ -335,159 +335,115 @@
             let bukti_dukung =  '';
             let realisasi=  '';
             var tambahan = 0;
-            let button_bukti = `
-            <td rowspan="${item.realisasi.length+2}" >
-              <button class="btn btn-sm btn-block btn-primary mr-1" data-rhk_id="${item.id}" data-edit="false" data-toggle="modal" data-target="#tambahbuktidukung">
-                Tambah
-              </button>
-            </td>
-            `
-            let button_realisasi = `
-            <td>
-              <button class="btn btn-sm btn-block btn-primary mr-1" data-rhk_id="${item.id}" data-edit="false" data-toggle="modal" data-target="#tambahrealisasi">
-                Tambah
-              </button>
-            </td>
-            `
-            if (item.realisasi.length > 0){
-              item.realisasi.map(item_realisasi =>{
-                realisasi += `
-                <tr>
-                  <td>
-                      <div style="display: flex" >
-                        <div id="realisasi-${item_realisasi.id}">${item_realisasi.realisasi}</div>
-                        <div style="padding-right:3px; padding-left:3px;" >berdasarkan</div>
-                        <div id="sumber-${item_realisasi.id}">${item_realisasi.sumber}</div>
-                      </div>
-                      <div class="d-flex">
-                        <button class="btn btn-sm btn-warning mr-1" data-id="${item_realisasi.id}" data-rhk_id="${item.id}" data-edit="true" data-toggle="modal" data-target="#tambahrealisasi">
-                          <i class="flaticon2-pen"></i>
-                        </button>
-                        <a onclick="delete_action('${item_realisasi.delete_url}')" class="btn btn-icon btn-danger">
-                          <i class="flaticon-delete-1"></i>
-                        </a>
-                      </div>
-                  </td>
-                </tr>
-                `
-              })
-              realisasi += `
-                <tr>
-                  ${button_realisasi}
-                </tr>
-                `
-              }else{
-                realisasi += `
-                <tr>
-                  ${button_realisasi}
-                </tr>
-              `
-            }
-            if (item.bukti_dukung.length > 0){
-              item.bukti_dukung.map(item_bukti_dukung =>{
-                bukti_dukung += `
-                <tr rowspan="${item.realisasi.length+2}">
-                  <td>
-                      <a href="${item_bukti_dukung.link}" target="_blank" id="bukti-${item_bukti_dukung.id}">${item_bukti_dukung.nama}</a>
-                      <div class="d-flex">
-                        <button class="btn btn-sm btn-warning mr-1" data-id="${item_bukti_dukung.id}" data-rhk_id="${item.id}" data-edit="true" data-toggle="modal" data-target="#tambahbuktidukung">
-                          <i class="flaticon2-pen"></i>
-                        </button>
-                        <a onclick="delete_action('${item_bukti_dukung.delete_url}')" class="btn btn-icon btn-danger">
-                          <i class="flaticon-delete-1"></i>
-                        </a>
-                      </div>
-                  </td>
-                </tr>
-                `
-              })
-              bukti_dukung += `
-                <tr rowspan="${item.realisasi.length+2}">
-                  ${button_bukti}
-                </tr>
-                `
-              }else{
-                bukti_dukung += `
-                <tr rowspan="${item.realisasi.length+2}">
-                  ${button_bukti}
-                </tr>
-              `
-            }
             if (item.indikator.length > 0){
               item.indikator.map(item_indikator => {
+                let button_bukti = `
+                <button class="btn btn-sm btn-block btn-primary mr-1" data-indikator_id="${item_indikator.id}" data-edit="false" data-toggle="modal" data-target="#tambahbuktidukung">
+                  Tambah
+                </button>
+                `
+                let button_realisasi = `
+                <button class="btn btn-sm btn-block btn-primary mr-1" data-indikator_id="${item_indikator.id}" data-edit="false" data-toggle="modal" data-target="#tambahrealisasi">
+                  Tambah
+                </button>
+                `
+                if(item_indikator.bukti_dukung){
+                  bukti_dukung = `
+                  <td>
+                    <a href="${item_indikator.bukti_dukung.link}" target="_blank" id="bukti-${item_indikator.bukti_dukung.id}">${item_indikator.bukti_dukung.nama}</a>
+                    <div class="d-flex">
+                      <button class="btn btn-sm btn-warning mr-1" data-id="${item_indikator.bukti_dukung.id}" data-indikator_id="${item_indikator.id}" data-edit="true" data-toggle="modal" data-target="#tambahbuktidukung">
+                        <i class="flaticon2-pen"></i>
+                      </button>
+                      <a onclick="delete_action('${item_indikator.bukti_dukung.delete_url}')" class="btn btn-icon btn-danger">
+                        <i class="flaticon-delete-1"></i>
+                      </a>
+                    </div>
+                </td>
+                  `
+                }else{
+                  bukti_dukung = `
+                    <td>
+                      ${button_bukti}
+                    </td>
+                  `
+                }
+                if(item_indikator.realisasi){
+                  realisasi = `
+                  <td>
+                    <div style="display: flex" >
+                      <div id="realisasi-${item_indikator.realisasi.id}">${item_indikator.realisasi.realisasi}</div>
+                      <div style="padding-right:3px; padding-left:3px;" >berdasarkan</div>
+                      <div id="sumber-${item_indikator.realisasi.id}">${item_indikator.realisasi.sumber}</div>
+                    </div>
+                    <div class="d-flex">
+                      <button class="btn btn-sm btn-warning mr-1" data-id="${item_indikator.realisasi.id}" data-indikator_id="${item_indikator.id}" data-edit="true" data-toggle="modal" data-target="#tambahrealisasi">
+                        <i class="flaticon2-pen"></i>
+                      </button>
+                      <a onclick="delete_action('${item_indikator.realisasi.delete_url}')" class="btn btn-icon btn-danger">
+                        <i class="flaticon-delete-1"></i>
+                      </a>
+                    </div>
+                </td>
+                  `
+                }else{
+                  realisasi = `
+                    <td>
+                      ${button_realisasi}
+                    </td>
+                  `
+                }
                 indikator += `
                 <tr>
                   {% if obj.jenis_jabatan == 1 %}
-                  <td rowspan="${item.bukti_dukung.length+3+item.realisasi.length}" id="perspektif-${item_indikator.indikator_id}">${item_indikator.perspektif ? item_indikator.perspektif : '-'}</td>
+                  <td id="perspektif-${item_indikator.id}">${item_indikator.perspektif ? item_indikator.perspektif : '-'}</td>
                   {% else %}
-                  <td rowspan="${item.bukti_dukung.length+3+item.realisasi.length}" id="aspek-${item_indikator.indikator_id}">${item_indikator.aspek ? item_indikator.aspek : '-'}</td>
+                  <td id="aspek-${item_indikator.id}">${item_indikator.aspek ? item_indikator.aspek : '-'}</td>
                   {% endif %}
-                  <td rowspan="${item.bukti_dukung.length+3+item.realisasi.length}">
-                    <span id="indikator-${item_indikator.indikator_id}" >${item_indikator.indikator}</span>
+                  <td>
+                    <span  id="indikator-${item_indikator.id}" >${item_indikator.indikator}</span>
                   </td>
-                  <td rowspan="${item.bukti_dukung.length+3+item.realisasi.length}" id="target-${item_indikator.indikator_id}">${item_indikator.target}</td>
+                  <td id="target-${item_indikator.id}">${item_indikator.target}</td>
+                  ${bukti_dukung}
+                  ${realisasi}
                 </tr>
                 `
               })
             } else {
               delete_html = `
-
-              `
-              tambahan += 2
-              indikator += `
-              <tr>
-                <td rowspan="${item.bukti_dukung.length+2+item.realisasi.length}"></td>
-                <td rowspan="${item.bukti_dukung.length+2+item.realisasi.length}"></td>
-                <td rowspan="${item.bukti_dukung.length+2+item.realisasi.length}"></td>
-                ${item.bukti_dukung.length < 0 ? button_bukti : ""}
-                ${item.realisasi.length < 0 ? button_realisasi : ""}
-              </tr>
               `
             }
 
-            // indikator += `
-            //   <tr>
-            //     <td colspan="3"></td>
-            //     <td colspan="3">
-            //       <button class="btn btn-sm btn-primary btn-block" data-rhk_id="${item.id}" onclick="set_rhk_indikator($(this))">Pilih Indikator</button>
-            //     </td>
-            //   </tr>
-            // `
-            
             if (item.indikator.length > 0){
               indikator += `
+
               `
             }
 
-            let induk_elem = `
-            <td rowspan="${item.indikator.length+3+item.bukti_dukung.length+item.realisasi.length+tambahan}">
-                  ${item?.induk ? item.induk.rencana_kerja : ''}
-                </td>
-              `
             ol = `<ol style="margin: unset; padding-left: 10px;">`
               item.rencana_aksi.map((item)=>{
                 ol += `<li class="item-rencana" style="margin: unset;">${item}</li>`
               })
             ol += "</ol>"
+
+            let induk_elem = `
+                <td rowspan="${item.indikator.length+1}">
+                  ${item?.induk ? item.induk.rencana_kerja : ''}
+                </td>
+              `
             html_ += `
-              <tr>
-                <td rowspan="${item.indikator.length+3+item.bukti_dukung.length+item.realisasi.length+tambahan}">${no}</td>
+            <tr>
+                <td rowspan="${item.indikator.length+1}">${no}</td>
                 {% if obj.jenis_jabatan != 1 %}${induk_elem}{% endif %}
-                <td rowspan="${item.indikator.length+3+item.bukti_dukung.length+item.realisasi.length+tambahan}">
+                <td rowspan="${item.indikator.length+1}">
                   ${item.rencana_kerja}
                 </td>
-                <td rowspan="${item.indikator.length+3+item.bukti_dukung.length+item.realisasi.length+tambahan}">
+                <td rowspan="${item.indikator.length+1}">
                   ${ol}
                 </td>
               </tr>
               ${indikator}
-              ${bukti_dukung}
-              ${realisasi}
             `
-            // <tr>
-            //     <td colspan="3"></td>
-            //     <td colspan="3"></td>
-            //   </tr>
             no += 1;
           })
           $('#result_list > tbody').html(html_);
@@ -523,114 +479,83 @@
             let bukti_dukung =  '';
             let realisasi=  '';
             var tambahan = 0;
-            let button_bukti = `
-            <td rowspan="${item.realisasi.length+2}" >
-              <button class="btn btn-sm btn-block btn-primary mr-1" data-rhk_id="${item.id}" data-edit="false" data-toggle="modal" data-target="#tambahbuktidukung">
-                Tambah
-              </button>
-            </td>
-            `
-            let button_realisasi = `
-            <td>
-              <button class="btn btn-sm btn-block btn-primary mr-1" data-rhk_id="${item.id}" data-edit="false" data-toggle="modal" data-target="#tambahrealisasi">
-                Tambah
-              </button>
-            </td>
-            `
-            if (item.realisasi.length > 0){
-              item.realisasi.map(item_realisasi =>{
-                realisasi += `
-                <tr>
-                  <td>
-                      <div style="display: flex" >
-                        <div id="realisasi-${item_realisasi.id}">${item_realisasi.realisasi}</div>
-                        <div style="padding-right:3px; padding-left:3px;" >berdasarkan</div>
-                        <div id="sumber-${item_realisasi.id}">${item_realisasi.sumber}</div>
-                      </div>
-                      <div class="d-flex">
-                        <button class="btn btn-sm btn-warning mr-1" data-id="${item_realisasi.id}" data-rhk_id="${item.id}" data-edit="true" data-toggle="modal" data-target="#tambahrealisasi">
-                          <i class="flaticon2-pen"></i>
-                        </button>
-                        <a onclick="delete_action('${item_realisasi.delete_url}')" class="btn btn-icon btn-danger">
-                          <i class="flaticon-delete-1"></i>
-                        </a>
-                      </div>
-                  </td>
-                </tr>
-                `
-              })
-              realisasi += `
-                <tr>
-                  ${button_realisasi}
-                </tr>
-                `
-              }else{
-                realisasi += `
-                <tr>
-                  ${button_realisasi}
-                </tr>
-              `
-            }
-            if (item.bukti_dukung.length > 0){
-              item.bukti_dukung.map(item_bukti_dukung =>{
-                bukti_dukung += `
-                <tr rowspan="${item.realisasi.length+2}">
-                  <td>
-                      <a href="${item_bukti_dukung.link}" target="_blank" id="bukti-${item_bukti_dukung.id}">${item_bukti_dukung.nama}</a>
-                      <div class="d-flex">
-                        <button class="btn btn-sm btn-warning mr-1" data-id="${item_bukti_dukung.id}" data-rhk_id="${item.id}" data-edit="true" data-toggle="modal" data-target="#tambahbuktidukung">
-                          <i class="flaticon2-pen"></i>
-                        </button>
-                        <a onclick="delete_action('${item_bukti_dukung.delete_url}')" class="btn btn-icon btn-danger">
-                          <i class="flaticon-delete-1"></i>
-                        </a>
-                      </div>
-                  </td>
-                </tr>
-                `
-              })
-              bukti_dukung += `
-                <tr rowspan="${item.realisasi.length+2}">
-                  ${button_bukti}
-                </tr>
-                `
-              }else{
-                bukti_dukung += `
-                <tr rowspan="${item.realisasi.length+2}">
-                  ${button_bukti}
-                </tr>
-                `
-            }
             if (item.indikator.length > 0){
               item.indikator.map(item_indikator => {
+                let button_bukti = `
+                <button class="btn btn-sm btn-block btn-primary mr-1" data-indikator_id="${item_indikator.id}" data-edit="false" data-toggle="modal" data-target="#tambahbuktidukung">
+                  Tambah
+                </button>
+                `
+                let button_realisasi = `
+                <button class="btn btn-sm btn-block btn-primary mr-1" data-indikator_id="${item_indikator.id}" data-edit="false" data-toggle="modal" data-target="#tambahrealisasi">
+                  Tambah
+                </button>
+                `
+                if(item_indikator.bukti_dukung){
+                  bukti_dukung = `
+                  <td>
+                    <a href="${item_indikator.bukti_dukung.link}" target="_blank" id="bukti-${item_indikator.bukti_dukung.id}">${item_indikator.bukti_dukung.nama}</a>
+                    <div class="d-flex">
+                      <button class="btn btn-sm btn-warning mr-1" data-id="${item_indikator.bukti_dukung.id}" data-indikator_id="${item_indikator.id}" data-edit="true" data-toggle="modal" data-target="#tambahbuktidukung">
+                        <i class="flaticon2-pen"></i>
+                      </button>
+                      <a onclick="delete_action('${item_indikator.bukti_dukung.delete_url}')" class="btn btn-icon btn-danger">
+                        <i class="flaticon-delete-1"></i>
+                      </a>
+                    </div>
+                </td>
+                  `
+                }else{
+                  bukti_dukung = `
+                    <td>
+                      ${button_bukti}
+                    </td>
+                  `
+                }
+                if(item_indikator.realisasi){
+                  realisasi = `
+                  <td>
+                    <div style="display: flex" >
+                      <div id="realisasi-${item_indikator.realisasi.id}">${item_indikator.realisasi.realisasi}</div>
+                      <div style="padding-right:3px; padding-left:3px;" >berdasarkan</div>
+                      <div id="sumber-${item_indikator.realisasi.id}">${item_indikator.realisasi.sumber}</div>
+                    </div>
+                    <div class="d-flex">
+                      <button class="btn btn-sm btn-warning mr-1" data-id="${item_indikator.realisasi.id}" data-indikator_id="${item_indikator.id}" data-edit="true" data-toggle="modal" data-target="#tambahrealisasi">
+                        <i class="flaticon2-pen"></i>
+                      </button>
+                      <a onclick="delete_action('${item_indikator.realisasi.delete_url}')" class="btn btn-icon btn-danger">
+                        <i class="flaticon-delete-1"></i>
+                      </a>
+                    </div>
+                </td>
+                  `
+                }else{
+                  realisasi = `
+                    <td>
+                      ${button_realisasi}
+                    </td>
+                  `
+                }
                 indikator += `
                 <tr>
                   {% if obj.jenis_jabatan == 1 %}
-                  <td rowspan="${item.bukti_dukung.length+3+item.realisasi.length}" id="perspektif-${item_indikator.indikator_id}">${item_indikator.perspektif ? item_indikator.perspektif : '-'}</td>
+                  <td id="perspektif-${item_indikator.id}">${item_indikator.perspektif ? item_indikator.perspektif : '-'}</td>
                   {% else %}
-                  <td rowspan="${item.bukti_dukung.length+3+item.realisasi.length}" id="aspek-${item_indikator.indikator_id}">${item_indikator.aspek ? item_indikator.aspek : '-'}</td>
+                  <td id="aspek-${item_indikator.id}">${item_indikator.aspek ? item_indikator.aspek : '-'}</td>
                   {% endif %}
                   <td>
-                    <span rowspan="${item.bukti_dukung.length+3+item.realisasi.length}" id="indikator-${item_indikator.indikator_id}" >${item_indikator.indikator}</span>
+                    <span  id="indikator-${item_indikator.id}" >${item_indikator.indikator}</span>
                   </td>
-                  <td rowspan="${item.bukti_dukung.length+3+item.realisasi.length}" id="target-${item_indikator.indikator_id}">${item_indikator.target}</td>
+                  <td id="target-${item_indikator.id}">${item_indikator.target}</td>
+                  ${bukti_dukung}
+                  ${realisasi}
                 </tr>
                 `
               })
             } else {
               delete_html = `
               `
-              tambahan += 2
-              indikator += `
-              <tr>
-                <td rowspan="${item.bukti_dukung.length+3+item.realisasi.length}"></td>
-                <td rowspan="${item.bukti_dukung.length+3+item.realisasi.length}"></td>
-                <td rowspan="${item.bukti_dukung.length+3+item.realisasi.length}"></td>
-                ${item.bukti_dukung.length < 0 ? button_bukti : ""}
-                ${item.realisasi.length < 0 ? button_realisasi : ""}
-              </tr>
-
-              `
             }
 
             if (item.indikator.length > 0){
@@ -639,30 +564,29 @@
               `
             }
 
-            let induk_elem = `
-                <td rowspan="${item.indikator.length+3+item.bukti_dukung.length+item.realisasi.length+tambahan}">
-                  ${item?.induk ? item.induk.rencana_kerja : ''}
-                </td>
-              `
             ol = `<ol style="margin: unset; padding-left: 10px;">`
               item.rencana_aksi.map((item)=>{
                 ol += `<li class="item-rencana" style="margin: unset;">${item}</li>`
               })
             ol += "</ol>"
+
+            let induk_elem = `
+                <td rowspan="${item.indikator.length+1}">
+                  ${item?.induk ? item.induk.rencana_kerja : ''}
+                </td>
+              `
             html_ += `
             <tr>
-                <td rowspan="${item.indikator.length+3+item.bukti_dukung.length+item.realisasi.length+tambahan}">${no}</td>
+                <td rowspan="${item.indikator.length+1}">${no}</td>
                 {% if obj.jenis_jabatan != 1 %}${induk_elem}{% endif %}
-                <td rowspan="${item.indikator.length+3+item.bukti_dukung.length+item.realisasi.length+tambahan}">
+                <td rowspan="${item.indikator.length+1}">
                   ${item.rencana_kerja} ${item.penugasan_dari ? `(Penugasan dari ${item.penugasan_dari})` : ''}
                 </td>
-                <td rowspan="${item.indikator.length+3+item.bukti_dukung.length+item.realisasi.length+tambahan}">
+                <td rowspan="${item.indikator.length+1}">
                   ${ol}
                 </td>
               </tr>
               ${indikator}
-              ${bukti_dukung}
-              ${realisasi}
             `
             no += 1;
           })
@@ -685,7 +609,7 @@
   const save_bukti_dukung = () => {
     let modal = $("#tambahbuktidukung")
     let bukti_id = $("#bukti_id").val()
-    let rhk_id = $("#rhk_id_bukti").val()
+    let indikator_id = $("#indikator_id").val()
     let bukti_dukung = $("#bukti_dukung").val()
     let link = $("#url_bukti_dukung").val()
     let csrf = modal.find('input[name=csrfmiddlewaretoken]').val();
@@ -695,8 +619,7 @@
         type: 'POST',
         data: {
           csrfmiddlewaretoken: csrf,
-          skp_id: "{{obj.id}}",
-          rhk_id: rhk_id,
+          indikator_id: indikator_id,
           periode: "{{periode}}",
           bukti_id: bukti_id,
           nama: bukti_dukung,
@@ -716,7 +639,7 @@
   const save_realisasi = () => {
     let modal = $("#tambahrealisasi")
     let realisasi_id = $("#realisasi_id").val()
-    let rhk_id = $("#rhk_id_realisasi").val()
+    let indikator_id = $("#indikator_id_realisasi").val()
     let realisasi= $("#realisasi").val()
     let sumber= $("#sumber_data").val()
     let csrf = modal.find('input[name=csrfmiddlewaretoken]').val();
@@ -727,7 +650,7 @@
         data: {
           csrfmiddlewaretoken: csrf,
           skp_id: "{{obj.id}}",
-          rhk_id: rhk_id,
+          indikator_id: indikator_id,
           periode: "{{periode}}",
           realisasi_id: realisasi_id,
           realisasi: realisasi,

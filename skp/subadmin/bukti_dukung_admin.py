@@ -4,11 +4,11 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import path
 from django.utils.safestring import mark_safe
 
-from skp.models import BuktiDukung, RencanaHasilKerja, SasaranKinerja
+from skp.models import BuktiDukung, RencanaHasilKerja, SasaranKinerja, IndikatorKinerjaIndividu
 
 
 class BuktiDukungAdmin(admin.ModelAdmin):
-    list_display = ("pk", "skp", "rhk", "periode", "get_bukti_dukung", "created")
+    list_display = ("pk", "indikator", "periode", "get_bukti_dukung", "created")
 
     def get_bukti_dukung(self, obj):
         if self.obj.link and self.obj.link != "":
@@ -20,30 +20,23 @@ class BuktiDukungAdmin(admin.ModelAdmin):
 
     def create(self, request):
         respon = {'success': False}
-        skp = request.POST.get('skp_id')
         bukti_id = request.POST.get('bukti_id')
         periode = request.POST.get('periode')
-        rhk = request.POST.get('rhk_id')
+        indikator = request.POST.get('indikator_id')
         bukti_dukung = request.POST.get('nama', None)
         link = request.POST.get('link', None)
 
-        skp_obj = None
-        rhk_obj = None
+        indikator_obj = None
+
         if bukti_id == "":
             bukti_id = None
         try:
-            skp_obj = SasaranKinerja.objects.get(pk=skp)
-        except SasaranKinerja.DoesNotExist:
-            respon = {'success': False, 'pesan': "SKP Tidak ditemukan"}
+            indikator_obj = IndikatorKinerjaIndividu.objects.get(pk=indikator)
+        except IndikatorKinerjaIndividu.DoesNotExist:
+            respon = {'success': False, 'pesan': "Indikator Kinerja Tidak ditemukan"}
             return JsonResponse(respon, safe=False)
 
-        try:
-            rhk_obj = RencanaHasilKerja.objects.get(pk=rhk)
-        except RencanaHasilKerja.DoesNotExist:
-            respon = {'success': False, 'pesan': "RHK Tidak ditemukan"}
-            return JsonResponse(respon, safe=False)
-
-        if skp_obj and rhk_obj:
+        if indikator_obj:
             tambah = True
             try:
                 obj = BuktiDukung.objects.get(pk=bukti_id)
@@ -51,8 +44,7 @@ class BuktiDukungAdmin(admin.ModelAdmin):
             except Exception as e:
                 print(e)
                 obj = BuktiDukung(
-                    skp=skp_obj,
-                    rhk=rhk_obj,
+                    indikator=indikator_obj,
                     periode=int(periode)
                 )
 

@@ -16,14 +16,15 @@ def rencana_aksi_list(skp_obj, rhk_obj, periode):
             rencana_aksi.append(rencana_item.rencana_aksi)
     return rencana_aksi
 
-def bukti_dukung_list(skp_obj, rhk_obj, periode):
-    bukti_dukung = []
+def bukti_dukung_list(indikator_obj, periode):
+    bukti_dukung = None
     if periode and periode != "":
         bukti_dukung_list = BuktiDukung.objects.filter(
-            skp=skp_obj, rhk=rhk_obj, periode=int(periode)
+            indikator=indikator_obj, periode=int(periode)
         )
-        for bukti_item in bukti_dukung_list:
-            bukti_dukung.append({
+        if bukti_dukung_list.exists():
+            bukti_item = bukti_dukung_list.last()
+            bukti_dukung = {
                 "delete_url": reverse_lazy(
                     "admin:skp_buktidukung_hapus", kwargs={
                         "id": bukti_item.id
@@ -32,17 +33,18 @@ def bukti_dukung_list(skp_obj, rhk_obj, periode):
                 "id": bukti_item.id,
                 "nama": bukti_item.nama_bukti_dukung,
                 "link": bukti_item.link,
-            })
+            }
     return bukti_dukung
 
-def realisasi_list(skp_obj, rhk_obj, periode):
-    realisasi = []
+def realisasi_list(indikator_obj, periode):
+    realisasi = None
     if periode and periode != "":
         realisasi_list = Realisasi.objects.filter(
-            skp=skp_obj, rhk=rhk_obj, periode=int(periode)
+            indikator=indikator_obj, periode=int(periode)
         )
-        for realisasi_item in realisasi_list:
-            realisasi.append({
+        if realisasi_list.exists():
+            realisasi_item = realisasi_list.last()
+            realisasi = {
                 "delete_url": reverse_lazy(
                     "admin:skp_realisasi_hapus", kwargs={
                         "id": realisasi_item.id
@@ -51,7 +53,7 @@ def realisasi_list(skp_obj, rhk_obj, periode):
                 "id": realisasi_item.id,
                 "realisasi": realisasi_item.realisasi,
                 "sumber": realisasi_item.sumber,
-            })
+            }
     return realisasi
 
 
@@ -144,10 +146,12 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
                                             "id": item_indikator.id
                                         }
                                     ),
-                                    "indikator_id": item_indikator.id,
+                                    "id": item_indikator.id,
                                     "indikator": item_indikator.indikator,
                                     "target": item_indikator.target,
                                     "aspek": item_indikator.aspek,
+                                    "realisasi": realisasi_list(item_indikator, periode),
+                                    "bukti_dukung": bukti_dukung_list(item_indikator, periode),
                                     "perspektif": item_indikator.perspektif.__str__()
                                     if item_indikator.perspektif
                                     else None,
@@ -164,11 +168,9 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
                             "id": item.id,
                             "induk": rencana_kerja_induk,
                             "rencana_kerja": item.rencana_kerja,
-                            "rencana_aksi": rencana_aksi_list(obj, item, periode),
-                            "realisasi": realisasi_list(obj, item, periode),
                             "penugasan_dari": item.penugasan_dari,
                             "indikator": indikator,
-                            "bukti_dukung": bukti_dukung_list(obj, item, periode),
+                            "rencana_aksi": rencana_aksi_list(obj, item, periode),
                         }
                     )
 

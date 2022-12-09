@@ -346,16 +346,10 @@ class RencanaAksi(models.Model):
         verbose_name_plural = "Rencana Aksi"
 
 class BuktiDukung(models.Model):
-    skp = models.ForeignKey(
-        SasaranKinerja,
+    indikator = models.OneToOneField(
+        IndikatorKinerjaIndividu,
         on_delete=models.CASCADE,
-        verbose_name="Sasaran Kinerja Pegawai",
-        null=True
-    )
-    rhk = models.ForeignKey(
-        RencanaHasilKerja,
-        on_delete=models.CASCADE,
-        verbose_name="Rencana Hasil Kerja Pegawai",
+        verbose_name="Indikator Kerja Individu",
         null=True
     )
     periode = models.IntegerField(
@@ -374,16 +368,10 @@ class BuktiDukung(models.Model):
         verbose_name_plural = "Bukti Dukung"
 
 class Realisasi(models.Model):
-    skp = models.ForeignKey(
-        SasaranKinerja,
+    indikator = models.OneToOneField(
+        IndikatorKinerjaIndividu,
         on_delete=models.CASCADE,
-        verbose_name="Sasaran Kinerja Pegawai",
-        null=True
-    )
-    rhk = models.ForeignKey(
-        RencanaHasilKerja,
-        on_delete=models.CASCADE,
-        verbose_name="Rencana Hasil Kerja Pegawai",
+        verbose_name="Indikator Kerja Individu",
         null=True
     )
     periode = models.IntegerField(

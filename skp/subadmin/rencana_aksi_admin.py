@@ -7,7 +7,7 @@ from skp.models import RencanaAksi, RencanaHasilKerja, SasaranKinerja
 
 
 class RencanaAksiAdmin(admin.ModelAdmin):
-    list_display = ("pk", "skp", "rhk", "periode", "rencana_aksi", "created")
+    list_display = ("pk", "rhk", "skp", "periode", "rencana_aksi", "created")
 
     def create(self, request):
         respon = {'success': False}

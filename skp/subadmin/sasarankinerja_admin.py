@@ -73,7 +73,9 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         )
         if obj.status == 3:
             btn += '<a class="dropdown-item" href="{}">Penilaian</a>'.format(
-                reverse_lazy("admin:skp_sasarankinerja_penilaian", kwargs={"id": obj.id})
+                reverse_lazy("admin:skp_sasarankinerja_penilaian", kwargs={
+                    "id": obj.id
+                })
             )
         btn += "</div>"
         btn += "</div>"

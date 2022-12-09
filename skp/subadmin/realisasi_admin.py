@@ -2,39 +2,31 @@ from django.contrib import admin
 from django.http import JsonResponse
 from django.urls import path
 
-from skp.models import Realisasi, RencanaHasilKerja, SasaranKinerja
+from skp.models import Realisasi, IndikatorKinerjaIndividu
 
 
 class RealisasiAdmin(admin.ModelAdmin):
-    list_display = ("pk", "skp", "rhk", "periode", "realisasi", "sumber", "created")
+    list_display = ("pk", "indikator", "periode", "realisasi", "sumber", "created")
 
     def create(self, request):
         respon = {'success': False}
-        skp = request.POST.get('skp_id')
         realisasi_id = request.POST.get('realisasi_id')
         periode = request.POST.get('periode')
-        rhk = request.POST.get('rhk_id')
+        indikator = request.POST.get('indikator_id')
         realisasi = request.POST.get('realisasi', None)
         sumber = request.POST.get('sumber', None)
 
-        skp_obj = None
-        rhk_obj = None
+        indikator_obj = None
         if realisasi_id == "":
             realisasi_id = None
 
         try:
-            skp_obj = SasaranKinerja.objects.get(pk=skp)
-        except SasaranKinerja.DoesNotExist:
-            respon = {'success': False, 'pesan': "SKP Tidak ditemukan"}
+            indikator_obj = IndikatorKinerjaIndividu.objects.get(pk=indikator)
+        except IndikatorKinerjaIndividu.DoesNotExist:
+            respon = {'success': False, 'pesan': "Indikator Kinerja Tidak ditemukan"}
             return JsonResponse(respon, safe=False)
 
-        try:
-            rhk_obj = RencanaHasilKerja.objects.get(pk=rhk)
-        except RencanaHasilKerja.DoesNotExist:
-            respon = {'success': False, 'pesan': "RHK Tidak ditemukan"}
-            return JsonResponse(respon, safe=False)
-
-        if skp_obj and rhk_obj:
+        if indikator_obj:
             tambah = True
             try:
                 obj = Realisasi.objects.get(pk=realisasi_id)
@@ -42,8 +34,7 @@ class RealisasiAdmin(admin.ModelAdmin):
             except Exception as e:
                 print(e)
                 obj = Realisasi(
-                    skp=skp_obj,
-                    rhk=rhk_obj,
+                    indikator=indikator_obj,
                     periode=int(periode)
                 )
 
