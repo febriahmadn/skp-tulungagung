@@ -150,8 +150,12 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
                                     "indikator": item_indikator.indikator,
                                     "target": item_indikator.target,
                                     "aspek": item_indikator.aspek,
-                                    "realisasi": realisasi_list(item_indikator, periode),
-                                    "bukti_dukung": bukti_dukung_list(item_indikator, periode),
+                                    "realisasi": realisasi_list(
+                                        item_indikator, periode
+                                    ),
+                                    "bukti_dukung": bukti_dukung_list(
+                                        item_indikator, periode
+                                    ),
                                     "perspektif": item_indikator.perspektif.__str__()
                                     if item_indikator.perspektif
                                     else None,

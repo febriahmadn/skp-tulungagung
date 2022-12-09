@@ -4,7 +4,8 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import path
 from django.utils.safestring import mark_safe
 
-from skp.models import BuktiDukung, RencanaHasilKerja, SasaranKinerja, IndikatorKinerjaIndividu
+from skp.models import (BuktiDukung, IndikatorKinerjaIndividu,
+                        RencanaHasilKerja, SasaranKinerja)
 
 
 class BuktiDukungAdmin(admin.ModelAdmin):

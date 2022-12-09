@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.http import JsonResponse
 from django.urls import path
 
-from skp.models import Realisasi, IndikatorKinerjaIndividu
+from skp.models import IndikatorKinerjaIndividu, Realisasi
 
 
 class RealisasiAdmin(admin.ModelAdmin):
