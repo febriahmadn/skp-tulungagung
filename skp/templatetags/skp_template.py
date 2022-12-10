@@ -2,8 +2,9 @@ from django import template
 from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 
-from skp.models import (DaftarLampiran, DaftarPerilakuKerjaPegawai, BuktiDukung, Realisasi,
-                        RencanaAksi, RencanaHasilKerja)
+from skp.models import (BuktiDukung, DaftarLampiran,
+                        DaftarPerilakuKerjaPegawai, Realisasi, RencanaAksi,
+                        RencanaHasilKerja)
 from skp.utils import FULL_BULAN
 
 register = template.Library()
@@ -220,7 +221,9 @@ def get_complete_periode(awal, akhir):
 
 @register.simple_tag
 def get_bukti_dukung(indikator_obj, periode):
-    bukti_dukung_list = BuktiDukung.objects.filter(indikator=indikator_obj, periode=periode)
+    bukti_dukung_list = BuktiDukung.objects.filter(
+        indikator=indikator_obj, periode=periode
+    )
     html = ""
     if bukti_dukung_list.exists():
         html = "<ol>"
@@ -241,4 +244,3 @@ def get_realisasi(indikator_obj, periode):
     if realisasi_list.exists():
         return realisasi_list.last()
     return None
-    

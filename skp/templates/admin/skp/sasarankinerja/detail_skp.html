@@ -60,11 +60,11 @@
     <button style="align-self: center;" class="btn btn-sm btn-primary mr-1" id="action_ajukan_skp_id"><i class="fas fa-paper-plane"></i> Ajukan SKP</button>
     <button style="align-self: center;" class="btn btn-sm btn-danger mr-1" id="action_archive_skp_id"><i class="flaticon2-trash"></i> Archivekan SKP</button>
     {% endif %}
-    <a style="align-self: center;" class="btn btn-success btn-sm mr-1" href="{% url 'admin:skp_sasarankinerja_cetak' obj.id %}">
+    <a style="align-self: center;" id="btn-cetak-skp" class="btn btn-success btn-sm mr-1" href="{% url 'admin:skp_sasarankinerja_cetak' obj.id %}">
       <i class="fas fa-print"></i> Cetak SKP
     </a>
     {% if penilai_view %}
-    <button style="align-self: center;" type="button" class="btn btn-sm btn-warning mr-1" data-toggle="modal" data-target="#modal_edit_status">
+    <button style="align-self: center;" id="btn-edit" type="button" class="btn btn-sm btn-warning mr-1" data-toggle="modal" data-target="#modal_edit_status">
       <i class="fas fa-edit"></i> Edit Status
     </button>
     {% endif %}

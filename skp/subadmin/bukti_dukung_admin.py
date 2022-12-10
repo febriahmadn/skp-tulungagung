@@ -4,9 +4,9 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import path
 from django.utils.safestring import mark_safe
 
+from services.models import Configurations
 from skp.models import (BuktiDukung, IndikatorKinerjaIndividu, PerilakuKerja,
                         RencanaHasilKerja, SasaranKinerja)
-from services.models import Configurations
 
 
 class BuktiDukungAdmin(admin.ModelAdmin):
@@ -79,7 +79,13 @@ class BuktiDukungAdmin(admin.ModelAdmin):
             "periode": periode,
         }
         batas_waktu = Configurations.get_solo().batas_input
-        messages.info(request, "Batas waktu pengisian eviden dan realisasi SKP untuk periode ini adalah {}".format(batas_waktu.strftime("%d-%m-%Y")))
+        messages.info(
+            request,
+            """Batas waktu pengisian eviden dan
+                realisasi SKP untuk periode ini adalah {}""".format(
+                batas_waktu.strftime("%d-%m-%Y")
+            )
+        )
         return render(
             request, "admin/skp/buktidukung/bukti_dukung.html", extra_context
         )
