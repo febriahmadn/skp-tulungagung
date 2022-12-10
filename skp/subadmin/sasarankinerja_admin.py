@@ -166,8 +166,6 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         extra_context = {
             "title": "Detail SKP",
             "obj": obj,
-            "pegawai": obj.pegawai,
-            "penilai": obj.pejabat_penilai,
             "perilaku_kerja_list": perilaku_kerja_list,
             "perspektif_list": Perspektif.objects.all(),
             "lampiran": lampiran_list.order_by("id"),
@@ -298,8 +296,6 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
             show_ttd = False
         extra_context = {
             "obj": obj,
-            "pegawai": obj.pegawai,
-            "atasan": obj.pegawai.atasan if obj.pegawai.atasan else None,
             "title": "Cetak SKP {} [{}]".format(
                 obj.pegawai.username, obj.get_periode()
             ),
@@ -326,8 +322,6 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
             "obj": obj,
             "list_skp_bawahan": list_skp_bawahan,
             "status_choices": SasaranKinerja.Status.choices,
-            "pegawai": obj.pegawai,
-            "atasan": obj.pegawai.atasan if obj.pegawai.atasan else None,
             "title": "SKP Bawahan",
             "show_detail": show_detail,
         }

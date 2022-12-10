@@ -72,8 +72,6 @@ class BuktiDukungAdmin(admin.ModelAdmin):
         extra_context = {
             "title": "Bukti Dukung",
             "obj": obj,
-            "pegawai": obj.pegawai,
-            "penilai": obj.pejabat_penilai,
             "rhk_list": rhk_list,
             "penilai_view": penilai,
             "periode": periode,
