@@ -121,7 +121,7 @@
 								<form class="form fv-plugins-bootstrap fv-plugins-framework" method="POST" novalidate="novalidate" action="{{ app_path }}" id="kt_login_signin_form">
 									{% csrf_token %}
 									<div class="form-group">
-										<input {% if form.errors.username %}style="border:1px solid red"{% endif %} class="form-control form-control-solid h-auto py-5 px-6" name="username" type="text" placeholder="Username" name="username" value="{{form.username.value | default:'' }}" required /> 
+										<input {% if form.errors.username %}style="border:1px solid red"{% endif %} class="form-control form-control-solid h-auto py-5 px-6" name="username" id="username" type="text" placeholder="Username" name="username" value="{{form.username.value | default:'' }}" required /> 
 										{% if form.errors.username %}
 											{% for error in form.errors.username %}
 											<div class="fv-plugins-message-container"><div data-field="username" data-validator="notEmpty" class="fv-help-block">{{ error }}</div></div>
@@ -129,7 +129,7 @@
 										{% endif %}
 										</div>
 									<div class="form-group">
-										<input {% if form.errors.password %}style="border:1px solid red"{% endif %} class="form-control form-control-solid h-auto py-5 px-6" name="password" type="password" placeholder="Password" name="password" required />
+										<input {% if form.errors.password %}style="border:1px solid red"{% endif %} class="form-control form-control-solid h-auto py-5 px-6" name="password" id="password" type="password" placeholder="Password" name="password" required />
 										{% if form.errors.password %}
 											{% for error in form.errors.password %}
 											<div class="fv-plugins-message-container"><div data-field="username" data-validator="notEmpty" class="fv-help-block">{{ error }}</div></div>
@@ -139,11 +139,11 @@
 									<!--begin::Action-->
 									<div class="form-group d-flex flex-wrap justify-content-between align-items-center">
 										<a href="{% url 'password_reset' %}" class="text-dark-50 text-hover-primary my-3 mr-2" id="kt_login_forgot">Forgot Password ?</a>
-										<button type="submit" class="btn btn-primary font-weight-bold px-9 py-4 my-3">Sign In</button>
+										<button type="submit" id="btn-login" class="btn btn-primary font-weight-bold px-9 py-4 my-3">Sign In</button>
 									</div>
 									<!--end::Action-->
 								</form>
-								<a href="{% url 'cas_ng_login' %}" class="btn btn-primary btn-block">Login with Presensi Online</a>
+								<a href="{% url 'cas_ng_login' %}" id="btn-presensi-login" class="btn btn-primary btn-block">Login with Presensi Online</a>
 							<!-- </div> -->
 
 							<!--end::Form-->

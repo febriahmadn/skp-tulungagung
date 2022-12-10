@@ -33,10 +33,10 @@
     <a href="/admin/skp" class="text-muted">Skp</a>
   </li>
   <li class="breadcrumb-item text-muted">
-    <a href="{% url 'admin:skp_sasarankinerja_changelist' %}" class="text-muted">Sasaran Kinerja</a>
+    <a href="#" class="text-muted">Rencana Aksi</a>
   </li>
   <li class="breadcrumb-item text-muted">
-    <a href="#" class="text-muted">Detail Sasaran Kinerja</a>
+    <a href="#" class="text-muted">Detail Rencana Aksi</a>
   </li>
 </ul>
 {% endblock breadcrumbs %}
@@ -52,12 +52,11 @@
 
   <div class="col-md-8 d-flex flex-row-reverse">
     <!-- <a href="{% url 'admin:skp_sasarankinerja_cetak' obj.id %}"> -->
-    <a href="{% url 'admin:skp_rencanaaksi_cetak' obj.id periode %}">
-      <button class="btn btn-success mr-1"><i class="fas fa-print"></i> Cetak</button>
+    <a class="btn btn-success mr-1" id="btn-cetak-skp" style="align-self: center" href="{% url 'admin:skp_rencanaaksi_cetak' obj.id periode %}">
+      <i class="fas fa-print"></i> Cetak
     </a>
   </div>
 </div>
-<!-- data detail perlu diganti menggunakan detailrincian skp -->
 <div class="row">
   <div class="col-md-6">
     <div class="card">
@@ -69,27 +68,27 @@
           <tr>
             <td style="width: 30%;">Nama</td>
             <td style="width: 5%;">:</td>
-            <td>{{pegawai.get_complete_name}}</td>
+            <td>{{obj.detailsasarankinerja.nama_pegawai}}</td>
           </tr>
           <tr>
             <td>NIP</td>
             <td>:</td>
-            <td>{{pegawai.username}}</td>
+            <td>{{obj.detailsasarankinerja.nip_pegawai}}</td>
           </tr>
           <tr>
             <td>Pangkat / Gol. Ruang</td>
             <td>:</td>
-            <td>{{pegawai.get_golongan_display|default_if_none:"---"}}</td>
+            <td>{{obj.detailsasarankinerja.golongan_pegawai}}</td>
           </tr>
           <tr>
             <td>Jabatan</td>
             <td>:</td>
-            <td>{{pegawai.jabatan|default_if_none:"---"}}</td>
+            <td>{{obj.detailsasarankinerja.jabatan_pegawai}}</td>
           </tr>
           <tr>
             <td>Unit Kerja</td>
             <td>:</td>
-            <td>{% if pegawai.unitkerja %}{{pegawai.unitkerja.unitkerja}}{% else %}---{% endif %}</td>
+            <td>{{obj.detailsasarankinerja.unor_pegawai}}</td>
           </tr>
         </table>
       </div>
@@ -105,27 +104,27 @@
           <tr>
             <td style="width: 30%;">Nama</td>
             <td style="width: 5%;">:</td>
-            <td>{{penilai.get_complete_name|default_if_none:"---"}}</td>
+            <td>{{obj.detailsasarankinerja.nama_pejabat}}</td>
           </tr>
           <tr>
             <td>NIP</td>
             <td>:</td>
-            <td>{{penilai.username|default_if_none:"---"}}</td>
+            <td>{{obj.detailsasarankinerja.nip_pejabat}}</td>
           </tr>
           <tr>
             <td>Pangkat / Gol. Ruang</td>
             <td>:</td>
-            <td>{{penilai.get_golongan_display|default_if_none:"---"}}</td>
+            <td>{{obj.detailsasarankinerja.golongan_pejabat}}</td>
           </tr>
           <tr>
             <td>Jabatan</td>
             <td>:</td>
-            <td>{{penilai.jabatan|default_if_none:"---"}}</td>
+            <td>{{obj.detailsasarankinerja.jabatan_pejabat}}</td>
           </tr>
           <tr>
             <td>Unit Kerja</td>
             <td>:</td>
-            <td>{% if penilai.unitkerja %}{{penilai.unitkerja.unitkerja}}{% else %}---{% endif %}</td>
+            <td>{{obj.detailsasarankinerja.unor_pejabat}}</td>
           </tr>
         </table>
       </div>

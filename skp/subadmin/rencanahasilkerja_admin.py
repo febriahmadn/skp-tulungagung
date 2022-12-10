@@ -2,8 +2,59 @@ from django.contrib import admin
 from django.http import JsonResponse
 from django.urls import path, reverse_lazy
 
-from skp.models import (IndikatorKinerjaIndividu, RencanaHasilKerja,
-                        SasaranKinerja)
+from skp.models import (BuktiDukung, IndikatorKinerjaIndividu, Realisasi,
+                        RencanaAksi, RencanaHasilKerja, SasaranKinerja)
+
+
+def rencana_aksi_list(skp_obj, rhk_obj, periode):
+    rencana_aksi = []
+    if periode and periode != "":
+        rencana_aksi_list = RencanaAksi.objects.filter(
+            skp=skp_obj, rhk=rhk_obj, periode=int(periode)
+        )
+        for rencana_item in rencana_aksi_list:
+            rencana_aksi.append(rencana_item.rencana_aksi)
+    return rencana_aksi
+
+def bukti_dukung_list(indikator_obj, periode):
+    bukti_dukung = None
+    if periode and periode != "":
+        bukti_dukung_list = BuktiDukung.objects.filter(
+            indikator=indikator_obj, periode=int(periode)
+        )
+        if bukti_dukung_list.exists():
+            bukti_item = bukti_dukung_list.last()
+            bukti_dukung = {
+                "delete_url": reverse_lazy(
+                    "admin:skp_buktidukung_hapus", kwargs={
+                        "id": bukti_item.id
+                    }
+                ),
+                "id": bukti_item.id,
+                "nama": bukti_item.nama_bukti_dukung,
+                "link": bukti_item.link,
+            }
+    return bukti_dukung
+
+def realisasi_list(indikator_obj, periode):
+    realisasi = None
+    if periode and periode != "":
+        realisasi_list = Realisasi.objects.filter(
+            indikator=indikator_obj, periode=int(periode)
+        )
+        if realisasi_list.exists():
+            realisasi_item = realisasi_list.last()
+            realisasi = {
+                "delete_url": reverse_lazy(
+                    "admin:skp_realisasi_hapus", kwargs={
+                        "id": realisasi_item.id
+                    }
+                ),
+                "id": realisasi_item.id,
+                "realisasi": realisasi_item.realisasi,
+                "sumber": realisasi_item.sumber,
+            }
+    return realisasi
 
 
 class RencanahasilkerjaAdmin(admin.ModelAdmin):
@@ -67,6 +118,7 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
         # kalau bisa nanti diubah ke rest api lebih bagus
         respon = []
         jenis = request.GET.get("jenis", None)
+        periode = request.GET.get("periode", None)
         try:
             obj = SasaranKinerja.objects.get(pk=obj_id)
         except SasaranKinerja.DoesNotExist:
@@ -94,15 +146,22 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
                                             "id": item_indikator.id
                                         }
                                     ),
-                                    "indikator_id": item_indikator.id,
+                                    "id": item_indikator.id,
                                     "indikator": item_indikator.indikator,
                                     "target": item_indikator.target,
                                     "aspek": item_indikator.aspek,
+                                    "realisasi": realisasi_list(
+                                        item_indikator, periode
+                                    ),
+                                    "bukti_dukung": bukti_dukung_list(
+                                        item_indikator, periode
+                                    ),
                                     "perspektif": item_indikator.perspektif.__str__()
                                     if item_indikator.perspektif
                                     else None,
                                 }
                             )
+
                     respon.append(
                         {
                             "delete_url": reverse_lazy(
@@ -115,6 +174,7 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
                             "rencana_kerja": item.rencana_kerja,
                             "penugasan_dari": item.penugasan_dari,
                             "indikator": indikator,
+                            "rencana_aksi": rencana_aksi_list(obj, item, periode),
                         }
                     )
 

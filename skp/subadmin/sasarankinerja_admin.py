@@ -71,9 +71,12 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         btn += '<a class="dropdown-item" href="{}">SKP Bawahan</a>'.format(
             reverse_lazy("admin:skp_sasarankinerja_bawahan", kwargs={"id": obj.id})
         )
-        btn += '<a class="dropdown-item" href="{}">Penilaian</a>'.format(
-            reverse_lazy("admin:skp_sasarankinerja_penilaian", kwargs={"id": obj.id})
-        )
+        if obj.status == 3:
+            btn += '<a class="dropdown-item" href="{}">Penilaian</a>'.format(
+                reverse_lazy("admin:skp_sasarankinerja_penilaian", kwargs={
+                    "id": obj.id
+                })
+            )
         btn += "</div>"
         btn += "</div>"
         return mark_safe(btn)
@@ -163,8 +166,6 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         extra_context = {
             "title": "Detail SKP",
             "obj": obj,
-            "pegawai": obj.pegawai,
-            "penilai": obj.pejabat_penilai,
             "perilaku_kerja_list": perilaku_kerja_list,
             "perspektif_list": Perspektif.objects.all(),
             "lampiran": lampiran_list.order_by("id"),
@@ -295,8 +296,6 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
             show_ttd = False
         extra_context = {
             "obj": obj,
-            "pegawai": obj.pegawai,
-            "atasan": obj.pegawai.atasan if obj.pegawai.atasan else None,
             "title": "Cetak SKP {} [{}]".format(
                 obj.pegawai.username, obj.get_periode()
             ),
@@ -323,8 +322,6 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
             "obj": obj,
             "list_skp_bawahan": list_skp_bawahan,
             "status_choices": SasaranKinerja.Status.choices,
-            "pegawai": obj.pegawai,
-            "atasan": obj.pegawai.atasan if obj.pegawai.atasan else None,
             "title": "SKP Bawahan",
             "show_detail": show_detail,
         }
@@ -364,7 +361,11 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                 'rencana_aksi_url': reverse_lazy('admin:rencana-aksi-skp', kwargs={
                     "skp_id": sasaran_obj.id,
                     "periode": awal.month
-                })
+                }),
+                'bukti_dukung_url': reverse_lazy('admin:bukti-dukung-skp', kwargs={
+                    "skp_id": sasaran_obj.id,
+                    "periode": awal.month
+                }) if sasaran_obj.status == 3 else "#"
             })
         else:
             for i in range(awal.month, akhir.month + 1):
@@ -386,7 +387,13 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                                     "skp_id": sasaran_obj.id,
                                     "periode": i
                                 }
-                            )
+                            ),
+                            'bukti_dukung_url': reverse_lazy(
+                                'admin:bukti-dukung-skp', kwargs={
+                                    "skp_id": sasaran_obj.id,
+                                    "periode": awal.month
+                                }
+                            ) if sasaran_obj.status == 3 else "#"
                         }
                     )
                 elif i == akhir.month:
@@ -406,25 +413,41 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                                     "skp_id": sasaran_obj.id,
                                     "periode": i
                                 }
-                            )
+                            ),
+                            'bukti_dukung_url': reverse_lazy(
+                                'admin:bukti-dukung-skp', kwargs={
+                                    "skp_id": sasaran_obj.id,
+                                    "periode": awal.month
+                                }
+                            ) if sasaran_obj.status == 3 else "#"
                         }
                     )
                 else:
                     num_days = calendar.monthrange(awal.year, awal.month)[1]
-                    bulan_list.append(
-                        {
-                            "bulan": FULL_BULAN[i],
-                            "range": "{}-{}-{} / {}-{}-{}".format(
-                                akhir.year,
-                                i if i > 9 else "0{}".format(i),
-                                "01",
-                                akhir.year,
-                                i if i > 9 else "0{}".format(i),
-                                num_days,
-                            ),
-                        }
-                    )
-        respon = {"success": True, "data": bulan_list}
+                    bulan_list.append({
+                        'bulan': FULL_BULAN[i],
+                        'range': "{}-{}-{} / {}-{}-{}".format(
+                            akhir.year,
+                            i if i > 9 else "0{}".format(i),
+                            "01",
+                            akhir.year,
+                            i if i > 9 else "0{}".format(i),
+                            num_days,
+                        ),
+                        'rencana_aksi_url': reverse_lazy(
+                            'admin:rencana-aksi-skp', kwargs={
+                                "skp_id": sasaran_obj.id,
+                                "periode": i
+                            }
+                        ),
+                        'bukti_dukung_url': reverse_lazy(
+                            'admin:bukti-dukung-skp', kwargs={
+                                "skp_id": sasaran_obj.id,
+                                "periode": awal.month
+                            }
+                        ) if sasaran_obj.status == 3 else "#"
+                    })
+        respon = {'success': True, "data": bulan_list}
         return JsonResponse(respon, safe=False)
 
     def view_matriks_hasil_peran(self, request, obj_id):
@@ -433,7 +456,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
 
         skp_childs = SasaranKinerja.objects.filter(induk_id=obj.id)
         extra_context = {
-            "title": "Matriks Hasil Peran",
+            "title": "Matrik Peran Hasil",
             "obj": obj,
             "rhk_list": obj.rencanahasilkerja_set.all(),
             "skp_childs": skp_childs,

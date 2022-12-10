@@ -7,7 +7,7 @@ from skp.models import RencanaAksi, RencanaHasilKerja, SasaranKinerja
 
 
 class RencanaAksiAdmin(admin.ModelAdmin):
-    list_display = ("pk", "skp", "rhk", "periode", "rencana_aksi", "created")
+    list_display = ("pk", "rhk", "skp", "periode", "rencana_aksi", "created")
 
     def create(self, request):
         respon = {'success': False}
@@ -66,8 +66,6 @@ class RencanaAksiAdmin(admin.ModelAdmin):
         extra_context = {
             "title": "Rencana Aksi",
             "obj": obj,
-            "pegawai": obj.pegawai,
-            "penilai": obj.pejabat_penilai,
             "rhk_list": rhk_list,
             "penilai_view": penilai,
             "periode": periode,
@@ -109,8 +107,6 @@ class RencanaAksiAdmin(admin.ModelAdmin):
             nama_pegawai = obj.pegawai.get_complete_name()
         extra_context = {
             "obj": obj,
-            "pegawai": obj.pegawai,
-            "penilai": obj.pejabat_penilai,
             "title": "Cetak Rencana Aksi {} [{}]".format(
                 nama_pegawai, obj.get_periode()
             ),
