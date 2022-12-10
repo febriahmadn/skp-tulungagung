@@ -54,6 +54,7 @@
     <div class="contents">
         <div style="text-align: center; margin: 20px;">
             <h4 class="m-0">SASARAN KINERJA PEGAWAI</h4>
+            <h4 class="m-0">PENGISIAN BUKTI DUKUNG UNTUK PERIODE {{periode|get_bulan|upper}} TAHUN {{obj.periode_awal|date:"y"}}</h4>
         </div>
         <h5>PERIODE: {{periode|get_bulan|upper}}</h5>
         <div style="display: flex;">
@@ -163,26 +164,219 @@
                 {% endif %}
             </tbody>
         </table>
+       <table>
+           <tr class="bg-blue">
+               <th colspan="10" style="font-weight: bold;text-transform: uppercase;" align="left">capaian kinerja organisasi<br>-</th>
+            </tr>
+        </table> 
         <table>
             <tr class="bg-blue">
-                <th colspan="3" align="left">Rencana Aksi</th>
+                <th colspan="10" style="font-weight: bold; text-transform: uppercase;" align="left">Pola Distribusi<br>-</th>
             </tr>
+        </table> 
+        <table>
+            <tr class="bg-blue">
+                <th colspan="10" align="left">HASIL KERJA</th>
+                {% comment %} {% if obj.jenis_jabatan != 1 %}
+                {% else %}
+                <th colspan="5" align="left">HASIL KERJA</th>
+                {% endif %} {% endcomment %}
+            </tr>
+            {% comment %} {% if obj.jenis_jabatan != 1 %} {% endcomment %}
+            <tr class="bg-blue">
+                <th>NO</th>
+                <th>RENCANA HASIL KERJA PIMPINAN YANG DIINTERVENSI</th>
+                <th>RENCANA HASIL KERJA</th>
+                <th>ASPEK</th>
+                <th>INDIKATOR KINERJA INDIVIDU</th>
+                <th>TARGET / SESUAI EKSPETASI</th>
+                <th>REALISASI BERDASARKAN BUKTI DUKUNG</th>
+                <th>UMPAN BALIK BERKELANJUTAN BERDASARKAN BUKTI DUKUNG</th>
+            </tr>
+            {% comment %} {% else %}
             <tr class="bg-blue">
                 <th>NO</th>
                 <th>RENCANA HASIL KERJA</th>
-                <th>RENCANA AKSI</th>
+                <th>INDIKATOR KINERJA INDIVIDU</th>
+                <th>TARGET</th>
+                <th>ASPEK</th>
             </tr>
-            {% for item in rhk_list %}
+            {% endif %} {% endcomment %}
+            <tr class="bg-blue">
+                <th>(1)</th>
+                <th>(2)</th>
+                <th>(3)</th>
+                <th>(4)</th>
+                <th>(5)</th>
+                {% comment %} {% if obj.jenis_jabatan != 1 %} {% endcomment %}
+                <th>(6)</th>
+                <th>(7)</th>
+                <th>(8)</th>
+                {% comment %} {% endif %} {% endcomment %}
+            </tr>
+            <tr class="bg-blue">
+                <th colspan="10" align="left">UTAMA</th>
+                {% comment %} {% if obj.jenis_jabatan != 1 %}
+                {% else %}
+                <th colspan="5" align="left">UTAMA</th>
+                {% endif %} {% endcomment %}
+            </tr>
+
+            {% comment %} {% if obj.jenis_jabatan == 1 %} {% endcomment %}
+            {% for utama in obj.get_rencanakerja_utama %}
+            {% with count_indikator=utama.indikatorkinerjaindividu_set.all.count|add:"1" %}
             <tr>
-                <td>{{forloop.counter}}</td>
-                <td>{{item.rencana_kerja}}</td>
-                <td>
-                    {% daftar_rencana_aksi 1 obj item periode "ya" %}
-                </td>
+                <td rowspan="{{count_indikator|add:1}}" style="vertical-align: top; text-align: center;">{{ forloop.counter }}</td>
+                <td rowspan="{{count_indikator|add:1}}" style="vertical-align: top;">{{ utama.induk.rencana_kerja }}</td>
+                {% comment %} {% if obj.jenis_jabatan != 1 %}
+                {% endif %}
+                <td rowspan="{{count_indikator|add:2}}" style="vertical-align: top;">{{ utama.rencana_kerja }} {% if utama.penugasan_dari %}(Penugasan dari {{ utama.penugasan_dari|default:'-' }}){% endif %}</td> {% endcomment %}
+            </tr>
+            <tr>
+                <td rowspan="{{count_indikator}}" >{{utama.rencana_kerja}}</td>
+            </tr>
+            {% endwith %}
+            {% for indikator in utama.indikatorkinerjaindividu_set.all %}
+            <tr>
+                <td>{{ indikator.aspek|default:'-' }}</td>
+                <td>{{ indikator.indikator }}</td>
+                {% get_realisasi indikator periode as realisasi %}
+                <td>{{realisasi.realisasi}}</td>
+                <td>{{realisasi.realisasi}} berdasarkan {{realisasi.sumber}}</td>
+                <td></td>
+                {% comment %} <td>{{ indikator.perspektif|default:'-' }}</td>
+                {% if obj.jenis_jabatan != 1 %}
+                {% else %}
+                {% endif %} {% endcomment %}
             </tr>
             {% endfor %}
-        </table>
+            {% endfor %}
+            {% comment %} {% else %}
+                {% for utama in obj.get_rencanakerja_utama %}
+                {% with count_indikator=utama.indikatorkinerjaindividu_set.all.count|add:"1" %}
+                <tr>
+                    <td rowspan="{{count_indikator}}" style="vertical-align: top; text-align: center;">{{ forloop.counter }}</td>
+                    {% if obj.jenis_jabatan != 1 %}
+                    <td rowspan="{{count_indikator}}" style="vertical-align: top;">
+                        {% if utama.induk %}
+                        {% is_fisrt_parent obj.id utama.id utama.induk.id as fisrt_parent %}
+                        {% if fisrt_parent %}
+                        {{ utama.induk.rencana_kerja }}
+                        {% endif %}
+                        {% else %}
+                        -
+                        {% endif %}
+                    </td>
+                    {% endif %}
+                    <td rowspan="{{count_indikator}}" style="vertical-align: top;">{{ utama.rencana_kerja }}</td>
+                </tr>
+                {% endwith %}
+                {% for indikator in utama.indikatorkinerjaindividu_set.all %}
+                <tr>
+                    <td>{{ indikator.indikator }}</td>
+                    <td>{{ indikator.target }}</td>
+                    {% if obj.jenis_jabatan != 1 %}
+                    <td>{{ indikator.aspek|default:'-' }}</td>
+                    {% else %}
+                    <td>{{ indikator.perspektif|default:'-' }}</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+                {% endfor %}
+            {% endif %} {% endcomment %}
 
+            <tr class="bg-blue">
+                <th colspan="10" align="left">TAMBAHAN</th>
+                {% comment %} {% if obj.jenis_jabatan != 1 %}
+                {% else %}
+                <th colspan="5" align="left">TAMBAHAN</th>
+                {% endif %} {% endcomment %}
+            </tr>
+            
+            {% for tambahan in obj.get_rencanakerja_tambahan %}
+            {% with count_indikator=tambahan.indikatorkinerjaindividu_set.all.count|add:"1" %}
+            <tr>
+                <td rowspan="{{count_indikator|add:1}}" style="vertical-align: top; text-align: center;">{{ forloop.counter }}</td>
+                {% if obj.jenis_jabatan != 1 %}
+                <td rowspan="{{count_indikator|add:1}}" style="vertical-align: top;">
+                    {% if tambahan.induk %}
+                    {% is_fisrt_parent obj.id tambahan.id tambahan.induk.id as fisrt_parent %}
+                    {% if fisrt_parent %}
+                    {{ tambahan.induk.rencana_kerja }}
+                    {% endif %}
+                    {% else %}
+                    -
+                    {% endif %}
+                </td>
+                {% endif %}
+                <td rowspan="{{count_indikator}}" style="vertical-align: top;">{{ tambahan.rencana_kerja }} {% if tambahan.penugasan_dari %}(Penugasan dari {{ tambahan.penugasan_dari|default:'-' }}){% endif %}</td>
+            </tr>
+            {% endwith %}
+            {% for indikator in tambahan.indikatorkinerjaindividu_set.all %}
+            <tr>
+                <td>{{ indikator.aspek|default:'-' }}</td>
+                <td>{{ indikator.indikator }}</td>
+                {% get_realisasi indikator periode as realisasi %}
+                <td>{{realisasi.realisasi}}</td>
+                <td>{{realisasi.realisasi}} berdasarkan {{realisasi.sumber}}</td>
+                <td></td>
+                {% comment %} <td>{{ indikator.perspektif|default:'-' }}</td>
+                {% if obj.jenis_jabatan != 1 %}
+                {% else %}
+                {% endif %} {% endcomment %}
+            </tr>
+            {% endfor %}
+            {% endfor %}
+        </table>
+        <table>
+            <tr class="bg-blue">
+                <th colspan="10" style="font-weight: bold; text-transform: uppercase;" align="left">rating hasil kerja<br>-</th>
+            </tr>
+        </table> 
+        <table>
+            <thead class="bg-blue">
+                <tr>
+                    <th colspan="3" align="left">PERILAKU KERJA</th>
+                    <th>UMPAN BALIK BERKELANJUTAN BERDASARKAN BUKTI DUKUNG</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in perilakukerja_list %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ item.perilaku_kerja }}</td>
+                    <td>Ekspektasi Khusus Pimpinan:</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td style="padding: 0px;" >
+                        <ol>
+                        {% for subitem in item.daftarperilakukerja_set.all %}
+                        <li>{{ subitem.keterangan }}</li>
+                        {% endfor %}
+                        </ol>
+                    </td>
+                    <td style="width: 15%;">
+                        {% daftar_ekspetasi item.id obj.id "ya" %}
+                    </td>
+                    <td style="width: 18%;">
+                        
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <table>
+            <tr class="bg-blue">
+                <th colspan="10" style="font-weight: bold; text-transform: uppercase;" align="left">rating perilaku kerja<br>-</th>
+            </tr>
+        </table>
+        <table>
+            <tr class="bg-blue">
+                <th colspan="10" style="font-weight: bold; text-transform: uppercase;" align="left">predikat Kinerja Pegawai<br>-</th>
+            </tr>
+        </table>
         {% if show_ttd %}
         <div style="padding-top: 20px;">
             <table class="no-border">

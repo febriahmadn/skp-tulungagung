@@ -1,11 +1,12 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import path
 from django.utils.safestring import mark_safe
 
-from skp.models import (BuktiDukung, IndikatorKinerjaIndividu,
+from skp.models import (BuktiDukung, IndikatorKinerjaIndividu, PerilakuKerja,
                         RencanaHasilKerja, SasaranKinerja)
+from services.models import Configurations
 
 
 class BuktiDukungAdmin(admin.ModelAdmin):
@@ -77,6 +78,8 @@ class BuktiDukungAdmin(admin.ModelAdmin):
             "penilai_view": penilai,
             "periode": periode,
         }
+        batas_waktu = Configurations.get_solo().batas_input
+        messages.info(request, "Batas waktu pengisian eviden dan realisasi SKP untuk periode ini adalah {}".format(batas_waktu.strftime("%d-%m-%Y")))
         return render(
             request, "admin/skp/buktidukung/bukti_dukung.html", extra_context
         )
@@ -118,6 +121,7 @@ class BuktiDukungAdmin(admin.ModelAdmin):
                 nama_pegawai, obj.get_periode()
             ),
             "rhk_list": rhk_list,
+            "perilakukerja_list": PerilakuKerja.objects.filter(is_active=True),
             "show_ttd": show_ttd,
             "periode": periode
         }
