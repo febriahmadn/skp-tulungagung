@@ -88,6 +88,11 @@ def menu_pengguna(request):
                     icon="fa fa-building",
                     url=reverse("admin:skp_daftarperilakukerja_changelist"),
                 ),
+                # dict(
+                #     title="Daftar Hasil",
+                #     icon="fas fa-bullseye",
+                #     url=reverse("admin:skp_hasil_changelist"),
+                # ),
             ]
 
             menus += [

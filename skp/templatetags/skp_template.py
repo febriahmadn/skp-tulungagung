@@ -2,7 +2,7 @@ from django import template
 from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 
-from skp.models import (BuktiDukung, DaftarLampiran,
+from skp.models import (BuktiDukung, DaftarLampiran, SasaranKinerja,
                         DaftarPerilakuKerjaPegawai, Realisasi, RencanaAksi,
                         RencanaHasilKerja)
 from skp.utils import FULL_BULAN
@@ -244,3 +244,21 @@ def get_realisasi(indikator_obj, periode):
     if realisasi_list.exists():
         return realisasi_list.last()
     return None
+
+@register.simple_tag
+def get_detail_skp(pegawai, skp_obj, periode):
+    list_skp_bawahan = SasaranKinerja.objects.filter(
+        pegawai= pegawai,
+        periode_awal__gte= skp_obj.periode_awal,
+        periode_akhir__lte= skp_obj.periode_akhir,
+        status= SasaranKinerja.Status.PERSETUJUAN
+    )
+    if list_skp_bawahan.exists():
+        obj = list_skp_bawahan.last()
+        button = """
+            <a href="{}" class="btn btn-sm btn-warning" ><i class="fas fa-info-circle"></i> Detail</a>
+        """.format(
+            reverse_lazy("admin:penilaian-bawahan-skp-detail", kwargs={'skp_id':obj.id, "periode":periode})
+        )
+        return mark_safe(button)
+    return "---"

@@ -53,19 +53,16 @@
 <body>
     <div class="contents">
         <div style="text-align: center; margin: 20px;">
-            <h4 class="m-0">SASARAN KINERJA PEGAWAI</h4>
-            <h4 class="m-0">PENGISIAN BUKTI DUKUNG UNTUK PERIODE {{periode|get_bulan|upper}} TAHUN {{obj.periode_awal|date:"y"}}</h4>
+            <h4 class="m-0">EVALUASI KINERJA PEGAWAI</h4>
+            <h4 class="m-0">PENDEKATAN HASIL KERJA {{obj.get_pendekatan_display|upper}}</h4>
         </div>
-        <h5>PERIODE: {{periode|get_bulan|upper}}</h5>
-        <div style="display: flex;">
+        <div style="display: flex; padding-top: 10px">
             <div class="w-50">
-                <h5 class="m-0">
-                    {{obj.unor.unitkerja}} 
-                </h5>
+                <h5 class="m-0">PERIODE PENILAIAN: {{periode|get_bulan|upper}}</h5>
             </div>
             <div class="w-50">
-                <h5 class="m-0">
-                    PERIODE PENILAIAN: {% get_complete_periode obj.periode_awal obj.periode_akhir %} </h5>
+                <h5 class="m-0" style="text-align: end;">
+                    PERIODE SKP: {% get_complete_periode obj.periode_awal obj.periode_akhir %} </h5>
                 </h5>
             </div>
         </div>

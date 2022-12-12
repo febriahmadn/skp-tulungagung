@@ -168,7 +168,7 @@
                                 <td>${val.bulan}<br>${val.range}<br>{{batas_input|date:"d-m-Y"}}</td>
                                 <td>
                                     <div style="display: inline-grid">
-                                        <button class="btn btn-sm btn-primary m-1" >Penilaian Bawahan</button>
+                                        <a href="${val.penilaian_bawahan_url}?b64=${btoa(val.range)}" target="_blank" class="btn btn-sm btn-primary m-1" >Penilaian Bawahan</a>
                                         <button class="btn btn-sm btn-success m-1" >Rekap Penilaian Bawahan</button>
                                         <button class="btn btn-sm btn-info m-1" >Lihat Kurva</button>
                                     </div>

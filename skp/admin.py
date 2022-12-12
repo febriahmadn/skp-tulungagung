@@ -8,7 +8,7 @@ from .models import (BuktiDukung, DaftarLampiran, DaftarPerilakuKerja,
                      DaftarPerilakuKerjaPegawai, DetailSasaranKinerja,
                      IndikatorKinerjaIndividu, Lampiran, PerilakuKerja,
                      Perspektif, Realisasi, RencanaAksi, RencanaHasilKerja,
-                     SasaranKinerja)
+                     SasaranKinerja, Hasil, PenilaianBawahan)
 from .subadmin.bukti_dukung_admin import BuktiDukungAdmin
 from .subadmin.daftarlampiran_admin import DaftarlampiranAdmin
 from .subadmin.daftarperilakuerjapegawai_admin import \
@@ -22,6 +22,7 @@ from .subadmin.perspektif_admin import PerspektifAdmin
 from .subadmin.realisasi_admin import RealisasiAdmin
 from .subadmin.rencana_aksi_admin import RencanaAksiAdmin
 from .subadmin.rencanahasilkerja_admin import RencanahasilkerjaAdmin
+from .subadmin.penilaian_bawahan_admin import PenilaianBawahanAdmin
 
 admin.site.register(DetailSasaranKinerja, DetailsasarankerjaAdmin)
 admin.site.register(RencanaHasilKerja, RencanahasilkerjaAdmin)
@@ -39,3 +40,6 @@ admin.site.register(RencanaAksi, RencanaAksiAdmin)
 admin.site.register(Realisasi, RealisasiAdmin)
 admin.site.register(Lampiran, LampiranAdmin)
 admin.site.register(DaftarLampiran, DaftarlampiranAdmin)
+
+admin.site.register(Hasil)
+admin.site.register(PenilaianBawahan, PenilaianBawahanAdmin)

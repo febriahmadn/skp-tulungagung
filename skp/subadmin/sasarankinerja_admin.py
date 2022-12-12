@@ -365,7 +365,13 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                 'bukti_dukung_url': reverse_lazy('admin:bukti-dukung-skp', kwargs={
                     "skp_id": sasaran_obj.id,
                     "periode": awal.month
-                }) if sasaran_obj.status == 3 else "#"
+                }) if sasaran_obj.status == 3 else "#",
+                'penilaian_bawahan_url': reverse_lazy(
+                    'admin:penilaian-bawahan-skp', kwargs={
+                        "skp_id": sasaran_obj.id,
+                        "periode": awal.month
+                    }
+                ) if sasaran_obj.status == 3 else "#",
             })
         else:
             for i in range(awal.month, akhir.month + 1):
@@ -391,9 +397,15 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                             'bukti_dukung_url': reverse_lazy(
                                 'admin:bukti-dukung-skp', kwargs={
                                     "skp_id": sasaran_obj.id,
-                                    "periode": awal.month
+                                    "periode": i
                                 }
-                            ) if sasaran_obj.status == 3 else "#"
+                            ) if sasaran_obj.status == 3 else "#",
+                            'penilaian_bawahan_url': reverse_lazy(
+                                'admin:penilaian-bawahan-skp', kwargs={
+                                    "skp_id": sasaran_obj.id,
+                                    "periode": i
+                                }
+                            ) if sasaran_obj.status == 3 else "#",
                         }
                     )
                 elif i == akhir.month:
@@ -417,9 +429,15 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                             'bukti_dukung_url': reverse_lazy(
                                 'admin:bukti-dukung-skp', kwargs={
                                     "skp_id": sasaran_obj.id,
-                                    "periode": awal.month
+                                    "periode": i
                                 }
-                            ) if sasaran_obj.status == 3 else "#"
+                            ) if sasaran_obj.status == 3 else "#",
+                            'penilaian_bawahan_url': reverse_lazy(
+                                'admin:penilaian-bawahan-skp', kwargs={
+                                    "skp_id": sasaran_obj.id,
+                                    "periode": i
+                                }
+                            ) if sasaran_obj.status == 3 else "#",
                         }
                     )
                 else:
@@ -443,9 +461,15 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                         'bukti_dukung_url': reverse_lazy(
                             'admin:bukti-dukung-skp', kwargs={
                                 "skp_id": sasaran_obj.id,
-                                "periode": awal.month
+                                "periode": i
                             }
-                        ) if sasaran_obj.status == 3 else "#"
+                        ) if sasaran_obj.status == 3 else "#",
+                        'penilaian_bawahan_url': reverse_lazy(
+                            'admin:penilaian-bawahan-skp', kwargs={
+                                "skp_id": sasaran_obj.id,
+                                "periode": i
+                            }
+                        ) if sasaran_obj.status == 3 else "#",
                     })
         respon = {'success': True, "data": bulan_list}
         return JsonResponse(respon, safe=False)
