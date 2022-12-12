@@ -394,7 +394,7 @@ class Hasil(models.Model):
     is_active = models.BooleanField(default=True)
     keterangan = models.CharField("Keterangan", max_length=255, null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
-    
+
     def __str__(self):
         return self.nama
 
@@ -420,14 +420,18 @@ class PenilaianBawahan(models.Model):
         verbose_name="Rating Hasil Kinerja",
         related_name="hasil_rating_kinerja"
     )
-    predikat_perilaku =  models.ForeignKey(
+    predikat_perilaku = models.ForeignKey(
         Hasil,
         on_delete=models.SET_NULL,
         null=True,
         verbose_name="Predikat Perilaku Kinerja",
         related_name="hasil_predikat_perilaku_kerja"
     )
-    predikat_kerja = models.CharField(verbose_name="Predikat Kerja", null=True, max_length=255)
+    predikat_kerja = models.CharField(
+        verbose_name="Predikat Kerja",
+        null=True,
+        max_length=255
+    )
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

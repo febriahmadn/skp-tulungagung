@@ -1,17 +1,18 @@
 import base64
 import datetime
+
 from django.contrib import admin, messages
 from django.http import JsonResponse
+from django.shortcuts import redirect, render
 from django.urls import path, reverse
-from django.shortcuts import render, redirect
 
+from skp.models import Hasil, PenilaianBawahan, PerilakuKerja, SasaranKinerja
 from usom.models import Account
-from skp.models import SasaranKinerja, PerilakuKerja, Hasil, PenilaianBawahan
+
 
 class PenilaianBawahanAdmin(admin.ModelAdmin):
-    
     def create(self, request):
-        respon = {'success':False, "pesan": "Terjadi Kesalahan Sistem"}
+        respon = {"success": False, "pesan": "Terjadi Kesalahan Sistem"}
         skp_id = request.POST.get("skp_id", None)
         jenis = request.POST.get("jenis", None)
         penilaianbawahan = request.POST.get("penilaianbawahan", None)
@@ -23,32 +24,19 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
         try:
             skp_obj = SasaranKinerja.objects.get(pk=skp_id)
         except Exception as e:
-            respon = {'success':False, "pesan": str(e)}
+            respon = {"success": False, "pesan": str(e)}
             return JsonResponse(respon, safe=False)
 
         try:
             hasil_obj = Hasil.objects.get(pk=hasil)
         except Exception as e:
-            respon = {'success':False, "pesan": str(e)}
+            respon = {"success": False, "pesan": str(e)}
             return JsonResponse(respon, safe=False)
 
         try:
-            if penilaianbawahan:
-                obj = PenilaianBawahan.objects.get(pk=penilaianbawahan)
-            else:
-                obj = PenilaianBawahan(
-                    skp=skp_obj,
-                    periode=periode
-                )
-                
+            obj = PenilaianBawahan.objects.get(pk=penilaianbawahan)
         except PenilaianBawahan.DoesNotExist:
-            obj = PenilaianBawahan(
-                skp=skp_obj,
-                periode=periode
-            )
-        except Exception as e:
-            respon = {'success':False, "pesan": str(e)}
-            return JsonResponse(respon, safe=False)
+            obj = PenilaianBawahan(skp=skp_obj, periode=periode)
 
         if jenis == "perdikat_perilaku":
             obj.predikat_perilaku = hasil_obj
@@ -56,17 +44,19 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
             obj.rating_hasil = hasil_obj
         obj.save()
 
-        respon = {'success':True, "pesan": "Berhasil Menambah Hasil"}
+        respon = {"success": True, "pesan": "Berhasil Menambah Hasil"}
         return JsonResponse(respon, safe=False)
-    
+
     def page_penilaian_bawahan(self, request, skp_id, periode, extra_context={}):
         try:
             obj = SasaranKinerja.objects.get(pk=skp_id)
         except Exception as e:
             messages.error(request, str(e))
-            return redirect(reverse("admin:skp_sasarankinerja_penilaian", kwargs={"id":skp_id}))
-            
-        b64 = request.GET.get('b64',None)
+            return redirect(
+                reverse("admin:skp_sasarankinerja_penilaian", kwargs={"id": skp_id})
+            )
+
+        b64 = request.GET.get("b64", None)
         awal = None
         akhir = None
         if b64 and b64 != "":
@@ -77,18 +67,22 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
                 akhir = datetime.datetime.strptime(text[1].strip(), "%Y-%m-%d")
             except Exception as e:
                 messages.error(request, str(e))
-                return redirect(reverse("admin:skp_sasarankinerja_penilaian", kwargs={"id":skp_id}))
-        find_all_bawahan = Account.objects.filter(atasan=obj.pegawai)    
-        extra_context.update({
-            "title":"Penilaian Bawahan",
-            "periode_penilaian":b64_decode,
-            "obj":obj,
-            "list_pegawai":find_all_bawahan,
-            "awal":awal,
-            "akhir":akhir,
-            "periode":periode
-        })
-        
+                return redirect(
+                    reverse("admin:skp_sasarankinerja_penilaian", kwargs={"id": skp_id})
+                )
+        find_all_bawahan = Account.objects.filter(atasan=obj.pegawai)
+        extra_context.update(
+            {
+                "title": "Penilaian Bawahan",
+                "periode_penilaian": b64_decode,
+                "obj": obj,
+                "list_pegawai": find_all_bawahan,
+                "awal": awal,
+                "akhir": akhir,
+                "periode": periode,
+            }
+        )
+
         return render(request, "admin/skp/penilaianbawahan/list.html", extra_context)
 
     def detail_penilaian_bawahan(self, request, skp_id, periode, extra_context={}):
@@ -96,7 +90,9 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
             obj = SasaranKinerja.objects.get(pk=skp_id)
         except Exception as e:
             messages.error(request, str(e))
-            return redirect(reverse("admin:skp_sasarankinerja_penilaian", kwargs={"id":skp_id}))
+            return redirect(
+                reverse("admin:skp_sasarankinerja_penilaian", kwargs={"id": skp_id})
+            )
         perilaku_kerja_list = PerilakuKerja.objects.filter(is_active=True)
         hasil_list = Hasil.objects.filter(is_active=True)
         try:
@@ -107,18 +103,20 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
             print(e)
             penilaian_obj = None
 
-        extra_context.update({
-            "title":"Penilaian Bawahan",
-            "obj":obj,
-            "periode":periode,
-            "perilaku_kerja_list":perilaku_kerja_list,
-            "hasil_list":hasil_list,
-            "penilaian_obj":penilaian_obj
-        })
+        extra_context.update(
+            {
+                "title": "Penilaian Bawahan",
+                "obj": obj,
+                "periode": periode,
+                "perilaku_kerja_list": perilaku_kerja_list,
+                "hasil_list": hasil_list,
+                "penilaian_obj": penilaian_obj,
+            }
+        )
         return render(request, "admin/skp/penilaianbawahan/detail.html", extra_context)
 
     def load_penilaian_bawahan(self, request):
-        respon = {'success':False, "pesan": "Terjadi Kesalahan Sistem"}
+        respon = {"success": False, "pesan": "Terjadi Kesalahan Sistem"}
         return JsonResponse(respon, safe=False)
 
     def get_urls(self):

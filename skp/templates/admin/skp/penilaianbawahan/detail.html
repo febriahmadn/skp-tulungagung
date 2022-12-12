@@ -225,7 +225,9 @@
         <button class="btn btn-sm btn-{% if penilaian_obj.predikat_perilaku %}warning{% else %}primary{% endif %} mt-2" data-toggle="modal" {% if penilaian_obj %}data-id="{{penilaian_obj.id}}" {% if penilaian_obj.predikat_perilaku %} data-edit="true"{% endif %}data-hasil="{{penilaian_obj.predikat_perilaku.id}}"{% else %}data-edit="false"{% endif %} data-jenis="perdikat_perilaku" data-target="#tambahhasil">
           {% if penilaian_obj.predikat_perilaku %}Ubah{% else %}Tambah{% endif %}
         </button><br>
-        PREDIKAT KINERJA : 
+        <div class="pt-2">
+          PREDIKAT KINERJA : {% if penilaian_obj %}{{penilaian_obj.predikat_kerja|default_if_none:"---"}}{% endif %}
+        </div>
       </div>
     </div>
   </div>
@@ -548,8 +550,10 @@
     let penilaianbawahan_id = $("#penilaianbawahan_id").val()
     let hasil_id = $("#hasil_id").val()
     let csrf = modal.find('input[name=csrfmiddlewaretoken]').val();
-    $.ajax({
-      url: '{% url "admin:penilaian-bawahan-create" %}',
+    if(hasil_id != ""){
+
+      $.ajax({
+        url: '{% url "admin:penilaian-bawahan-create" %}',
       type: 'POST',
       data: {
         csrfmiddlewaretoken: csrf,
@@ -568,6 +572,9 @@
         }
       }
     })
+  }else{
+    toastr.warning("isian hasil tidak boleh kosong");
+  }
   }
 
   const delete_action = (url) => {
