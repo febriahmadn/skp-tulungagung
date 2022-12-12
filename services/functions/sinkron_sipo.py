@@ -43,6 +43,12 @@ class ServiceSipo:
                 if len(results) > 0:
                     self.handler_save(results[0])
                 return True
+            else:
+                print(response.status_code)
+                if response.status_code == 500:
+                    self.auth_login()
+                    self.sinkron_pegawai_by_nip(nip)
+                    return True
         return False
 
     def get_jabatan(self, payload):
@@ -79,7 +85,7 @@ class ServiceSipo:
 
     def handler_save(self, payload={}):
         if payload:
-            # print(payload)
+            print(payload)
             try:
                 data = {
                     "id_sipo": payload.get("id", None),
@@ -92,7 +98,7 @@ class ServiceSipo:
                     "jabatan": self.get_jabatan(payload),
                     "unitkerja_id": self.get_unitkerja(payload),
                     "golongan": self.get_golongan(payload),
-                    "eselon": self.get_eselon(payload)
+                    "eselon": self.get_eselon(payload),
                 }
 
                 account_obj, created = Account.objects.get_or_create(
@@ -109,7 +115,7 @@ class ServiceSipo:
                 try:
                     group_input = Group.objects.get(name="Input")
                 except Group.DoesNotExist:
-                    pass
+                    print("Group Not Found")
                 else:
                     account_obj.groups.add(group_input)
                     account_obj.save()
