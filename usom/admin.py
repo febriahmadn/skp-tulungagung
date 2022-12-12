@@ -19,10 +19,12 @@ class UnitKerjaAdmin(admin.ModelAdmin):
         unitkerja_list = UnitKerja.objects.filter(aktif=True)
         if unitkerja_list.exists():
             for item in unitkerja_list:
-                respon.append({
-                    'id': item.id,
-                    'text': item.unitkerja,
-                })
+                respon.append(
+                    {
+                        "id": item.id,
+                        "text": item.unitkerja,
+                    }
+                )
         return JsonResponse(respon, safe=False)
 
     def get_urls(self):
@@ -43,8 +45,8 @@ admin.site.register(UnitKerja, UnitKerjaAdmin)
 class AccountAdmin(UserAdmin):
     list_display = ("username", "nama_lengkap", "email")
     readonly_fields = ("last_login", "date_joined")
-    search_fields = ('username', 'nama_lengkap', 'jabatan')
-    ordering = ('-id',)
+    search_fields = ("username", "nama_lengkap", "jabatan")
+    ordering = ("-id",)
     form = AccountForm
     fieldsets = (
         (
@@ -105,11 +107,14 @@ class AccountAdmin(UserAdmin):
         return super().get_list_display(request)
 
     def get_name_and_username(self, obj):
-        html_ = '''
+        html_ = """
         <span>{}</span></br>
         <span class="text-muted">{}</span>
-        '''.format(obj.username, obj.get_complete_name())
+        """.format(
+            obj.username, obj.get_complete_name()
+        )
         return mark_safe(html_)
+
     get_name_and_username.short_description = "Pegawai"
 
     def get_akses(self, obj):
@@ -162,9 +167,9 @@ class AccountAdmin(UserAdmin):
             form = EditProfilPegawai(request.POST, instance=obj)
             if form.is_valid():
                 form.save()
-                messages.success(request, "Berhasil merubah {}".format(
-                    obj.get_complete_name()
-                ))
+                messages.success(
+                    request, "Berhasil merubah {}".format(obj.get_complete_name())
+                )
             else:
                 print(form.errors)
                 messages.error(request, form.errors)
@@ -174,8 +179,8 @@ class AccountAdmin(UserAdmin):
             "title_sort": "Edit Profile",
             # "golongan_list": Account.GOLONGAN,
             # "unor_list": UnitKerja.objects.filter(aktif=True),
-            'obj': obj,
-            'form': form
+            "obj": obj,
+            "form": form,
         }
         return render(request, "admin/usom/account/profile_edit.html", extra_context)
 
@@ -218,7 +223,7 @@ class AccountAdmin(UserAdmin):
 
     def sinkron_data_pegawai(self, request):
         respon = {}
-        nip = request.GET.get('nip', None)
+        nip = request.GET.get("nip", None)
         if nip:
             sync = ServiceSipo().sinkron_pegawai_by_nip(nip)
             if sync:
@@ -228,15 +233,17 @@ class AccountAdmin(UserAdmin):
                     pass
                 else:
                     data = {
-                        'nip': pegawai.username,
-                        'nama_lengkap': pegawai.get_complete_name(),
-                        'unor': pegawai.unitkerja.unitkerja if pegawai.unitkerja else '-',
-                        'jabatan': pegawai.jabatan,
-                        'jenis_jabatan': pegawai.jenis_jabatan,
-                        'golongan': pegawai.golongan,
-                        'eselon': pegawai.eselon,
+                        "nip": pegawai.username,
+                        "nama_lengkap": pegawai.get_complete_name(),
+                        "unor": pegawai.unitkerja.unitkerja
+                        if pegawai.unitkerja
+                        else "-",
+                        "jabatan": pegawai.jabatan,
+                        "jenis_jabatan": pegawai.jenis_jabatan,
+                        "golongan": pegawai.golongan,
+                        "eselon": pegawai.eselon,
                     }
-                    respon = {'success': True, 'data': data}
+                    respon = {"success": True, "data": data}
         return JsonResponse(respon)
 
     def get_urls(self):
@@ -263,10 +270,10 @@ class AccountAdmin(UserAdmin):
                 name="usom_account_set_atasan",
             ),
             path(
-                'sync-data',
+                "sync-data",
                 self.admin_site.admin_view(self.sinkron_data_pegawai),
-                name="usom_account_sync_data"
-            )
+                name="usom_account_sync_data",
+            ),
         ]
         return custom_url + admin_url
 
