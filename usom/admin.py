@@ -6,6 +6,7 @@ from django.shortcuts import render
 from django.urls import path, reverse
 from django.utils.safestring import mark_safe
 
+from services.functions.sinkron_sipo import ServiceSipo
 from usom.forms import AccountForm, EditProfilPegawai
 from usom.models import Account, UnitKerja
 
@@ -215,6 +216,29 @@ class AccountAdmin(UserAdmin):
                 respon = {"success": True}
         return JsonResponse(respon)
 
+    def sinkron_data_pegawai(self, request):
+        respon = {}
+        nip = request.GET.get('nip', None)
+        if nip:
+            sync = ServiceSipo().sinkron_pegawai_by_nip(nip)
+            if sync:
+                try:
+                    pegawai = Account.objects.get(username=nip)
+                except Account.DoesNotExist:
+                    pass
+                else:
+                    data = {
+                        'nip': pegawai.username,
+                        'nama_lengkap': pegawai.get_complete_name(),
+                        'unor': pegawai.unitkerja.unitkerja if pegawai.unitkerja else '-',
+                        'jabatan': pegawai.jabatan,
+                        'jenis_jabatan': pegawai.jenis_jabatan,
+                        'golongan': pegawai.golongan,
+                        'eselon': pegawai.eselon,
+                    }
+                    respon = {'success': True, 'data': data}
+        return JsonResponse(respon)
+
     def get_urls(self):
         admin_url = super().get_urls()
         custom_url = [
@@ -238,6 +262,11 @@ class AccountAdmin(UserAdmin):
                 self.admin_site.admin_view(self.action_set_pegawai_atasan),
                 name="usom_account_set_atasan",
             ),
+            path(
+                'sync-data',
+                self.admin_site.admin_view(self.sinkron_data_pegawai),
+                name="usom_account_sync_data"
+            )
         ]
         return custom_url + admin_url
 
