@@ -39,6 +39,38 @@ services:
     networks:
       skpapps_network:
         ipv4_address: 172.38.0.3
+  
+  redis:
+    image: 'redis:alpine'
+    expose:
+      - 6379
+    networks:
+      skpapps_network:
+        ipv4_address: 172.38.0.4
+  
+  skp-celery:
+    build:
+      context: .
+    command: "celery -A core worker -l INFO" 
+    links:
+      - redis
+    depends_on:
+      - redis
+    environment:
+      - DEBUG=${DEBUG}
+      - SECRET_KEY=${SECRET_KEY}
+      - DB_USER=${DB_USER}
+      - DB_NAME=${DB_NAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    networks:
+      skpapps_network:
+        ipv4_address: 172.18.0.4
+
+
 
 volumes:
   skpapps_static_volume:
