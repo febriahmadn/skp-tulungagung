@@ -83,9 +83,29 @@ class ServiceSipo:
                 return eselon.upper()
         return None
 
+    def get_jenis_jabatan(self, payload):
+        # JPT : eselon kode nya 21 dan 22
+        # jenjab_kode nya 1
+        # JA:
+        # 1. eselon III dan IV jenjab: 1 eselon_kode: 31, 32, 41, 42
+        # JA: Pelaksana
+        # jenjab_kode : 4
+        # JF:
+        # jenjab_kode = 2
+        eselon_kode = payload.get("eselon_kode", None)
+        jenjab_kode = payload.get("jenjab_kode", None)
+        jenis_jabatan = None
+        if eselon_kode in ["21", "22"] and jenjab_kode == "1":
+            jenis_jabatan = "JPT"
+        elif eselon_kode in ["31", "32", "41", "42"] and jenjab_kode in ["1", "4"]:
+            jenis_jabatan = "JA"
+        elif jenjab_kode == "2":
+            jenis_jabatan = "JF"
+        return jenis_jabatan
+
     def handler_save(self, payload={}):
         if payload:
-            print(payload)
+            # print(payload)
             try:
                 data = {
                     "id_sipo": payload.get("id", None),
@@ -99,6 +119,7 @@ class ServiceSipo:
                     "unitkerja_id": self.get_unitkerja(payload),
                     "golongan": self.get_golongan(payload),
                     "eselon": self.get_eselon(payload),
+                    "jenis_jabatan": self.get_jenis_jabatan(payload),
                 }
 
                 account_obj, created = Account.objects.get_or_create(
