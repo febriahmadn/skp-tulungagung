@@ -9,8 +9,13 @@ from django.utils.safestring import mark_safe
 
 from services.models import Configurations
 from skp.forms.sasarankinerja_form import SasaranKinerjaForm
-from skp.models import (Lampiran, PerilakuKerja, Perspektif, RencanaHasilKerja,
-                        SasaranKinerja)
+from skp.models import (
+    Lampiran,
+    PerilakuKerja,
+    Perspektif,
+    RencanaHasilKerja,
+    SasaranKinerja,
+)
 from skp.utils import FULL_BULAN
 
 
@@ -73,9 +78,9 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         )
         if obj.status == 3:
             btn += '<a class="dropdown-item" href="{}">Penilaian</a>'.format(
-                reverse_lazy("admin:skp_sasarankinerja_penilaian", kwargs={
-                    "id": obj.id
-                })
+                reverse_lazy(
+                    "admin:skp_sasarankinerja_penilaian", kwargs={"id": obj.id}
+                )
             )
         btn += "</div>"
         btn += "</div>"
@@ -312,7 +317,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         list_skp_bawahan = SasaranKinerja.objects.filter(
             pejabat_penilai=obj.pegawai.atasan,
             periode_awal__gte=obj.periode_awal,
-            periode_akhir__lte=obj.periode_akhir
+            periode_akhir__lte=obj.periode_akhir,
         )
         show_detail = [
             SasaranKinerja.Status.PENGAJUAN,
@@ -352,27 +357,31 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         akhir = sasaran_obj.periode_akhir
         bulan_list = []
         if awal.month == akhir.month:
-            bulan_list.append({
-                'bulan': FULL_BULAN[awal.month],
-                'range': "{} / {}".format(
-                    awal.strftime('%Y-%m-%d'),
-                    akhir.strftime('%Y-%m-%d'),
-                ),
-                'rencana_aksi_url': reverse_lazy('admin:rencana-aksi-skp', kwargs={
-                    "skp_id": sasaran_obj.id,
-                    "periode": awal.month
-                }),
-                'bukti_dukung_url': reverse_lazy('admin:bukti-dukung-skp', kwargs={
-                    "skp_id": sasaran_obj.id,
-                    "periode": awal.month
-                }) if sasaran_obj.status == 3 else "#",
-                'penilaian_bawahan_url': reverse_lazy(
-                    'admin:penilaian-bawahan-skp', kwargs={
-                        "skp_id": sasaran_obj.id,
-                        "periode": awal.month
-                    }
-                ) if sasaran_obj.status == 3 else "#",
-            })
+            bulan_list.append(
+                {
+                    "bulan": FULL_BULAN[awal.month],
+                    "range": "{} / {}".format(
+                        awal.strftime("%Y-%m-%d"),
+                        akhir.strftime("%Y-%m-%d"),
+                    ),
+                    "rencana_aksi_url": reverse_lazy(
+                        "admin:rencana-aksi-skp",
+                        kwargs={"skp_id": sasaran_obj.id, "periode": awal.month},
+                    ),
+                    "bukti_dukung_url": reverse_lazy(
+                        "admin:bukti-dukung-skp",
+                        kwargs={"skp_id": sasaran_obj.id, "periode": awal.month},
+                    )
+                    if sasaran_obj.status == 3
+                    else "#",
+                    "penilaian_bawahan_url": reverse_lazy(
+                        "admin:penilaian-bawahan-skp",
+                        kwargs={"skp_id": sasaran_obj.id, "periode": awal.month},
+                    )
+                    if sasaran_obj.status == 3
+                    else "#",
+                }
+            )
         else:
             for i in range(awal.month, akhir.month + 1):
                 if i == awal.month:
@@ -388,24 +397,22 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                                 else "0{}".format(awal.month),
                                 num_days,
                             ),
-                            'rencana_aksi_url': reverse_lazy(
-                                'admin:rencana-aksi-skp', kwargs={
-                                    "skp_id": sasaran_obj.id,
-                                    "periode": i
-                                }
+                            "rencana_aksi_url": reverse_lazy(
+                                "admin:rencana-aksi-skp",
+                                kwargs={"skp_id": sasaran_obj.id, "periode": i},
                             ),
-                            'bukti_dukung_url': reverse_lazy(
-                                'admin:bukti-dukung-skp', kwargs={
-                                    "skp_id": sasaran_obj.id,
-                                    "periode": i
-                                }
-                            ) if sasaran_obj.status == 3 else "#",
-                            'penilaian_bawahan_url': reverse_lazy(
-                                'admin:penilaian-bawahan-skp', kwargs={
-                                    "skp_id": sasaran_obj.id,
-                                    "periode": i
-                                }
-                            ) if sasaran_obj.status == 3 else "#",
+                            "bukti_dukung_url": reverse_lazy(
+                                "admin:bukti-dukung-skp",
+                                kwargs={"skp_id": sasaran_obj.id, "periode": i},
+                            )
+                            if sasaran_obj.status == 3
+                            else "#",
+                            "penilaian_bawahan_url": reverse_lazy(
+                                "admin:penilaian-bawahan-skp",
+                                kwargs={"skp_id": sasaran_obj.id, "periode": i},
+                            )
+                            if sasaran_obj.status == 3
+                            else "#",
                         }
                     )
                 elif i == akhir.month:
@@ -420,63 +427,62 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                                 "01",
                                 akhir.strftime("%Y-%m-%d"),
                             ),
-                            'rencana_aksi_url': reverse_lazy(
-                                'admin:rencana-aksi-skp', kwargs={
-                                    "skp_id": sasaran_obj.id,
-                                    "periode": i
-                                }
+                            "rencana_aksi_url": reverse_lazy(
+                                "admin:rencana-aksi-skp",
+                                kwargs={"skp_id": sasaran_obj.id, "periode": i},
                             ),
-                            'bukti_dukung_url': reverse_lazy(
-                                'admin:bukti-dukung-skp', kwargs={
-                                    "skp_id": sasaran_obj.id,
-                                    "periode": i
-                                }
-                            ) if sasaran_obj.status == 3 else "#",
-                            'penilaian_bawahan_url': reverse_lazy(
-                                'admin:penilaian-bawahan-skp', kwargs={
-                                    "skp_id": sasaran_obj.id,
-                                    "periode": i
-                                }
-                            ) if sasaran_obj.status == 3 else "#",
+                            "bukti_dukung_url": reverse_lazy(
+                                "admin:bukti-dukung-skp",
+                                kwargs={"skp_id": sasaran_obj.id, "periode": i},
+                            )
+                            if sasaran_obj.status == 3
+                            else "#",
+                            "penilaian_bawahan_url": reverse_lazy(
+                                "admin:penilaian-bawahan-skp",
+                                kwargs={"skp_id": sasaran_obj.id, "periode": i},
+                            )
+                            if sasaran_obj.status == 3
+                            else "#",
                         }
                     )
                 else:
                     num_days = calendar.monthrange(awal.year, awal.month)[1]
-                    bulan_list.append({
-                        'bulan': FULL_BULAN[i],
-                        'range': "{}-{}-{} / {}-{}-{}".format(
-                            akhir.year,
-                            i if i > 9 else "0{}".format(i),
-                            "01",
-                            akhir.year,
-                            i if i > 9 else "0{}".format(i),
-                            num_days,
-                        ),
-                        'rencana_aksi_url': reverse_lazy(
-                            'admin:rencana-aksi-skp', kwargs={
-                                "skp_id": sasaran_obj.id,
-                                "periode": i
-                            }
-                        ),
-                        'bukti_dukung_url': reverse_lazy(
-                            'admin:bukti-dukung-skp', kwargs={
-                                "skp_id": sasaran_obj.id,
-                                "periode": i
-                            }
-                        ) if sasaran_obj.status == 3 else "#",
-                        'penilaian_bawahan_url': reverse_lazy(
-                            'admin:penilaian-bawahan-skp', kwargs={
-                                "skp_id": sasaran_obj.id,
-                                "periode": i
-                            }
-                        ) if sasaran_obj.status == 3 else "#",
-                    })
-        respon = {'success': True, "data": bulan_list}
+                    bulan_list.append(
+                        {
+                            "bulan": FULL_BULAN[i],
+                            "range": "{}-{}-{} / {}-{}-{}".format(
+                                akhir.year,
+                                i if i > 9 else "0{}".format(i),
+                                "01",
+                                akhir.year,
+                                i if i > 9 else "0{}".format(i),
+                                num_days,
+                            ),
+                            "rencana_aksi_url": reverse_lazy(
+                                "admin:rencana-aksi-skp",
+                                kwargs={"skp_id": sasaran_obj.id, "periode": i},
+                            ),
+                            "bukti_dukung_url": reverse_lazy(
+                                "admin:bukti-dukung-skp",
+                                kwargs={"skp_id": sasaran_obj.id, "periode": i},
+                            )
+                            if sasaran_obj.status == 3
+                            else "#",
+                            "penilaian_bawahan_url": reverse_lazy(
+                                "admin:penilaian-bawahan-skp",
+                                kwargs={"skp_id": sasaran_obj.id, "periode": i},
+                            )
+                            if sasaran_obj.status == 3
+                            else "#",
+                        }
+                    )
+        respon = {"success": True, "data": bulan_list}
         return JsonResponse(respon, safe=False)
 
     def view_matriks_hasil_peran(self, request, obj_id):
         obj = get_object_or_404(SasaranKinerja, pk=obj_id)
         show = request.GET.get("show", None)
+        cetak = request.GET.get("cetak", None)
 
         skp_childs = SasaranKinerja.objects.filter(induk_id=obj.id)
         extra_context = {
@@ -486,6 +492,13 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
             "skp_childs": skp_childs,
             "show": True if show == "true" else False,
         }
+
+        if cetak:
+            return render(
+                request,
+                "admin/skp/sasarankinerja/matriks_hasil_peran_cetak.html",
+                extra_context,
+            )
         return render(
             request, "admin/skp/sasarankinerja/matriks_hasil_peran.html", extra_context
         )

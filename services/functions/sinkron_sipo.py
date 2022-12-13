@@ -92,6 +92,7 @@ class ServiceSipo:
         # jenjab_kode : 4
         # JF:
         # jenjab_kode = 2
+
         eselon_kode = payload.get("eselon_kode", None)
         jenjab_kode = payload.get("jenjab_kode", None)
         jenis_jabatan = None

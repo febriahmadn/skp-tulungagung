@@ -35,4 +35,12 @@ class ServicePresensi:
                 ServiceSipo().sinkron_pegawai_by_nip(username)
             if self.next:
                 self.get_pegawai_list()
+            else:
+                if self.task_obj:
+                    self.task_obj.is_done = True
+                    self.task_obj.save()
+        else:
+            if self.task_obj:
+                self.task_obj.is_done = True
+                self.task_obj.save()
         return True
