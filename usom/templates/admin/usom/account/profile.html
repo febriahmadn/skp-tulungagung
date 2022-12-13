@@ -16,6 +16,28 @@
 {% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
+  var card = new KTCard('kt_card_1');
+  var card_atasan = new KTCard('kt_card_2');
+  card.on('reload', function (card) {
+    KTApp.block(card.getSelf(), {
+      overlayColor: '#ffffff',
+      type: 'loader',
+      state: 'primary',
+      opacity: 0.3,
+      size: 'lg'
+    });
+  });
+
+  card_atasan.on('reload', function (card) {
+    KTApp.block(card.getSelf(), {
+      overlayColor: '#ffffff',
+      type: 'loader',
+      state: 'primary',
+      opacity: 0.3,
+      size: 'lg'
+    });
+  });
+
   $(function(){
     $('.select2').select2()
   })
@@ -30,7 +52,6 @@
         unor_id: value
       },
       success: function(response){
-        console.log({response})
         if (response.success){
           let options = '<option value="0">Pilih Unor Atasan</option>'
           response.results.map((item, index) => {
@@ -53,7 +74,6 @@
           atasan_id: atasan_id
         },
         success: function(response){
-          console.log({response})
           if (response.success) {
             toastr.success("Berhasil menambahkan atasan");
             window.location.reload();
@@ -69,6 +89,56 @@
     $('#modalatasan_id').modal('show')
     $('.select2').select2();
   })
+
+  const sinkron_data_pegawai = (nip="", type="profile") => {
+    if (nip) {
+      $.ajax({
+        url: `${BASE_URL}/admin/usom/account/sync-data`,
+        type: 'GET',
+        data: {
+          nip: nip
+        },
+        beforeSend: function(){
+          if (type == "profile") {
+            card.reload()
+          } else {
+            card_atasan.reload()
+          }
+        },
+        success: function(response) {
+          var card_elem = $('#kt_card_1')
+          if (type != "profile") {
+            card_elem = $('#kt_card_2')
+          }
+
+          if (response.success) {
+            toastr.success("Berhasil menambahkan atasan");
+            for (const [key, value] of Object.entries(response.data)) {
+              let value_ = value ? value : '-';
+              card_elem.find(`.data-${key}`).text(value_)
+            }
+          }
+
+          if (type == 'profile') {
+            setTimeout(function () {
+              KTApp.unblock(card.getSelf());
+            }, 1000);
+          } else {
+            setTimeout(function () {
+              KTApp.unblock(card_atasan.getSelf());
+            }, 1000);
+          }
+        },
+        error: function(){
+          if (type == 'profile') {
+            KTApp.unblock(card.getSelf());
+          } else {
+            KTApp.unblock(card_atasan.getSelf());
+          }
+        }
+      })
+    }
+  }
 </script>
 {% endblock %}
 
@@ -86,87 +156,55 @@
 {% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="">
   <div class="row">
     <div class="col-md-6" id="kt_profile_aside">
       <!--begin::Card-->
-      <div class="card card-custom gutter-b">
+      <div class="card card-custom gutter-b" id="kt_card_1">
         <!--begin::Body-->
-        <div class="card-body pt-4">
-          <!--begin::Toolbar-->
-          <div class="d-flex justify-content-end">
-            <div class="dropdown dropdown-inline">
-              <a href="#" class="btn btn-clean btn-hover-light-primary btn-sm btn-icon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="ki ki-bold-more-hor"></i>
-              </a>
-              <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right" style="">
-                <!--begin::Navigation-->
-                <ul class="navi navi-hover py-5">
-                  <li class="navi-item">
-                    <a href="#" class="navi-link">
-                      <span class="navi-icon">
-                        <i class="flaticon2-drop"></i>
-                      </span>
-                      <span class="navi-text">Sinkron Data</span>
-                    </a>
-                  </li>
-                  <li class="navi-item">
-                    <a href="{% url 'admin:usom_account_profile_edit' id=request.user.id %}" class="navi-link">
-                      <span class="navi-icon">
-                        <i class="fas fa-edit"></i>
-                      </span>
-                      <span class="navi-text">Ubah Pegawai</span>
-                    </a>
-                  </li>
-                </ul>
-                <!--end::Navigation-->
-              </div>
-            </div>
-          </div>
-          <!--end::Toolbar-->
+        <div class="card-body">
           <!--begin::User-->
           <div class="d-flex align-items-center">
             <div class="symbol symbol-light-success symbol-60 symbol-xxl-100 mr-5 align-self-start align-self-xxl-center">
-              <span
-              class="symbol-label font-size-h5 font-weight-bold text-uppercase">{{ request.user.nama_lengkap.0 }}</span>
+              <span class="symbol-label font-size-h1 font-weight-bold text-uppercase">{{ request.user.nama_lengkap.0 }}</span>
               <!-- <div class="symbol-label" style="background-image:url('/static/metronic/assets/media/users/300_13.jpg')"></div> -->
               <!-- <i class="symbol-badge bg-success"></i> -->
             </div>
             <div>
               <a href="#" class="font-weight-bold font-size-h5 text-dark-75 text-hover-primary">{{ request.user.get_complete_name }}</a>
-              <div class="text-muted">{{ request.user.username }}</div>
-              <!-- <div class="mt-2">
-                <a href="{% url 'admin:usom_account_profile_edit' id=request.user.id %}" class="btn btn-sm btn-primary font-weight-bold mr-2 py-2 px-3 px-xxl-5 my-1">Edit</a> -->
-                <!-- <a href="#" class="btn btn-sm btn-success font-weight-bold py-2 px-3 px-xxl-5 my-1">Follow</a> -->
-              <!-- </div> -->
+              <div class="text-muted data-nama_lengkap">{{ request.user.username }}</div>
+              <div class="mt-3">
+                <a href="{% url 'admin:usom_account_profile_edit' id=request.user.id %}" class="btn btn-primary btn-sm"><i class="flaticon-edit"></i> Edit</a>
+                <button onclick="sinkron_data_pegawai('{{ request.user.username }}')" class="btn btn-warning btn-sm" id="m_blockui_1_4"><i class="flaticon2-refresh"></i> Sinkron Data SIPO</button>
+              </div>
             </div>
           </div>
           <!--end::User-->
           <!--begin::Contact-->
           <div class="pt-8 pb-6">
-            <div class="d-flex align-items-center justify-content-between mb-2">
-              <span class="font-weight-bold mr-2">Email:</span>
-              <a href="#" class="text-muted text-hover-primary">{{ request.user.email|default:'-' }}</a>
+            <div class="mb-2">
+              <span class="font-weight-bold mr-2">Email:</span><br>
+              <span class="text-muted text-hover-primary">{{ request.user.email|default:'-' }}</span>
             </div>
-            <div class="d-flex align-items-center justify-content-between mb-2">
-              <span class="font-weight-bold mr-2">Unor:</span>
-              <span class="text-muted">{{ request.user.unitkerja|default_if_none:'-' }}</span>
+            <div class="mb-2">
+              <span class="font-weight-bold mr-2">Unor:</span><br>
+              <span class="text-muted data-unor">{{ request.user.unitkerja|default_if_none:'-' }}</span>
             </div>
-            <div class="d-flex align-items-center justify-content-between mb-2">
-              <span class="font-weight-bold mr-2">Jabatan:</span>
-              <span class="text-muted">{{ request.user.jabatan|default_if_none:'-' }}</span>
+            <div class="mb-2">
+              <span class="font-weight-bold mr-2">Jabatan:</span><br>
+              <span class="text-muted data-jabatan">{{ request.user.jabatan|default_if_none:'-' }}</span>
             </div>
-            <div class="d-flex align-items-center justify-content-between mb-2">
-              <span class="font-weight-bold mr-2">Jenis Jabatan:</span>
-              <span class="text-muted">{{ request.user.jenis_jabatan|default_if_none:'-' }}</span>
+            <div class="mb-2">
+              <span class="font-weight-bold mr-2">Jenis Jabatan:</span><br>
+              <span class="text-muted data-jenis_jabatan">{{ request.user.jenis_jabatan|default_if_none:'-' }}</span>
             </div>
-            <div class="d-flex align-items-center justify-content-between mb-2">
-              <span class="font-weight-bold mr-2">Golongan:</span>
-              <span class="text-muted">{{ request.user.golongan|default_if_none:'-' }}</span>
+            <div class="mb-2">
+              <span class="font-weight-bold mr-2">Golongan:</span><br>
+              <span class="text-muted data-golongan">{{ request.user.golongan|default_if_none:'-' }}</span>
             </div>
-            <div class="d-flex align-items-center justify-content-between mb-2">
-              <span class="font-weight-bold mr-2">Eselon:</span>
-              <span class="text-muted">{{ request.user.eselon|default_if_none:'-' }}</span>
+            <div class="mb-2">
+              <span class="font-weight-bold mr-2">Eselon:</span><br>
+              <span class="text-muted data-eselon">{{ request.user.eselon|default_if_none:'-' }}</span>
             </div>
           </div>
           <!--end::Contact-->
@@ -181,93 +219,72 @@
     </div>
 
     <div class="col-md-6">
-      <div class="card card-custom gutter-b">
-        <div class="card-body pt-4">
-          {% if atasan %}
-          <div class="d-flex justify-content-end">
-            <div class="dropdown dropdown-inline">
-              <a href="#" class="btn btn-clean btn-hover-light-primary btn-sm btn-icon" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="ki ki-bold-more-hor"></i>
-              </a>
-              <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
-                <!--begin::Navigation-->
-                <ul class="navi navi-hover py-5">
-                  <li class="navi-item">
-                    <a href="#" class="navi-link">
-                      <span class="navi-icon">
-                        <i class="flaticon2-drop"></i>
-                      </span>
-                      <span class="navi-text">Singkron Data</span>
-                    </a>
-                  </li>
-                  <li class="navi-item">
-                    <a href="#" class="navi-link" id="btn_change_atasan_id">
-                      <span class="navi-icon">
-                        <i class="flaticon2-drop"></i>
-                      </span>
-                      <span class="navi-text">Ganti Atasan</span>
-                    </a>
-                  </li>
-                </ul>
-                <!--end::Navigation-->
-              </div>
-            </div>
-          </div>
-          {% endif %}
-
+      <div class="card card-custom gutter-b" id="kt_card_2">
+        <div class="card-body p-0">
           <div class="align-items-center">
-            <h6 class="mb-5">Informasi Data Atasan</h6>
-            {% if atasan %}
-            <div class="d-flex align-items-center justify-content-between mb-2">
-              <span class="font-weight-bold mr-2">NIP:</span>
-              <span class="text-muted">{{ atasan.username }}</span>
+            <div class="bg-dark p-5 rounded">
+              <span class="font-size-h5 font-weight-bold text-uppercase text-white">Informasi Data Atasan</span>
+              {% if atasan %}
+              <div class="mt-5">
+                <button type="button" class="btn btn-primary btn-sm" id="btn_change_atasan_id"><i class="flaticon-network"></i> Ganti Atasan</button>
+                <button type="button" class="btn btn-warning btn-sm" onclick="sinkron_data_pegawai('{{ atasan.username }}', 'atasan')"><i class="flaticon2-refresh"></i> Singkron Data SIPO</button>
+              </div>
+              {% endif %}
             </div>
-            <div class="d-flex align-items-center justify-content-between mb-2">
-              <span class="font-weight-bold mr-2">Nama:</span>
-              <span class="text-muted">{{ atasan.get_complete_name }}</span>
-            </div>
-            <div class="d-flex align-items-center justify-content-between mb-2">
-              <span class="font-weight-bold mr-2">Unor:</span>
-              <span class="text-muted">{{ atasan.unitkerja|default_if_none:'-' }}</span>
-            </div>
-            <div class="d-flex align-items-center justify-content-between mb-2">
-              <span class="font-weight-bold mr-2">Jabatan:</span>
-              <span class="text-muted">{{ atasan.jabatan|default_if_none:'-' }}</span>
-            </div>
-            <div class="d-flex align-items-center justify-content-between mb-2">
-              <span class="font-weight-bold mr-2">Jenis Jabatan:</span>
-              <span class="text-muted">{{ atasan.jenis_jabatan|default_if_none:'-' }}</span>
-            </div>
-            <div class="d-flex align-items-center justify-content-between mb-2">
-              <span class="font-weight-bold mr-2">Golongan:</span>
-              <span class="text-muted">{{ atasan.golongan|default_if_none:'-' }}</span>
-            </div>
-            <div class="d-flex align-items-center justify-content-between mb-2">
-              <span class="font-weight-bold mr-2">Eselon:</span>
-              <span class="text-muted">{{ atasan.eselon|default_if_none:'-' }}</span>
-            </div>
-            {% else %}
-            <span class="text-muted">Atasan belum disetting, silahkan pilih pegawai atasan Anda terlebih dahulu sebelum menginputkan data SKP.</span>
 
-            <div class="pt-5">
-              <div class="form-group">
-                <label for="atasan_id">Unor Atasan</label>
-                <select name="unor_atasan" id="unor_atasan_id" class="form-control select2">
-                  <option value="0">Pilih Unor Atasan</option>
-                  {% if unor_list %}
-                  {% for item in unor_list %}
-                  <option value="{{ item.pk }}">{{ item.unitkerja }}</option>
-                  {% endfor %}
-                  {% endif %}
-                </select>
+            <div class="p-5">
+              {% if atasan %}
+              <div class="mb-2 mt-5">
+                <span class="font-weight-bold mr-2">NIP:</span><br>
+                <span class="text-muted data-nip">{{ atasan.username }}</span>
               </div>
-              <div class="form-group">
-                <label for="atasan_id">Atasan</label>
-                <select name="atasan" id="atasan_id" class="form-control select2"></select>
+              <div class="mb-2">
+                <span class="font-weight-bold mr-2">Nama:</span><br>
+                <span class="text-muted data-nama_lengkap">{{ atasan.get_complete_name }}</span>
               </div>
-              <button type="button" id="submit_pegawai_atasan_id" class="btn btn-light-success font-weight-bold">Set Pegawai Atasan</button>
+              <div class="mb-2">
+                <span class="font-weight-bold mr-2">Unor:</span><br>
+                <span class="text-muted data-unor">{{ atasan.unitkerja|default_if_none:'-' }}</span>
+              </div>
+              <div class="mb-2">
+                <span class="font-weight-bold mr-2">Jabatan:</span><br>
+                <span class="text-muted data-jabatan">{{ atasan.jabatan|default_if_none:'-' }}</span>
+              </div>
+              <div class="mb-2">
+                <span class="font-weight-bold mr-2">Jenis Jabatan:</span><br>
+                <span class="text-muted data-jenis_jabatan">{{ atasan.jenis_jabatan|default_if_none:'-' }}</span>
+              </div>
+              <div class="mb-2">
+                <span class="font-weight-bold mr-2">Golongan:</span><br>
+                <span class="text-muted data-golongan">{{ atasan.golongan|default_if_none:'-' }}</span>
+              </div>
+              <div class="mb-2">
+                <span class="font-weight-bold mr-2">Eselon:</span><br>
+                <span class="text-muted data-eselon">{{ atasan.eselon|default_if_none:'-' }}</span>
+              </div>
+              {% else %}
+              <span class="text-muted">Atasan belum disetting, silahkan pilih pegawai atasan Anda terlebih dahulu sebelum menginputkan data SKP.</span>
+
+              <div class="pt-5">
+                <div class="form-group">
+                  <label for="atasan_id">Unor Atasan</label>
+                  <select name="unor_atasan" id="unor_atasan_id" class="form-control select2">
+                    <option value="0">Pilih Unor Atasan</option>
+                    {% if unor_list %}
+                    {% for item in unor_list %}
+                    <option value="{{ item.pk }}">{{ item.unitkerja }}</option>
+                    {% endfor %}
+                    {% endif %}
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="atasan_id">Atasan</label>
+                  <select name="atasan" id="atasan_id" class="form-control select2"></select>
+                </div>
+                <button type="button" id="submit_pegawai_atasan_id" class="btn btn-light-success font-weight-bold">Set Pegawai Atasan</button>
+              </div>
+              {% endif %}
             </div>
-            {% endif %}
           </div>
         </div>
       </div>

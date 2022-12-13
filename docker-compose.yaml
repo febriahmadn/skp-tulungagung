@@ -68,7 +68,7 @@ services:
       - REDIS_PORT=6379
     networks:
       skpapps_network:
-        ipv4_address: 172.18.0.4
+        ipv4_address: 172.38.0.5
 
 
 
