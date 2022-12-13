@@ -388,3 +388,55 @@ class Realisasi(models.Model):
     class Meta:
         verbose_name = "Realisasi"
         verbose_name_plural = "Realisasi"
+
+class Hasil(models.Model):
+    nama = models.CharField("Nama Hasil", null=True, max_length=255)
+    is_active = models.BooleanField(default=True)
+    keterangan = models.CharField("Keterangan", max_length=255, null=True, blank=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.nama
+
+    class Meta:
+        verbose_name = "Hasil"
+        verbose_name_plural = "Hasil"
+
+class PenilaianBawahan(models.Model):
+    skp = models.ForeignKey(
+        SasaranKinerja,
+        on_delete=models.CASCADE,
+        verbose_name="Sasaran Kinerja Pegawai",
+    )
+    periode = models.IntegerField(
+        choices=[(k, v) for k, v in FULL_BULAN.items()],
+        null=True
+    )
+    is_dinilai = models.BooleanField(default=False)
+    rating_hasil = models.ForeignKey(
+        Hasil,
+        on_delete=models.SET_NULL,
+        null=True,
+        verbose_name="Rating Hasil Kinerja",
+        related_name="hasil_rating_kinerja"
+    )
+    predikat_perilaku = models.ForeignKey(
+        Hasil,
+        on_delete=models.SET_NULL,
+        null=True,
+        verbose_name="Predikat Perilaku Kinerja",
+        related_name="hasil_predikat_perilaku_kerja"
+    )
+    predikat_kerja = models.CharField(
+        verbose_name="Predikat Kerja",
+        null=True,
+        max_length=255
+    )
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return "{}".format(str(self.id))
+
+    class Meta:
+        verbose_name = "Penilaian Bawahan"
+        verbose_name_plural = "Penilaian Bawahan"

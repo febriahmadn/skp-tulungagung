@@ -55,15 +55,17 @@
       <label class="mx-1 py-2" style="min-width: 100px;">Status SKP</label>
       <input type="text" readonly class="form-control form-control-sm" id="staticEmail" value="{{obj.get_status_display}}">
     </div>
+    {% if obj.keterangan %}
     <div class="d-flex">
       <label class="mx-1 py-2" style="min-width: 100px;">Keterangan</label>
       <input type="text" readonly class="form-control form-control-sm" id="staticEmail" value="{{obj.keterangan|default_if_none:""}}">
     </div>
+    {% endif %}
   </div>
 
   <div class="col-md-8 d-flex flex-row-reverse">
     <!-- <a href="{% url 'admin:skp_sasarankinerja_cetak' obj.id %}"> -->
-    <a id="btn-cetak" class="btn btn-success mr-1" style="align-self: center" href="{% url 'admin:skp_buktidukung_cetak' obj.id periode %}">
+    <a id="btn-cetak" class="btn btn-success mr-1" style="align-self: center" href="#">
       <i class="fas fa-print"></i> Cetak
     </a>
   </div>
@@ -161,20 +163,12 @@
             <thead style="background: #2196f3;">
               <tr>
                 <th valign="center">No</th>
-                {% if obj.jenis_jabatan == 1 %}
-                <th valign="center" style="width: 40%;">Rencana Hasil Kerja</th>
-                <th valign="center">Rencana Aksi</th>
-                <th valign="center">Perspektif</th>
-                <th valign="center">Indikator Kinerja Individu</th>
-                <th valign="center">Target</th>
-                {% else %}
                 <th valign="center" style="min-width: 250px;">Rencana Hasil Kerja Pimpinan<br>yang Diintervensi</th>
                 <th valign="center" style="min-width: 250px;">Rencana Hasil Kerja</th>
                 <th valign="center">Rencana Aksi</th>
                 <th valign="center">Aspek</th>
                 <th valign="center">Indikator Kinerja Individu</th>
                 <th valign="center">Target</th>
-                {% endif %}
                 <th valign="center" style="min-width: 250px;">Bukti Dukung</th>
                 <th valign="center" style="min-width: 250px;">Realisasi</th>
               </tr>
@@ -187,70 +181,87 @@
           </table>
         </div>
       </div>
+      <div class="card-footer p-2">
+        RATING HASIL KINERJA : {% if penilaian_obj %}{{penilaian_obj.rating_hasil.nama|upper}}{% endif %}<br>
+        <button class="btn btn-sm btn-{% if penilaian_obj.rating_hasil %}warning{% else %}primary{% endif %} mt-2" data-toggle="modal" {% if penilaian_obj %}data-id="{{penilaian_obj.id}}"  {% if penilaian_obj.rating_hasil %} data-edit="true"{% endif %} data-hasil="{{penilaian_obj.rating_hasil.id}}"{% else %}data-edit="false"{% endif %} data-jenis="rating_hasil" data-target="#tambahhasil">
+          {% if penilaian_obj.rating_hasil %}Ubah{% else %}Tambah{% endif %}
+        </button>
+      </div>
     </div>
   </div>
- 
-<div class="modal fade" id="tambahbuktidukung" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  {% if perilaku_kerja_list %}
+  <div class="col-md-12 pt-3">
+    <div class="card">
+      <div class="d-flex justify-content-between card-header py-4 px-5">
+        <h6 class="d-flex align-items-center m-0">PERILAKU KERJA</h6>
+      </div>
+      <div class="card-body p-2">
+        <div class="table-responsive">
+          <table class="table table-bordered mb-0 table-custom">
+            {% for item in perilaku_kerja_list %}
+            <tr>
+              <td rowspan="2" style="vertical-align : middle;text-align:center; width: 5%;">{{ forloop.counter }}</td>
+              <th>{{ item.perilaku_kerja }}</th>
+              <th style="width: 20%;">Ekspektasi Khusus Pimpinan</th>
+            </tr>
+            <tr>
+              <td>
+                <ol>
+                  {% for subitem in item.daftarperilakukerja_set.all %}
+                  <li>{{ subitem.keterangan }}</li>
+                  {% endfor %}
+                </ol>
+              </td>
+              <td>
+                {% daftar_ekspetasi item.id obj.id "ya" %}
+              </td>
+            </tr>
+            {% endfor %}
+          </table>
+        </div>
+      </div>
+      <div class="card-footer p-2">
+        PREDIKAT PERILAKU KERJA : {% if penilaian_obj %}{{penilaian_obj.predikat_perilaku.nama|upper}}{% endif %}<br>
+        <button class="btn btn-sm btn-{% if penilaian_obj.predikat_perilaku %}warning{% else %}primary{% endif %} mt-2" data-toggle="modal" {% if penilaian_obj %}data-id="{{penilaian_obj.id}}" {% if penilaian_obj.predikat_perilaku %} data-edit="true"{% endif %}data-hasil="{{penilaian_obj.predikat_perilaku.id}}"{% else %}data-edit="false"{% endif %} data-jenis="perdikat_perilaku" data-target="#tambahhasil">
+          {% if penilaian_obj.predikat_perilaku %}Ubah{% else %}Tambah{% endif %}
+        </button><br>
+        <div class="pt-2">
+          PREDIKAT KINERJA : {% if penilaian_obj %}{{penilaian_obj.predikat_kerja|default_if_none:"---"}}{% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+<div class="modal fade" id="tambahhasil" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="bukti_dukung_title">Tambah Bukti Dukung</h5>
+        <h5 class="modal-title" id="hasil_title">Tambah Hasil</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
         {% csrf_token %}
-        <input type="hidden" name="bukti_id" id="bukti_id">
-        <input type="hidden" name="indikator_id" id="indikator_id">
+        <input type="hidden" name="jenis" id="jenis">
+        <input type="hidden" name="penilaianbawahan" id="penilaianbawahan_id">
         <div class="form-group m-0">
-          <label for="rencana_aksi">Nama Bukti Dukung</label>
-          <input type="text" class="form-control" id="bukti_dukung">
-        </div>
-        <div class="form-group mt-2">
-          <label for="rencana_aksi">Bukti Dukung (Link ke file google drive/dropbox/etc)</label>
-          <input type="url" class="form-control" id="url_bukti_dukung">
-          <span class="text-muted" >Contoh: http://bit.ly/contoh</span>
+          <label for="hasil">Hasil</label>
+          <select class="form-control" name="hasil" id="hasil_id">
+            <option value="" readonly>--------</option>
+            {% for item in hasil_list %}
+            <option value="{{item.id}}">{{item.nama}}</option>
+            {% endfor %}
+          </select>
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" onclick="save_bukti_dukung()">Submit</button>
+        <button type="button" class="btn btn-primary" onclick="save_hasil()">Submit</button>
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
 </div>
-
-<div class="modal fade" id="tambahrealisasi" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="realisasi_title">Tambah Realisasi</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        {% csrf_token %}
-        <input type="hidden" name="realisasi_id" id="realisasi_id">
-        <input type="hidden" name="indikator_id_realisasi" id="indikator_id_realisasi">
-        <div class="form-group m-0">
-          <label for="rencana_aksi">Realisasi</label>
-          <input type="text" class="form-control" id="realisasi">
-        </div>
-        <div class="form-group mt-2">
-          <label for="rencana_aksi">Sumber Data</label>
-          <input type="text" class="form-control" id="sumber_data">
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" onclick="save_realisasi()">Submit</button>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 {% endblock content %}
 
 {% block custom_js %}
@@ -267,46 +278,21 @@
     }
   };
   
-  $("#tambahbuktidukung").on('show.bs.modal', function (event) {
-    let modal = $("#tambahbuktidukung")
+  $("#tambahhasil").on('show.bs.modal', function (event) {
+    let modal = $("#tambahhasil")
     let button = $(event.relatedTarget)
-    let indikator = button.data('indikator_id')
     let edit = button.data('edit')
+    let jenis = button.data('jenis')
     let id = button.data('id')
-    $("#indikator_id").val(indikator)
-    $("#bukti_dukung_title").html("Tambah Bukti Dukung")
+    let hasil = button.data('hasil')
+    $("#jenis").val(jenis)
+    $("#hasil_title").html("Tambah Hasil")
+    $("#penilaianbawahan_id").val(id)
     if(edit){
-      $("#bukti_dukung_title").html("Ubah Bukti Dukung")
-      let isi = $("#bukti-"+id)
-      $("#bukti_dukung").val(isi.html())
-      $("#bukti_id").val(id)
-      $("#url_bukti_dukung").val(isi.attr('href'))
+      $("#hasil_title").html("Ubah Hasil")
+      $("#hasil_id").val(hasil).trigger("change")
     }else{
-      $("#bukti_dukung").val("")
-      $("#url_bukti_dukung").val("")
-      $("#bukti_id").val("")
-    }
-  })
-  $("#tambahrealisasi").on('show.bs.modal', function (event) {
-    let modal = $("#tambahrealisasi")
-    let button = $(event.relatedTarget)
-    let indikator_id = button.data('indikator_id')
-    let edit = button.data('edit')
-    let id = button.data('id')
-    $("#indikator_id_realisasi").val(indikator_id)
-    $("#realisasi_title").html("Tambah Realisasi")
-    if(edit){
-      $("#realisasi_title").html("Ubah Realisasi")
-      $("#realisasi_id").val(id)
-      let realisasi = $("#realisasi-"+id)
-      let sumber = $("#sumber-"+id)
-      console.log(realisasi.html(), sumber.html())
-      $("#sumber_data").val(sumber.html())
-      $("#realisasi").val(realisasi.html())
-    }else{
-      $("#realisasi_id").val("")
-      $("#sumber_data").val("")
-      $("#realisasi").val("")
+      $("#hasil_id").val("").trigger("change")
     }
   })
   let no = 1;
@@ -326,11 +312,7 @@
         delete_html = ""
         if(response.length > 0){
           let html_ = `<tr class="bg-dark">
-                        {% if obj.jenis_jabatan != 1 %}
                         <td colspan="9">
-                        {% else %}
-                        <td colspan="8">
-                        {% endif %}
                           <span class="font-weight-bold text-white">Utama<span>
                         </td>
                       </tr>`
@@ -341,34 +323,15 @@
             var tambahan = 0;
             if (item.indikator.length > 0){
               item.indikator.map(item_indikator => {
-                let button_bukti = `
-                <button style="width: 70%" class="btn btn-sm btn-primary mr-1" data-indikator_id="${item_indikator.id}" data-edit="false" data-toggle="modal" data-target="#tambahbuktidukung">
-                  Tambah
-                </button>
-                `
-                let button_realisasi = `
-                <button style="width: 70%" class="btn btn-sm btn-primary mr-1" data-indikator_id="${item_indikator.id}" data-edit="false" data-toggle="modal" data-target="#tambahrealisasi">
-                  Tambah
-                </button>
-                `
                 if(item_indikator.bukti_dukung){
                   bukti_dukung = `
                   <td>
                     <a href="${item_indikator.bukti_dukung.link}" target="_blank" id="bukti-${item_indikator.bukti_dukung.id}">${item_indikator.bukti_dukung.nama}</a>
-                    <div class="d-flex justify-content-center">
-                      <button class="btn btn-sm btn-warning mr-1" data-id="${item_indikator.bukti_dukung.id}" data-indikator_id="${item_indikator.id}" data-edit="true" data-toggle="modal" data-target="#tambahbuktidukung">
-                        <i class="flaticon2-pen"></i>
-                      </button>
-                      <a onclick="delete_action('${item_indikator.bukti_dukung.delete_url}')" class="btn btn-icon btn-danger">
-                        <i class="flaticon-delete-1"></i>
-                      </a>
-                    </div>
                 </td>
                   `
                 }else{
                   bukti_dukung = `
                     <td style="text-align: center">
-                      ${button_bukti}
                     </td>
                   `
                 }
@@ -380,20 +343,11 @@
                       <div style="padding-right:3px; padding-left:3px;" >berdasarkan</div>
                       <div id="sumber-${item_indikator.realisasi.id}">${item_indikator.realisasi.sumber}</div>
                     </div>
-                    <div class="d-flex justify-content-center">
-                      <button class="btn btn-sm btn-warning mr-1" data-id="${item_indikator.realisasi.id}" data-indikator_id="${item_indikator.id}" data-edit="true" data-toggle="modal" data-target="#tambahrealisasi">
-                        <i class="flaticon2-pen"></i>
-                      </button>
-                      <a onclick="delete_action('${item_indikator.realisasi.delete_url}')" class="btn btn-icon btn-danger">
-                        <i class="flaticon-delete-1"></i>
-                      </a>
-                    </div>
                 </td>
                   `
                 }else{
                   realisasi = `
                     <td style="text-align: center">
-                      ${button_realisasi}
                     </td>
                   `
                 }
@@ -423,7 +377,7 @@
 
               `
             }
-
+            // Rencana Aksi
             ol = `<ol style="margin: unset; padding-left: 10px;">`
               item.rencana_aksi.map((item)=>{
                 ol += `<li class="item-rencana" style="margin: unset;">${item}</li>`
@@ -438,7 +392,7 @@
             html_ += `
             <tr>
                 <td rowspan="${item.indikator.length+1}">${no}</td>
-                {% if obj.jenis_jabatan != 1 %}${induk_elem}{% endif %}
+                ${induk_elem}
                 <td rowspan="${item.indikator.length+1}">
                   ${item.rencana_kerja}
                 </td>
@@ -485,22 +439,12 @@
             var tambahan = 0;
             if (item.indikator.length > 0){
               item.indikator.map(item_indikator => {
-                let button_bukti = `
-                <button class="btn btn-sm btn-block btn-primary mr-1" data-indikator_id="${item_indikator.id}" data-edit="false" data-toggle="modal" data-target="#tambahbuktidukung">
-                  Tambah
-                </button>
-                `
-                let button_realisasi = `
-                <button class="btn btn-sm btn-block btn-primary mr-1" data-indikator_id="${item_indikator.id}" data-edit="false" data-toggle="modal" data-target="#tambahrealisasi">
-                  Tambah
-                </button>
-                `
                 if(item_indikator.bukti_dukung){
                   bukti_dukung = `
                   <td>
                     <a href="${item_indikator.bukti_dukung.link}" target="_blank" id="bukti-${item_indikator.bukti_dukung.id}">${item_indikator.bukti_dukung.nama}</a>
                     <div class="d-flex">
-                      <button class="btn btn-sm btn-warning mr-1" data-id="${item_indikator.bukti_dukung.id}" data-indikator_id="${item_indikator.id}" data-edit="true" data-toggle="modal" data-target="#tambahbuktidukung">
+                      <button class="btn btn-sm btn-warning mr-1" data-id="${item_indikator.bukti_dukung.id}" data-indikator_id="${item_indikator.id}" data-edit="true" data-toggle="modal" data-target="#tambahhasil">
                         <i class="flaticon2-pen"></i>
                       </button>
                       <a onclick="delete_action('${item_indikator.bukti_dukung.delete_url}')" class="btn btn-icon btn-danger">
@@ -512,7 +456,6 @@
                 }else{
                   bukti_dukung = `
                     <td>
-                      ${button_bukti}
                     </td>
                   `
                 }
@@ -524,20 +467,11 @@
                       <div style="padding-right:3px; padding-left:3px;" >berdasarkan</div>
                       <div id="sumber-${item_indikator.realisasi.id}">${item_indikator.realisasi.sumber}</div>
                     </div>
-                    <div class="d-flex">
-                      <button class="btn btn-sm btn-warning mr-1" data-id="${item_indikator.realisasi.id}" data-indikator_id="${item_indikator.id}" data-edit="true" data-toggle="modal" data-target="#tambahrealisasi">
-                        <i class="flaticon2-pen"></i>
-                      </button>
-                      <a onclick="delete_action('${item_indikator.realisasi.delete_url}')" class="btn btn-icon btn-danger">
-                        <i class="flaticon-delete-1"></i>
-                      </a>
-                    </div>
                 </td>
                   `
                 }else{
                   realisasi = `
                     <td>
-                      ${button_realisasi}
                     </td>
                   `
                 }
@@ -610,67 +544,39 @@
   $(function(){
     startLoad()
   })
-  const save_bukti_dukung = () => {
-    let modal = $("#tambahbuktidukung")
-    let bukti_id = $("#bukti_id").val()
-    let indikator_id = $("#indikator_id").val()
-    let bukti_dukung = $("#bukti_dukung").val()
-    let link = $("#url_bukti_dukung").val()
+  const save_hasil = () => {
+    let modal = $("#tambahhasil")
+    let jenis = $("#jenis").val()
+    let penilaianbawahan_id = $("#penilaianbawahan_id").val()
+    let hasil_id = $("#hasil_id").val()
     let csrf = modal.find('input[name=csrfmiddlewaretoken]').val();
-    if(validURL(link)){
+    if(hasil_id != ""){
+
       $.ajax({
-        url: '{% url "admin:bukti-dukung-create" %}',
-        type: 'POST',
-        data: {
-          csrfmiddlewaretoken: csrf,
-          indikator_id: indikator_id,
-          periode: "{{periode}}",
-          bukti_id: bukti_id,
-          nama: bukti_dukung,
-          link: link,
-        },
-        success: function(response){
-          if(response.success){
-            toastr.success(response.pesan);
-            window.location.reload()
-          } else {
-            toastr.warning(response.pesan);
-          }
+        url: '{% url "admin:penilaian-bawahan-create" %}',
+      type: 'POST',
+      data: {
+        csrfmiddlewaretoken: csrf,
+        skp_id: "{{obj.id}}",
+        jenis: jenis,
+        penilaianbawahan: penilaianbawahan_id,
+        periode: "{{periode}}",
+        hasil: hasil_id,
+      },
+      success: function(response){
+        if(response.success){
+          toastr.success(response.pesan);
+          window.location.reload()
+        } else {
+          toastr.warning(response.pesan);
         }
-      })  
-    }
+      }
+    })
+  }else{
+    toastr.warning("isian hasil tidak boleh kosong");
   }
-  const save_realisasi = () => {
-    let modal = $("#tambahrealisasi")
-    let realisasi_id = $("#realisasi_id").val()
-    let indikator_id = $("#indikator_id_realisasi").val()
-    let realisasi= $("#realisasi").val()
-    let sumber= $("#sumber_data").val()
-    let csrf = modal.find('input[name=csrfmiddlewaretoken]').val();
-    if(realisasi != "" && sumber != ""){
-      $.ajax({
-        url: '{% url "admin:realisasi-create" %}',
-        type: 'POST',
-        data: {
-          csrfmiddlewaretoken: csrf,
-          skp_id: "{{obj.id}}",
-          indikator_id: indikator_id,
-          periode: "{{periode}}",
-          realisasi_id: realisasi_id,
-          realisasi: realisasi,
-          sumber: sumber,
-        },
-        success: function(response){
-          if(response.success){
-            toastr.success(response.pesan);
-            window.location.reload()
-          } else {
-            toastr.warning(response.pesan);
-          }
-        }
-      })  
-    }
   }
+
   const delete_action = (url) => {
     Swal.fire({
       title: 'Apakah anda yakin ingin menghapus data ini?',
