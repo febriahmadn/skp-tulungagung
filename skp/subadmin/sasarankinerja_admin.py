@@ -477,6 +477,8 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
     def view_matriks_hasil_peran(self, request, obj_id):
         obj = get_object_or_404(SasaranKinerja, pk=obj_id)
         show = request.GET.get("show", None)
+        cetak = request.GET.get("cetak", None)
+
 
         skp_childs = SasaranKinerja.objects.filter(induk_id=obj.id)
         extra_context = {
@@ -486,6 +488,11 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
             "skp_childs": skp_childs,
             "show": True if show == "true" else False,
         }
+
+        if cetak:
+            return render(
+                request, "admin/skp/sasarankinerja/matriks_hasil_peran_cetak.html", extra_context
+            )
         return render(
             request, "admin/skp/sasarankinerja/matriks_hasil_peran.html", extra_context
         )
