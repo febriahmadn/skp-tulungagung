@@ -1,5 +1,7 @@
 import requests
+
 from services.models import Configurations, TaskList
+
 from .sinkron_sipo import ServiceSipo
 
 

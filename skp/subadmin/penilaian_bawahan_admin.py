@@ -121,20 +121,24 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
         except Exception as e:
             messages.error(request, str(e))
             return redirect(
-                reverse("admin:penilaian-bawahan-skp", kwargs={"skp_id": skp_id, 'periode':periode})
+                reverse(
+                    "admin:penilaian-bawahan-skp",
+                    kwargs={"skp_id": skp_id, "periode": periode},
+                )
             )
         try:
             penilaian_bawah_obj = PenilaianBawahan.objects.get(skp=obj, periode=periode)
         except PenilaianBawahan.DoesNotExist:
             penilaian_bawah_obj = None
-        extra_context.update({
-            'title':"Penilaian Bawahan",
-            'periode':periode,
-            'obj':obj,
-            "penilaianbawah": penilaian_bawah_obj,
-            "perilaku_kerja_list": PerilakuKerja.objects.filter(is_active=True)
-            
-        })
+        extra_context.update(
+            {
+                "title": "Penilaian Bawahan",
+                "periode": periode,
+                "obj": obj,
+                "penilaianbawah": penilaian_bawah_obj,
+                "perilaku_kerja_list": PerilakuKerja.objects.filter(is_active=True),
+            }
+        )
         return render(request, "admin/skp/penilaianbawahan/cetak.html", extra_context)
 
     def get_urls(self):
