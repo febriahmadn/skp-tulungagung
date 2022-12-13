@@ -59,10 +59,10 @@ class SasaranKinerja(models.Model):
         )
 
     def get_rencanakerja_utama(self):
-        return self.rencanahasilkerja_set.filter(jenis=1).order_by('id', 'induk')
+        return self.rencanahasilkerja_set.filter(jenis=1).order_by("id", "induk")
 
     def get_rencanakerja_tambahan(self):
-        return self.rencanahasilkerja_set.filter(jenis=2).order_by('id', 'induk')
+        return self.rencanahasilkerja_set.filter(jenis=2).order_by("id", "induk")
 
     class Meta:
         verbose_name = "Sasaran Kinerja Pegawai"
@@ -137,8 +137,8 @@ class RencanaHasilKerja(models.Model):
     unor = models.ForeignKey(
         UnitKerja, null=True, blank=True, on_delete=models.SET_NULL
     )
-    ekinerja_id = models.IntegerField('Ekinerja ID', null=True, blank=True)
-    aspek = models.CharField('Aspek', null=True, blank=True, max_length=50)
+    ekinerja_id = models.IntegerField("Ekinerja ID", null=True, blank=True)
+    aspek = models.CharField("Aspek", null=True, blank=True, max_length=50)
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -165,19 +165,21 @@ class IndikatorKinerjaIndividu(models.Model):
     rencana_kerja = models.ForeignKey(
         RencanaHasilKerja,
         on_delete=models.SET_NULL,
-        null=True, blank=True,
+        null=True,
+        blank=True,
         verbose_name="Rencana Hasil Kerja",
     )
     skp = models.ForeignKey(
         SasaranKinerja,
         on_delete=models.SET_NULL,
-        null=True, blank=True,
+        null=True,
+        blank=True,
         verbose_name="Sasaran Kinerja Pegawai",
     )
-    ekinerja_id = models.IntegerField('Ekinerja ID', null=True, blank=True)
+    ekinerja_id = models.IntegerField("Ekinerja ID", null=True, blank=True)
     indikator = models.CharField("Indikator", max_length=255, null=True)
     target = models.CharField("Target", max_length=100, null=True, blank=True)
-    aspek = models.CharField('Aspek', null=True, blank=True, max_length=50)
+    aspek = models.CharField("Aspek", null=True, blank=True, max_length=50)
     perspektif = models.ForeignKey(
         Perspektif, on_delete=models.SET_NULL, null=True, blank=True
     )
@@ -232,6 +234,7 @@ class DaftarPerilakuKerja(models.Model):
         verbose_name = "Daftar Perilaku Kerja"
         verbose_name_plural = "Daftar Perilaku Kerja"
 
+
 class DaftarPerilakuKerjaPegawai(models.Model):
     # class Status(models.IntegerChoices):
     #     ACTIVE = 1, "Aktif"
@@ -244,7 +247,7 @@ class DaftarPerilakuKerjaPegawai(models.Model):
         SasaranKinerja,
         on_delete=models.CASCADE,
         verbose_name="Sasaran Kinerja Pegawai",
-        null=True
+        null=True,
     )
     isi = models.TextField("Isi Ekspetasi", null=True, blank=True)
     # status = models.IntegerField(choices=Status.choices, null=True, default=1)
@@ -283,7 +286,7 @@ class DaftarLampiran(models.Model):
         SasaranKinerja,
         on_delete=models.CASCADE,
         verbose_name="Sasaran Kinerja Pegawai",
-        null=True
+        null=True,
     )
     isi = models.TextField("Isi Lampiran", null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
@@ -318,22 +321,23 @@ def handler_sasarankinerja_save(instance, created, **kwargs):
         if skp_atasan:
             instance.induk = skp_atasan
             instance.save()
+
+
 class RencanaAksi(models.Model):
     skp = models.ForeignKey(
         SasaranKinerja,
         on_delete=models.CASCADE,
         verbose_name="Sasaran Kinerja Pegawai",
-        null=True
+        null=True,
     )
     rhk = models.ForeignKey(
         RencanaHasilKerja,
         on_delete=models.CASCADE,
         verbose_name="Rencana Hasil Kerja Pegawai",
-        null=True
+        null=True,
     )
     periode = models.IntegerField(
-        choices=[(k, v) for k, v in FULL_BULAN.items()],
-        null=True
+        choices=[(k, v) for k, v in FULL_BULAN.items()], null=True
     )
     rencana_aksi = models.TextField("Rencana Aksi", null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
@@ -345,16 +349,16 @@ class RencanaAksi(models.Model):
         verbose_name = "Rencana Aksi"
         verbose_name_plural = "Rencana Aksi"
 
+
 class BuktiDukung(models.Model):
     indikator = models.OneToOneField(
         IndikatorKinerjaIndividu,
         on_delete=models.CASCADE,
         verbose_name="Indikator Kerja Individu",
-        null=True
+        null=True,
     )
     periode = models.IntegerField(
-        choices=[(k, v) for k, v in FULL_BULAN.items()],
-        null=True
+        choices=[(k, v) for k, v in FULL_BULAN.items()], null=True
     )
     nama_bukti_dukung = models.TextField("Nama Bukti Dukung", null=True, blank=True)
     link = models.URLField("Link", null=True, blank=True)
@@ -367,16 +371,16 @@ class BuktiDukung(models.Model):
         verbose_name = "Bukti Dukung"
         verbose_name_plural = "Bukti Dukung"
 
+
 class Realisasi(models.Model):
     indikator = models.OneToOneField(
         IndikatorKinerjaIndividu,
         on_delete=models.CASCADE,
         verbose_name="Indikator Kerja Individu",
-        null=True
+        null=True,
     )
     periode = models.IntegerField(
-        choices=[(k, v) for k, v in FULL_BULAN.items()],
-        null=True
+        choices=[(k, v) for k, v in FULL_BULAN.items()], null=True
     )
     realisasi = models.CharField("Realisasi", max_length=255, null=True, blank=True)
     sumber = models.CharField("Sumber Data", max_length=255, null=True, blank=True)
@@ -388,6 +392,7 @@ class Realisasi(models.Model):
     class Meta:
         verbose_name = "Realisasi"
         verbose_name_plural = "Realisasi"
+
 
 class Hasil(models.Model):
     nama = models.CharField("Nama Hasil", null=True, max_length=255)
@@ -402,6 +407,7 @@ class Hasil(models.Model):
         verbose_name = "Hasil"
         verbose_name_plural = "Hasil"
 
+
 class PenilaianBawahan(models.Model):
     skp = models.ForeignKey(
         SasaranKinerja,
@@ -409,8 +415,7 @@ class PenilaianBawahan(models.Model):
         verbose_name="Sasaran Kinerja Pegawai",
     )
     periode = models.IntegerField(
-        choices=[(k, v) for k, v in FULL_BULAN.items()],
-        null=True
+        choices=[(k, v) for k, v in FULL_BULAN.items()], null=True
     )
     is_dinilai = models.BooleanField(default=False)
     rating_hasil = models.ForeignKey(
@@ -418,19 +423,17 @@ class PenilaianBawahan(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         verbose_name="Rating Hasil Kinerja",
-        related_name="hasil_rating_kinerja"
+        related_name="hasil_rating_kinerja",
     )
     predikat_perilaku = models.ForeignKey(
         Hasil,
         on_delete=models.SET_NULL,
         null=True,
         verbose_name="Predikat Perilaku Kinerja",
-        related_name="hasil_predikat_perilaku_kerja"
+        related_name="hasil_predikat_perilaku_kerja",
     )
     predikat_kerja = models.CharField(
-        verbose_name="Predikat Kerja",
-        null=True,
-        max_length=255
+        verbose_name="Predikat Kerja", null=True, max_length=255
     )
     created = models.DateTimeField(auto_now_add=True)
 

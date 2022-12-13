@@ -246,7 +246,7 @@
             {% endfor %}
             {% endfor %}
             <tr class="bg-blue">
-                <td colspan="10" align="left">RATING HASIL KINERJA:<br>{% if penilaianbawah %}{{penilaianbawah.rating_hasil.nama}}{% else %}-{% endif %}</td>
+                <td colspan="10" align="left">RATING HASIL KINERJA:<br>{% if penilaianbawah %}{{penilaianbawah.rating_hasil.nama|upper}}{% else %}-{% endif %}</td>
             </tr>
         </table>
         <table>
@@ -281,7 +281,7 @@
                 </tr>
                 {% endfor %}
                 <tr class="bg-blue">
-                    <td colspan="10" align="left">PREDIKAT PERILAKU KERJA:<br>{% if penilaianbawah %}{{penilaianbawah.predikat_perilaku.nama}}{% else %}-{% endif %}</td>
+                    <td colspan="10" align="left">PREDIKAT PERILAKU KERJA:<br>{% if penilaianbawah %}{{penilaianbawah.predikat_perilaku.nama|upper}}{% else %}-{% endif %}</td>
                 </tr>
                 <tr class="bg-blue">
                     <td colspan="10" align="left">PREDIKAT KINERJA:<br>{% if penilaianbawah %}{{penilaianbawah.predikat_kerja|default_if_none:"---"}}{% else %}-{% endif %}</td>

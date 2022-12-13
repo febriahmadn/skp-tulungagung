@@ -7,6 +7,7 @@ from django.shortcuts import redirect, render
 from django.urls import path, reverse
 
 from skp.models import Hasil, PenilaianBawahan, PerilakuKerja, SasaranKinerja
+from skp.utils import get_predikat_kerja
 from usom.models import Account
 
 
@@ -42,6 +43,12 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
             obj.predikat_perilaku = hasil_obj
         elif jenis == "rating_hasil":
             obj.rating_hasil = hasil_obj
+
+        obj.predikat_kerja = get_predikat_kerja(
+            obj.rating_hasil.nama if obj.rating_hasil else "",
+            obj.predikat_perilaku.nama if obj.predikat_perilaku else "",
+        )
+
         obj.save()
 
         respon = {"success": True, "pesan": "Berhasil Menambah Hasil"}
