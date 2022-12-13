@@ -7,6 +7,7 @@ from django.shortcuts import redirect, render
 from django.urls import path, reverse
 
 from skp.models import Hasil, PenilaianBawahan, PerilakuKerja, SasaranKinerja
+from skp.utils import get_predikat_kerja
 from usom.models import Account
 
 
@@ -42,6 +43,12 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
             obj.predikat_perilaku = hasil_obj
         elif jenis == "rating_hasil":
             obj.rating_hasil = hasil_obj
+
+        obj.predikat_kerja = get_predikat_kerja(
+            obj.rating_hasil.nama if obj.rating_hasil else "",
+            obj.predikat_perilaku.nama if obj.predikat_perilaku else "",
+        )
+
         obj.save()
 
         respon = {"success": True, "pesan": "Berhasil Menambah Hasil"}
@@ -115,9 +122,31 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
         )
         return render(request, "admin/skp/penilaianbawahan/detail.html", extra_context)
 
-    def load_penilaian_bawahan(self, request):
-        respon = {"success": False, "pesan": "Terjadi Kesalahan Sistem"}
-        return JsonResponse(respon, safe=False)
+    def cetak_penilaian_bawahan(self, request, skp_id, periode, extra_context={}):
+        try:
+            obj = SasaranKinerja.objects.get(pk=skp_id)
+        except Exception as e:
+            messages.error(request, str(e))
+            return redirect(
+                reverse(
+                    "admin:penilaian-bawahan-skp",
+                    kwargs={"skp_id": skp_id, "periode": periode},
+                )
+            )
+        try:
+            penilaian_bawah_obj = PenilaianBawahan.objects.get(skp=obj, periode=periode)
+        except PenilaianBawahan.DoesNotExist:
+            penilaian_bawah_obj = None
+        extra_context.update(
+            {
+                "title": "Penilaian Bawahan",
+                "periode": periode,
+                "obj": obj,
+                "penilaianbawah": penilaian_bawah_obj,
+                "perilaku_kerja_list": PerilakuKerja.objects.filter(is_active=True),
+            }
+        )
+        return render(request, "admin/skp/penilaianbawahan/cetak.html", extra_context)
 
     def get_urls(self):
         admin_url = super(PenilaianBawahanAdmin, self).get_urls()
@@ -133,19 +162,14 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
                 name="penilaian-bawahan-skp-detail",
             ),
             path(
+                "<int:skp_id>/penilaian-bawahan/<int:periode>/cetak",
+                self.admin_site.admin_view(self.cetak_penilaian_bawahan),
+                name="penilaian-bawahan-skp-cetak",
+            ),
+            path(
                 "create",
                 self.admin_site.admin_view(self.create),
                 name="penilaian-bawahan-create",
             ),
-            # path(
-            #     "<int:id>/hapus",
-            #     self.admin_site.admin_view(self.bukti_dukung_delete),
-            #     name="skp_buktidukung_hapus",
-            # ),
-            # path(
-            #     "<int:obj_id>/cetak/<int:periode>",
-            #     self.admin_site.admin_view(self.view_cetak_bukti_dukung_pegawai),
-            #     name="skp_buktidukung_cetak",
-            # ),
         ]
         return custom_url + admin_url
