@@ -16,14 +16,18 @@ class ServicePresensi:
             self.task_obj = TaskList.objects.get(id=task_id)
 
     def get_pegawai_list(self):
-        url = "{}/api/v8/pegawai/simple/".format(self.config.presensi_url)
+        url = '{}/api/v8/pegawai/simple/'.format(self.config.presensi_url)
         if self.next:
             url = self.next
-        response = requests.get(url, auth=("febriahmadn", "SegoPecel"), verify=False)
+        response = requests.get(
+            url,
+            auth=('febriahmadn', 'SegoPecel'),
+            verify=False
+        )
         if response.ok:
             response_json = response.json()
-            results = response_json.get("results", None)
-            self.next = response_json.get("next", None)
+            results = response_json.get('results', None)
+            self.next = response_json.get('next', None)
             if results:
                 self.on_loop_results(results)
         return True
@@ -31,8 +35,16 @@ class ServicePresensi:
     def on_loop_results(self, results=[]):
         if len(results) > 0:
             for item in results:
-                username = item.get("username", None)
+                username = item.get('username', None)
                 ServiceSipo().sinkron_pegawai_by_nip(username)
             if self.next:
                 self.get_pegawai_list()
+            else:
+                if self.task_obj:
+                    self.task_obj.is_done = True
+                    self.task_obj.save()
+        else:
+            if self.task_obj:
+                self.task_obj.is_done = True
+                self.task_obj.save()
         return True
