@@ -297,6 +297,12 @@
         {% csrf_token %}
         <input type="hidden" id="rhk_id">
         <div class="form-group">
+          <label for="">RHK Pimpinan</label>
+          <select name="rhk_pimpinan" id="rhk_pimpinan" class="form-control">
+            <option value="0">Pilih RHK Pimpinan</option>
+          </select>
+        </div>
+        <div class="form-group">
           <label for="">Klasifikasi</label>
           <select name="klasifikasi" onchange="onChangeKlasifikasi($(this))" class="form-control" id="klasifikasi_id">
             <option value="0">Pilih Klasifikasi</option>
@@ -611,6 +617,7 @@
     let button = $(event.relatedTarget)
     let edit = button.data('edit')
     let id = button.data('rhk_id')
+    let pimpinan_id = button.data('pimpinan_id')
     var modal = $("#tambahrhk")
     $("#rhk_id").val("")
     $("#klasifikasi_id").val($("#klasifikasi_id option:first").val()).trigger('change')
@@ -618,6 +625,11 @@
     $("#jenis_id").val("")
     $("#rencana_id").val("")
     $("#penugasan_id").val("")
+    if(pimpinan_id == undefined){
+      handleLoadRHKPimpinan()
+    }else{
+      handleLoadRHKPimpinan(pimpinan_id)
+    }
     if(edit){
       $('#rhk-label').html("Ubah RHK")
       $.ajax({
@@ -840,7 +852,7 @@
                     <span id="indikator-${item_indikator.id}" >${item_indikator.indikator}</span>
                     {% if obj.status == 1 %}
                     <div class="d-flex justify-content-center mt-3">
-                      <button class="btn btn-icon btn-warning mr-1" data-rhk_id="${item.id}" data-edit="true" data-indikator_id="${item_indikator.id}"  onclick="set_rhk_indikator($(this))">
+                      <button class="btn btn-icon btn-warning mr-1" data-rhk_id="${item.id}" data-edit="true" data-indikator_id="${item_indikator.id}" onclick="set_rhk_indikator($(this))">
                         <i class="flaticon2-pen"></i>
                       </button>
                       <a onclick="delete_action('${item_indikator.delete_url}')" class="btn btn-icon btn-danger">
@@ -901,11 +913,8 @@
             }
 
             let induk_elem = `
-            <td rowspan="{% if penilai_view %}${item.indikator.length+1}{% else %}${item.indikator.length+2}{% endif %}">
+                <td rowspan="{% if penilai_view %}${item.indikator.length+1}{% else %}${item.indikator.length+2}{% endif %}">
                   ${item?.induk ? item.induk.rencana_kerja : ''}
-                  {% if obj.status == 1 %}
-                  <button type="button" class="btn btn-sm btn-block btn-light-success font-weight-bold" data-rhk_id="${item.id}" onclick="onOpenModalRHKPimpinan($(this))">Set RHK Pimpinan</button>  
-                  {% endif %}
                 </td>
               `
 
@@ -921,7 +930,7 @@
                   ${item.rencana_kerja}
                   {% if obj.status == 1 %}
                   <div class="mt-3">
-                    <button class="btn btn-icon btn-warning mr-1" data-rhk_id="${item.id}" data-edit="true" data-toggle="modal" data-target="#tambahrhk">
+                    <button class="btn btn-icon btn-warning mr-1" data-rhk_id="${item.id}" data-pimpinan_id="${item.induk?.id}" data-edit="true" data-toggle="modal" data-target="#tambahrhk">
                       <i class="flaticon2-pen"></i>
                     </button>
                     ${delete_html}
@@ -972,7 +981,7 @@
                     <span id="indikator-${item_indikator.id}" >${item_indikator.indikator}</span>
                     {% if obj.status == 1 %}
                     <div class="d-flex justify-content-center mt-3">
-                      <button class="btn btn-icon btn-warning mr-1" data-rhk_id="${item.id}" data-edit="true" data-indikator_id="${item_indikator.id}"  onclick="set_rhk_indikator($(this))">
+                      <button class="btn btn-icon btn-warning mr-1" data-rhk_id="${item.id}" data-edit="true" data-indikator_id="${item_indikator.id}" onclick="set_rhk_indikator($(this))">
                         <i class="flaticon2-pen"></i>
                       </button>
                       <a onclick="delete_action('${item_indikator.delete_url}')" class="btn btn-icon btn-danger">
@@ -1026,9 +1035,6 @@
             let induk_elem = `
                 <td rowspan="{% if penilai_view %}${item.indikator.length+1}{% else %}${item.indikator.length+2}{% endif %}">
                   ${item?.induk ? item.induk.rencana_kerja : ''}
-                  {% if obj.status == 1 %}
-                  <button type="button" class="btn btn-sm btn-block btn-light-success font-weight-bold" data-rhk_id="${item.id}" onclick="onOpenModalRHKPimpinan($(this))">Set RHK Pimpinan</button>  
-                  {% endif %}
                 </td>
                 `
                 
@@ -1044,7 +1050,7 @@
                   ${item.rencana_kerja} ${item.penugasan_dari ? `(Penugasan dari ${item.penugasan_dari})` : ''}
                   {% if obj.status == 1 %}
                   <div class="mt-3">
-                    <button class="btn btn-icon btn-warning mr-1" data-rhk_id="${item.id}" data-edit="true" data-toggle="modal" data-target="#tambahrhk">
+                    <button class="btn btn-icon btn-warning mr-1" data-rhk_id="${item.id}" data-pimpinan_id="${item.induk?.id}" data-edit="true" data-toggle="modal" data-target="#tambahrhk">
                       <i class="flaticon2-pen"></i>
                     </button>
                     ${delete_html}
@@ -1085,6 +1091,26 @@
     })
   }
 
+  const handleLoadRHKPimpinan = (selected=null) => {
+    $.ajax({
+      url: '{% url "admin:skp_rencanahasilkerja_loadrhkpimpinan" %}?skp_id={{obj.id}}',
+      type: 'GET',
+      success: function(response){
+        if(response.length > 0){
+          let options = '<option value="0">Pilih RHK Pimpinan</option>'
+          response.map(item => {
+            options += `
+            <option value="${item.id}">${item.rencana_kerja}</option>
+            `
+          })
+          $('#rhk_pimpinan').html(options);
+          if(selected != "undefined"){
+            $('#rhk_pimpinan').val(selected).trigger('change')
+          }
+        }
+      }
+    })
+  }
   const onOpenModalRHKPimpinan = (elem) => {
     let rhk_id = elem.data('rhk_id');
     let modal = $('#modal_set_rhk_pimpinan_id')
@@ -1092,7 +1118,7 @@
     if(typeof rhk_id !== "undefined"){
       modal.find('input[name=rhk_id]').val(rhk_id)
       $.ajax({
-        url: '{% url "admin:skp_rencanahasilkerja_loadrhkpimpinan" %}',
+        url: '{% url "admin:skp_rencanahasilkerja_loadrhkpimpinan" %}?skp_id={{obj.id}}',
         type: 'GET',
         success: function(response){
           if(response.length > 0){
@@ -1268,6 +1294,7 @@
     let formData = {
       skp_id: '{{ obj.id }}',
       rhk_id: modal.find('#rhk_id').val(),
+      pimpinan_id: modal.find('#rhk_pimpinan').val(),
       klasifikasi: klasifikasi,
       jenis: modal.find('select[name=jenis]').val(),
       rencana_kerja: modal.find('input[name=rencana_kerja]').val(),

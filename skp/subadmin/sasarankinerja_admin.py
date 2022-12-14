@@ -1,7 +1,8 @@
 import calendar
 
 import requests
-from django.contrib import admin
+from django.db.models import Q
+from django.contrib import admin, messages
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import path, resolve, reverse_lazy
@@ -15,6 +16,27 @@ from skp.utils import FULL_BULAN
 from usom.models import Account
 
 
+def delete_skp(modeladmin, request, queryset):
+    count = 0
+    if queryset.filter(~Q(status=SasaranKinerja.Status.DRAFT)).exists():
+        messages.add_message(
+            request,
+            messages.ERROR,
+            "Terdapat Data Sasaran Kinerja Pegawai yang memiliki status Selain Draft",
+        )
+    else:
+        count = queryset.count()
+        queryset.delete()
+        messages.add_message(
+            request,
+            messages.SUCCESS,
+            "Berhasil Menghapus {} data Sasaran Kinerja Pegawai".format(count),
+        )
+
+
+delete_skp.short_description = "Hapus Sasaran Kinerja Pegawai yang dipilih"
+
+
 class SasaranKinerjaAdmin(admin.ModelAdmin):
     list_display = (
         "pk",
@@ -25,11 +47,19 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         "periode_awal",
         "periode_akhir",
         "pendekatan",
-        "keterangan",
         "status",
     )
     form = SasaranKinerjaForm
-    list_display_links = None
+    # list_display_links = None
+    actions = [
+        delete_skp,
+    ]
+
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if "delete_selected" in actions:
+            del actions["delete_selected"]
+        return actions
 
     def get_unor(self, obj):
         if obj.unor:
@@ -95,7 +125,6 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                 "pendekatan",
                 "jabatan",
                 "status",
-                "keterangan",
                 "Aksi",
             )
             self.list_filter = ("pendekatan", "status")
@@ -113,7 +142,6 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                 "pendekatan",
                 "jabatan",
                 "status",
-                "keterangan",
                 "Aksi",
             )
             self.list_filter = []
@@ -124,7 +152,6 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                 "pendekatan",
                 "jabatan",
                 "status",
-                "keterangan",
                 "Aksi",
             )
             self.list_filter = ["pendekatan", "status"]

@@ -182,11 +182,13 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
 
     def load_rhk_pimpinan(self, request):
         respon = []
-        atasan_id = request.user.atasan.id if request.user.atasan else None
-        if atasan_id:
+        skp_id = request.GET.get('skp_id')
+        find_skp = SasaranKinerja.objects.get(pk=skp_id)
+        if find_skp.induk:
             rhk_list = RencanaHasilKerja.objects.filter(
-                skp__pejabat_penilai_id=atasan_id
+                skp_id=find_skp.induk.id
             )
+
             if rhk_list.exists():
                 for item in rhk_list:
                     respon.append(
@@ -221,6 +223,7 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
         jenis = request.POST.get("jenis", None)
         rencana_kerja = request.POST.get("rencana_kerja", None)
         penugasan_dari = request.POST.get("penugasan_dari", None)
+        pimpinan_id = request.POST.get("pimpinan_id", None)
         if rhk_id and rhk_id != "":
             try:
                 obj = RencanaHasilKerja.objects.get(pk=rhk_id)
@@ -237,6 +240,8 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
         obj.jenis = int(jenis)
         obj.rencana_kerja = rencana_kerja
         obj.penugasan_dari = penugasan_dari
+        if pimpinan_id and pimpinan_id != "":
+            obj.induk_id = pimpinan_id
         obj.save()
         respon = {"success": True}
         return JsonResponse(respon, safe=True)
