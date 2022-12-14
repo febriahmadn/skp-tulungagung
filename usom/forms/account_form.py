@@ -64,19 +64,19 @@ class AccountForm(forms.ModelForm):
                 pk=self.instance.pk
             )
 
-class EditProfilPegawai(forms.ModelForm):
 
+class EditProfilPegawai(forms.ModelForm):
     class Meta:
         model = Account
         fields = [
-            'email',
-            'unitkerja',
-            'jenis_jabatan',
-            'jabatan',
-            'golongan',
-            'eselon',
+            "email",
+            "unitkerja",
+            "jenis_jabatan",
+            "jabatan",
+            "golongan",
+            "eselon",
         ]
-        
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['unitkerja'].label = "Unit Kerja"
+        self.fields["unitkerja"].label = "Unit Kerja"
