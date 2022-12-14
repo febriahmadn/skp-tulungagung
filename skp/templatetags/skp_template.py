@@ -3,8 +3,9 @@ from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 
 from skp.models import (BuktiDukung, DaftarLampiran,
-                        DaftarPerilakuKerjaPegawai, Realisasi, RencanaAksi,
-                        RencanaHasilKerja, SasaranKinerja)
+                        DaftarPerilakuKerjaPegawai, PenilaianBawahan,
+                        Realisasi, RencanaAksi, RencanaHasilKerja,
+                        SasaranKinerja)
 from skp.utils import FULL_BULAN
 
 register = template.Library()
@@ -264,3 +265,24 @@ def get_detail_skp(pegawai, skp_obj, periode):
         )
         return mark_safe(button)
     return "---"
+
+
+@register.simple_tag
+def get_penilaian_bawahan_status(pegawai, skp_obj, periode):
+    text = "Belum Dinilai"
+    list_skp_bawahan = SasaranKinerja.objects.filter(
+        pegawai=pegawai,
+        periode_awal__gte=skp_obj.periode_awal,
+        periode_akhir__lte=skp_obj.periode_akhir,
+        status=SasaranKinerja.Status.PERSETUJUAN,
+    )
+    if list_skp_bawahan.exists():
+        obj = list_skp_bawahan.last()
+        find_penilaian_bawahan = PenilaianBawahan.objects.filter(
+            skp=obj, periode=periode
+        )
+        if find_penilaian_bawahan.exists():
+            penilaian_obj = find_penilaian_bawahan.last()
+            if penilaian_obj.is_dinilai:
+                text = "Sudah Dinilai"
+    return text

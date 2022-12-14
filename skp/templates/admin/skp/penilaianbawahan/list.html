@@ -21,7 +21,8 @@
 <div class="d-flex justify-content-end mt-3">
     <form action="" method="get">
         <div class="input-group">
-            <input type="text" class="form-control" placeholder="Cari" aria-label="Cari" aria-describedby="basic-addon2">
+            <input type="hidden" class="form-control" name="b64" value="{{request.GET.b64}}" placeholder="Cari" aria-label="Cari" aria-describedby="basic-addon2">
+            <input type="text" class="form-control" name="cari" value="{{request.GET.cari}}" placeholder="Cari" aria-label="Cari" aria-describedby="basic-addon2">
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary" type="submit"><i class="fas fa-search" ></i></button>
             </div>
@@ -31,11 +32,14 @@
         <button type="button" class="btn btn-primary btn-sm">{% trans 'Filter' %}</button>
         <button type="button" class="btn btn-primary btn-sm dropdown-toggle dropdown-icon" data-toggle="dropdown">
             <div class="dropdown-menu dropdown-menu-right dropdown-menu-lg-left">
-                <a class="dropdown-item "href="?status=" onclick="window.location.href = window.location.pathname+'?status='">Semua</a>
-                <a class="dropdown-item "href="?status=0" onclick="window.location.href = window.location.pathname+'?status=0'">Belum Dinilai</a>
-                <a class="dropdown-item "href="?status=0" onclick="window.location.href = window.location.pathname+'?status=1'">Sudah Dinilai</a>
+                <a class="dropdown-item "href="?b64={{request.GET.b64}}&cari={{request.GET.cari}}&status=" onclick="window.location.href = window.location.pathname+'?b64={{request.GET.b64}}&cari={{request.GET.cari}}&status='">Semua</a>
+                <a class="dropdown-item "href="?b64={{request.GET.b64}}&cari={{request.GET.cari}}&status=0" onclick="window.location.href = window.location.pathname+'?b64={{request.GET.b64}}&cari={{request.GET.cari}}&status=0'">Belum Dinilai</a>
+                <a class="dropdown-item "href="?b64={{request.GET.b64}}&cari={{request.GET.cari}}&status=1" onclick="window.location.href = window.location.pathname+'?b64={{request.GET.b64}}&cari={{request.GET.cari}}&status=1'">Sudah Dinilai</a>
             </div>
         </button>
+    </div>
+    <div class="pl-3">
+        <a href="{% url 'admin:penilaian-bawahan-skp-export' obj.id periode %}" class="btn btn-success btn-sm"><i class="fas fa-print" ></i> Export Excel</a>
     </div>
 </div>
 <div class="card mt-4 p-0 m-0">
@@ -52,18 +56,25 @@
                 </tr>
             </thead>
             <tbody>
-                {% for item_pegawai in list_pegawai %}
+                {% if penilaian_list %}
+                {% for item in penilaian_list %}
                 <tr>
-                    <td>{{item_pegawai.username}}</td>
-                    <td>{{item_pegawai.get_complete_name}}</td>
-                    <td>{{item_pegawai.jabatan}}</td>
-                    <td>{{item_pegawai.unor.unitkerja}}</td>
-                    <td>--</td>
-                    <td>{% get_detail_skp item_pegawai obj periode %}</td>
+                    <td>{{item.skp.detailsasarankinerja.nip_pegawai}}</td>
+                    <td>{{item.skp.detailsasarankinerja.nama_pegawai}}</td>
+                    <td>{{item.skp.detailsasarankinerja.jabatan_pegawai}}</td>
+                    <td>{{item.skp.detailsasarankinerja.unor_pegawai}}</td>
+                    <td>{% get_penilaian_bawahan_status item.skp.pegawai obj periode %}</td>
+                    <td>{% get_detail_skp item.skp.pegawai obj periode %}</td>
                 </tr>
                 {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="6" style="text-align: center">Tidak ada Data</td>
+                </tr>
+                {% endif %}
             </tbody>
         </table>
     </div>
 </div>
 {% endblock content %}
+item.sub? : 0
