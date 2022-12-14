@@ -2,23 +2,17 @@ import calendar
 
 import requests
 from django.contrib import admin
-from django.http import JsonResponse, Http404
+from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import path, resolve, reverse_lazy
 from django.utils.safestring import mark_safe
 
-from usom.models import Account
 from services.models import Configurations
 from skp.forms.sasarankinerja_form import SasaranKinerjaForm
-from skp.models import (
-    Lampiran,
-    PerilakuKerja,
-    Perspektif,
-    RencanaHasilKerja,
-    SasaranKinerja,
-    DetailSasaranKinerja,
-)
+from skp.models import (DetailSasaranKinerja, Lampiran, PerilakuKerja,
+                        Perspektif, RencanaHasilKerja, SasaranKinerja)
 from skp.utils import FULL_BULAN
+from usom.models import Account
 
 
 class SasaranKinerjaAdmin(admin.ModelAdmin):
@@ -563,37 +557,37 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
     def sinkron_data_pegawai_local(self, request, id):
         respon = {}
         # jenis => pegawai / atasan_penilai
-        jenis = request.GET.get('jenis', None)
-        skp = request.GET.get('skp_id', None)
+        jenis = request.GET.get("jenis", None)
+        skp = request.GET.get("skp_id", None)
         try:
             obj = Account.objects.get(pk=id)
         except Account.DoesNotExist or Exception as e:
             print(e)
             raise Http404
-        
+
         find_detail_skp = DetailSasaranKinerja.objects.filter(skp__id=skp)
         if find_detail_skp.exists():
             detail_obj = find_detail_skp.last()
             if jenis == "pegawai":
-                detail_obj.nama_pegawai=obj.get_complete_name()
-                detail_obj.nip_pegawai=obj.username
-                detail_obj.jabatan_pegawai=obj.jabatan
-                detail_obj.golongan_pegawai=obj.golongan
-                detail_obj.unor_pegawai=obj.unitkerja.unitkerja
+                detail_obj.nama_pegawai = obj.get_complete_name()
+                detail_obj.nip_pegawai = obj.username
+                detail_obj.jabatan_pegawai = obj.jabatan
+                detail_obj.golongan_pegawai = obj.golongan
+                detail_obj.unor_pegawai = obj.unitkerja.unitkerja
             elif jenis == "atasan_penilai":
-                detail_obj.nama_pejabat=obj.get_complete_name()
-                detail_obj.nip_pejabat=obj.username
-                detail_obj.jabatan_pejabat=obj.jabatan
-                detail_obj.golongan_pejabat=obj.golongan
-                detail_obj.unor_pejabat=obj.unitkerja.unitkerja
+                detail_obj.nama_pejabat = obj.get_complete_name()
+                detail_obj.nip_pejabat = obj.username
+                detail_obj.jabatan_pejabat = obj.jabatan
+                detail_obj.golongan_pejabat = obj.golongan
+                detail_obj.unor_pejabat = obj.unitkerja.unitkerja
             detail_obj.save()
             data = {
-                'nama':obj.get_complete_name(),
-                'nip':obj.username,
-                'jabatan':obj.jabatan,
-                'golongan':obj.golongan,
-                'unitkerja':obj.unitkerja.unitkerja,
-                'jenis':jenis
+                "nama": obj.get_complete_name(),
+                "nip": obj.username,
+                "jabatan": obj.jabatan,
+                "golongan": obj.golongan,
+                "unitkerja": obj.unitkerja.unitkerja,
+                "jenis": jenis,
             }
             respon = {"success": True, "data": data}
         return JsonResponse(respon)

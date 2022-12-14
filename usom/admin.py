@@ -9,7 +9,6 @@ from django.utils.safestring import mark_safe
 from services.functions.sinkron_sipo import ServiceSipo
 from usom.forms import AccountForm, EditProfilPegawai
 from usom.models import Account, UnitKerja
-from skp.models import DetailSasaranKinerja
 
 
 class UnitKerjaAdmin(admin.ModelAdmin):

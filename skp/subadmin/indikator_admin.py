@@ -80,24 +80,24 @@ class IndikatorAdmin(admin.ModelAdmin):
                 obj.perspektif_id = perspektif
             else:
                 obj.perspektif_id = None
-                
+
         obj.save()
         respon = {"success": True}
         return JsonResponse(respon, safe=False)
 
     def indikator_delete(self, reqeust, id):
-        respon = {'success': False, 'pesan': "Terjadi kesalahan sistem"}
+        respon = {"success": False, "pesan": "Terjadi kesalahan sistem"}
         try:
             obj = IndikatorKinerjaIndividu.objects.get(pk=id)
         except IndikatorKinerjaIndividu.DoesNotExist:
-            respon = {'success': False, 'pesan': "Indikator Tidak Ditemukan"}
+            respon = {"success": False, "pesan": "Indikator Tidak Ditemukan"}
             return JsonResponse(respon, safe=False)
         except Exception as e:
-            respon = {'success': False, 'pesan': str(e)}
+            respon = {"success": False, "pesan": str(e)}
             return JsonResponse(respon, safe=False)
         else:
             obj.delete()
-            respon = {'success': True, 'pesan': "Berhasil Menghapus Indikator"}
+            respon = {"success": True, "pesan": "Berhasil Menghapus Indikator"}
         return JsonResponse(respon, safe=False)
 
     def get_urls(self):
