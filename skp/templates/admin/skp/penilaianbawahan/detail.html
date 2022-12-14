@@ -547,7 +547,10 @@
   const save_hasil = () => {
     let modal = $("#tambahhasil")
     let jenis = $("#jenis").val()
-    let penilaianbawahan_id = $("#penilaianbawahan_id").val()
+    var penilaianbawahan_id = $("#penilaianbawahan_id").val()
+    if(penilaianbawahan_id == ""){
+      penilaianbawahan_id = null
+    }
     let hasil_id = $("#hasil_id").val()
     let csrf = modal.find('input[name=csrfmiddlewaretoken]').val();
     if(hasil_id != ""){

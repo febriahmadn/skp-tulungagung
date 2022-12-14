@@ -1,0 +1,42 @@
+{% extends 'admin/base_site.html' %}
+{% load skp_template %}
+
+{% block content %}
+<div class="d-flex justify-content-end">
+    <a href="{% url 'admin:penilaian-bawahan-skp-export' obj.id periode %}?download=true" class="btn btn-sm btn-success"><i class="fas fa-download"></i>  Download Excel</a>
+</div>
+<div class="card p-0 mt-3">
+    <div class="card-body p-0 m-0">
+        <table class="table table-bordered table-hover" >
+            <thead>
+                <tr>
+                    <th>NIP</th>
+                    <th>Nama</th>
+                    <th>Jabatan</th>
+                    <th>Rating Hasil Kinerja</th>
+                    <th>Rating Perilaku Kerja</th>
+                    <th>Predikat Kinerja Periodik</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if penilaian_list %}
+                {% for item in penilaian_list %}
+                <tr>
+                    <td>{{item.skp.detailsasarankinerja.nip_pegawai}}</td>
+                    <td>{{item.skp.detailsasarankinerja.nama_pegawai}}</td>
+                    <td>{{item.skp.detailsasarankinerja.jabatan_pegawai}}</td>
+                    <td>{{item.rating_hasil.nama|upper|default_if_none:""}}</td>
+                    <td>{{item.predikat_perilaku.nama|upper|default_if_none:""}}</td>
+                    <td>{{item.predikat_kerja|default_if_none:""}}</td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="6" style="text-align: center">Tidak ada Data</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock content %}
