@@ -9,13 +9,8 @@ from django.utils.safestring import mark_safe
 
 from services.models import Configurations
 from skp.forms.sasarankinerja_form import SasaranKinerjaForm
-from skp.models import (
-    Lampiran,
-    PerilakuKerja,
-    Perspektif,
-    RencanaHasilKerja,
-    SasaranKinerja,
-)
+from skp.models import (Lampiran, PerilakuKerja, Perspektif, RencanaHasilKerja,
+                        SasaranKinerja)
 from skp.utils import FULL_BULAN
 
 
