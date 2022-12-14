@@ -71,6 +71,12 @@ class EditProfilPegawai(forms.ModelForm):
         fields = [
             'email',
             'unitkerja',
+            'jenis_jabatan',
             'jabatan',
-            'golongan'
+            'golongan',
+            'eselon',
         ]
+        
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['unitkerja'].label = "Unit Kerja"
