@@ -1,14 +1,15 @@
 import base64
 import datetime
 
+import xlwt
 from django.contrib import admin, messages
-from django.http import JsonResponse
+from django.db.models import Q
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import path, reverse
 
 from skp.models import Hasil, PenilaianBawahan, PerilakuKerja, SasaranKinerja
 from skp.utils import get_predikat_kerja
-from usom.models import Account
 
 
 class PenilaianBawahanAdmin(admin.ModelAdmin):
@@ -19,8 +20,6 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
         penilaianbawahan = request.POST.get("penilaianbawahan", None)
         periode = request.POST.get("periode", None)
         hasil = request.POST.get("hasil", None)
-        if penilaianbawahan == "":
-            penilaianbawahan = None
 
         try:
             skp_obj = SasaranKinerja.objects.get(pk=skp_id)
@@ -48,7 +47,8 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
             obj.rating_hasil.nama if obj.rating_hasil else "",
             obj.predikat_perilaku.nama if obj.predikat_perilaku else "",
         )
-
+        if obj.predikat_kerja:
+            obj.is_dinilai = True
         obj.save()
 
         respon = {"success": True, "pesan": "Berhasil Menambah Hasil"}
@@ -64,6 +64,8 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
             )
 
         b64 = request.GET.get("b64", None)
+        cari = request.GET.get("cari", None)
+        status = request.GET.get("status", None)
         awal = None
         akhir = None
         if b64 and b64 != "":
@@ -77,13 +79,26 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
                 return redirect(
                     reverse("admin:skp_sasarankinerja_penilaian", kwargs={"id": skp_id})
                 )
-        find_all_bawahan = Account.objects.filter(atasan=obj.pegawai)
+        penilaian_list = PenilaianBawahan.objects.filter(
+            skp__induk=obj, periode=periode
+        )
+        if cari:
+            penilaian_list = penilaian_list.filter(
+                Q(skp__detailsasarankinerja__nip_pegawai__icontains=cari)
+                | Q(skp__detailsasarankinerja__nama_pegawai__icontains=cari)
+            )
+
+        if status == "1":
+            penilaian_list = penilaian_list.filter(is_dinilai=True)
+        elif status == "0":
+            penilaian_list = penilaian_list.filter(is_dinilai=False)
+
         extra_context.update(
             {
                 "title": "Penilaian Bawahan",
                 "periode_penilaian": b64_decode,
                 "obj": obj,
-                "list_pegawai": find_all_bawahan,
+                "penilaian_list": penilaian_list,
                 "awal": awal,
                 "akhir": akhir,
                 "periode": periode,
@@ -148,6 +163,73 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
         )
         return render(request, "admin/skp/penilaianbawahan/cetak.html", extra_context)
 
+    def export_view(self, request, skp_id, periode, extra_context={}):
+        try:
+            obj = SasaranKinerja.objects.get(pk=skp_id)
+        except Exception as e:
+            messages.error(request, str(e))
+            return redirect(
+                reverse("admin:skp_sasarankinerja_penilaian", kwargs={"id": skp_id})
+            )
+        penilaian_list = PenilaianBawahan.objects.filter(
+            skp__induk=obj, periode=periode
+        )
+        download = request.GET.get("download", None)
+        if download == "true":
+            filename = "Rekap Penilaian Bawahan {}".format(
+                datetime.datetime.now().strftime("%d-%m-%Y")
+            )
+            response = HttpResponse(content_type="application/ms-excel")
+            response["Content-Disposition"] = (
+                'attachment; filename="' + filename + '.xls"'
+            )
+            wb = xlwt.Workbook(encoding="utf-8")
+            ws = wb.add_sheet("sheet 1")
+            row_num = 0
+
+            font_style = xlwt.XFStyle()
+            font_style.font.bold = True
+            columns = [
+                "NIP",
+                "Nama",
+                "Jabatan",
+                "Rating Hasil Kinerja",
+                "Rating Perilaku Kerja",
+                "Predikat Perilaku Periodik",
+            ]
+            rows = []
+            for i in penilaian_list:
+                isi = (
+                    i.skp.detailsasarankinerja.nip_pegawai,
+                    i.skp.detailsasarankinerja.nama_pegawai,
+                    i.skp.detailsasarankinerja.jabatan_pegawai,
+                    i.rating_hasil.nama if i.rating_hasil.upper() else "",
+                    i.predikat_perilaku.nama if i.predikat_perilaku.upper() else "",
+                    i.predikat_kerja if i.predikat_kerja else "",
+                )
+                rows.append(isi)
+
+            for col_num in range(len(columns)):
+                ws.write(row_num, col_num, columns[col_num], font_style)
+            font_style = xlwt.XFStyle()
+
+            for row in rows:
+                row_num += 1
+                for col_num in range(len(row)):
+                    ws.write(row_num, col_num, row[col_num], font_style)
+            wb.save(response)
+            return response
+
+        extra_context.update(
+            {
+                "title": "Rekap Penilaian Bawahan",
+                "obj": obj,
+                "periode": periode,
+                "penilaian_list": penilaian_list,
+            }
+        )
+        return render(request, "admin/skp/penilaianbawahan/export.html", extra_context)
+
     def get_urls(self):
         admin_url = super(PenilaianBawahanAdmin, self).get_urls()
         custom_url = [
@@ -165,6 +247,11 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
                 "<int:skp_id>/penilaian-bawahan/<int:periode>/cetak",
                 self.admin_site.admin_view(self.cetak_penilaian_bawahan),
                 name="penilaian-bawahan-skp-cetak",
+            ),
+            path(
+                "<int:skp_id>/penilaian-bawahan/<int:periode>/export",
+                self.admin_site.admin_view(self.export_view),
+                name="penilaian-bawahan-skp-export",
             ),
             path(
                 "create",

@@ -48,10 +48,12 @@
       <label class="mx-1 py-2" style="min-width: 100px;">Status SKP</label>
       <input type="text" readonly class="form-control form-control-sm" id="staticEmail" value="{{obj.get_status_display}}">
     </div>
+    {% if obj.keterangan %}
     <div class="d-flex">
       <label class="mx-1 py-2" style="min-width: 100px;">Keterangan</label>
       <input type="text" readonly class="form-control form-control-sm" id="staticEmail" value="{{obj.keterangan|default_if_none:"-"}}">
     </div>
+    {% endif %}
   </div>
 
   <div class="col-md-8 d-flex flex-row-reverse">
@@ -72,72 +74,78 @@
 </div>
 <div class="row">
   <div class="col-md-6">
-    <div class="card">
-      <div class="card-header bg-success text-white p-5">
-          <h6 class="m-0">PEGAWAI YANG DINILAI</h6>
+    <div class="card card-custom" id="card-pegawai">
+      <div class="card-header bg-primary">
+          <h6 class="card-title text-white m-0">PEGAWAI YANG DINILAI</h6>
+          <div class="card-toolbar m-0 p-0">
+            <button class="btn btn-sm btn-warning" data-jenis="pegawai" data-url="{% url 'admin:skp_sasarankinerja_sync_data_pegawai' obj.pegawai.id %}" data-id="{{obj.pegawai.id}}" onclick="handleSyncPegawai($(this))"><i class="fas fa-sync" ></i> Sinkron dari DB SKP</button>
+          </div>
       </div>
       <div class="card-body p-0">
-        <table class="table">
+        <table class="table" id="pegawai">
           <tr>
             <td style="width: 30%;">Nama</td>
             <td style="width: 5%;">:</td>
-            <td>{{obj.detailsasarankinerja.nama_pegawai}}</td>
+            <td class="nama" >{{obj.detailsasarankinerja.nama_pegawai}}</td>
           </tr>
           <tr>
             <td>NIP</td>
             <td>:</td>
-            <td>{{obj.detailsasarankinerja.nip_pegawai}}</td>
+            <td class="nip" >{{obj.detailsasarankinerja.nip_pegawai}}</td>
           </tr>
           <tr>
             <td>Pangkat / Gol. Ruang</td>
             <td>:</td>
-            <td>{{obj.detailsasarankinerja.golongan_pegawai}}</td>
+            <td class="golongan" >{{obj.detailsasarankinerja.golongan_pegawai}}</td>
           </tr>
           <tr>
             <td>Jabatan</td>
             <td>:</td>
-            <td>{{obj.detailsasarankinerja.jabatan_pegawai}}</td>
+            <td class="jabatan" >{{obj.detailsasarankinerja.jabatan_pegawai}}</td>
           </tr>
           <tr>
             <td>Unit Kerja</td>
             <td>:</td>
-            <td>{{obj.detailsasarankinerja.unor_pegawai}}</td>
+            <td class="unitkerja">{{obj.detailsasarankinerja.unor_pegawai}}</td>
           </tr>
         </table>
       </div>
     </div>
   </div>
   <div class="col-md-6">
-    <div class="card">
-      <div class="card-header bg-primary text-white p-5">
-          <h6 class="m-0">PEJABAT PENILAI KINERJA</h6>
+    <div class="card card-custom" id="card-penilai">
+      <div class="card-header bg-primary">
+          <h6 class="card-title text-white m-0">PEJABAT PENILAI KINERJA</h6>
+          <div class="card-toolbar m-0 p-0">
+            <button class="btn btn-sm btn-warning" data-jenis="atasan_penilai" data-url="{% url 'admin:skp_sasarankinerja_sync_data_pegawai' obj.pejabat_penilai.id %}" data-id="{{obj.pejabat_penilai.id}}" onclick="handleSyncPegawai($(this))"><i class="fas fa-sync" ></i> Sinkron dari DB SKP</button>
+          </div>
       </div>
       <div class="card-body p-0">
-        <table class="table">
+        <table class="table" id="atasan_penilai">
           <tr>
             <td style="width: 30%;">Nama</td>
             <td style="width: 5%;">:</td>
-            <td>{{obj.detailsasarankinerja.nama_pejabat}}</td>
+            <td class="nama">{{obj.detailsasarankinerja.nama_pejabat}}</td>
           </tr>
           <tr>
             <td>NIP</td>
             <td>:</td>
-            <td>{{obj.detailsasarankinerja.nip_pejabat}}</td>
+            <td class="nip">{{obj.detailsasarankinerja.nip_pejabat}}</td>
           </tr>
           <tr>
             <td>Pangkat / Gol. Ruang</td>
             <td>:</td>
-            <td>{{obj.detailsasarankinerja.golongan_pejabat}}</td>
+            <td class="golongan" >{{obj.detailsasarankinerja.golongan_pejabat}}</td>
           </tr>
           <tr>
             <td>Jabatan</td>
             <td>:</td>
-            <td>{{obj.detailsasarankinerja.jabatan_pejabat}}</td>
+            <td class="jabatan" >{{obj.detailsasarankinerja.jabatan_pejabat}}</td>
           </tr>
           <tr>
             <td>Unit Kerja</td>
             <td>:</td>
-            <td>{{obj.detailsasarankinerja.unor_pejabat}}</td>
+            <td class="unitkerja" >{{obj.detailsasarankinerja.unor_pejabat}}</td>
           </tr>
         </table>
       </div>
@@ -169,15 +177,15 @@
                 <th valign="center">No</th>
                 {% if obj.jenis_jabatan == 1 %}
                 <th valign="center" style="width: 40%;">Rencana Hasil Kerja</th>
-                <th valign="center">Perspektif</th>
                 <th valign="center">Indikator Kinerja Individu</th>
-                <th valign="center">Target</th>
+                <th valign="center">Target Tahunan</th>
+                <th valign="center">Perspektif</th>
                 {% else %}
                 <th valign="center" style="min-width: 250px;">Rencana Hasil Kerja Pimpinan<br>yang Diintervensi</th>
                 <th valign="center" style="min-width: 250px;">Rencana Hasil Kerja</th>
-                <th valign="center">Aspek</th>
                 <th valign="center">Indikator Kinerja Individu</th>
-                <th valign="center">Target</th>
+                <th valign="center">Target Tahunan</th>
+                <th valign="center">Aspek</th>
                 {% endif %}
               </tr>
             </thead>
@@ -288,6 +296,12 @@
       <div class="modal-body">
         {% csrf_token %}
         <input type="hidden" id="rhk_id">
+        <div class="form-group">
+          <label for="">RHK Pimpinan</label>
+          <select name="rhk_pimpinan" id="rhk_pimpinan" class="form-control">
+            <option value="0">Pilih RHK Pimpinan</option>
+          </select>
+        </div>
         <div class="form-group">
           <label for="">Klasifikasi</label>
           <select name="klasifikasi" onchange="onChangeKlasifikasi($(this))" class="form-control" id="klasifikasi_id">
@@ -507,7 +521,6 @@
 <script type="text/javascript">
   $('.field-keterangan').hide()
   const onchangeStatus = (elem) =>{
-    console.log(elem.val())
     if(elem.val() == "1"){
       $('.field-keterangan').show()
     }else{
@@ -525,7 +538,6 @@
           status: status
         },
         success: function(response){
-          console.log({response})
           if(response.success){
             resolve('ok')
           }else{
@@ -605,13 +617,19 @@
     let button = $(event.relatedTarget)
     let edit = button.data('edit')
     let id = button.data('rhk_id')
+    let pimpinan_id = button.data('pimpinan_id')
     var modal = $("#tambahrhk")
     $("#rhk_id").val("")
-    $("#klasifikasi_id").val("").trigger('change')
-    $("#unitkerja_id").val("").trigger('change')
+    $("#klasifikasi_id").val($("#klasifikasi_id option:first").val()).trigger('change')
+    $("#unitkerja_id").val($("#unitkerja_id option:first").val()).trigger('change')
     $("#jenis_id").val("")
     $("#rencana_id").val("")
     $("#penugasan_id").val("")
+    if(pimpinan_id == undefined){
+      handleLoadRHKPimpinan()
+    }else{
+      handleLoadRHKPimpinan(pimpinan_id)
+    }
     if(edit){
       $('#rhk-label').html("Ubah RHK")
       $.ajax({
@@ -760,8 +778,8 @@
     $('#rhk_indikator_id').val("")
     $("#indikator").val("")
     $(`#target`).val("")
-    $('#perspektif').val("").trigger('change')
-    $('#aspek').val("").trigger('change')
+    $('#perspektif').val($("#perspektif option:first").val()).trigger('change')
+    $('#aspek').val($("#aspek option:first").val()).trigger('change')
 
     if (typeof rhk_id !== "undefined"){
       $('#rhk_indikator_id').val(rhk_id)
@@ -776,7 +794,7 @@
         $(`#target`).val(target.html())
         {% if obj.jenis_jabatan == 1 %}
         let isi = $(`#perspektif-${indikator_id}`)
-        $('#perspektif').val(isi.html()).trigger('change')
+        $('#perspektif').val(isi.data('perspektif')).trigger('change')
         {% else %}
         let isi = $(`#aspek-${indikator_id}`)
         $('#aspek').val(isi.html()).trigger('change')
@@ -813,7 +831,6 @@
         jenis: jenis
       },
       success: function(response){
-        console.log({response})
         delete_html = ""
         if(response.length > 0){
           let html_ = `<tr class="bg-dark">
@@ -831,16 +848,11 @@
               item.indikator.map(item_indikator => {
                 indikator += `
                 <tr>
-                  {% if obj.jenis_jabatan == 1 %}
-                  <td id="perspektif-${item_indikator.indikator_id}">${item_indikator.perspektif ? item_indikator.perspektif : '-'}</td>
-                  {% else %}
-                  <td id="aspek-${item_indikator.indikator_id}">${item_indikator.aspek ? item_indikator.aspek : '-'}</td>
-                  {% endif %}
                   <td>
-                    <span id="indikator-${item_indikator.indikator_id}" >${item_indikator.indikator}</span>
+                    <span id="indikator-${item_indikator.id}" >${item_indikator.indikator}</span>
                     {% if obj.status == 1 %}
                     <div class="d-flex justify-content-center mt-3">
-                      <button class="btn btn-icon btn-warning mr-1" data-rhk_id="${item.id}" data-edit="true" data-indikator_id="${item_indikator.indikator_id}"  onclick="set_rhk_indikator($(this))">
+                      <button class="btn btn-icon btn-warning mr-1" data-rhk_id="${item.id}" data-edit="true" data-indikator_id="${item_indikator.id}" onclick="set_rhk_indikator($(this))">
                         <i class="flaticon2-pen"></i>
                       </button>
                       <a onclick="delete_action('${item_indikator.delete_url}')" class="btn btn-icon btn-danger">
@@ -849,7 +861,12 @@
                     </div>
                     {% endif %}
                   </td>
-                  <td id="target-${item_indikator.indikator_id}">${item_indikator.target}</td>
+                  <td id="target-${item_indikator.id}">${item_indikator.target}</td>
+                  {% if obj.jenis_jabatan == 1 %}
+                  <td id="perspektif-${item_indikator.id}" data-perspektif="${item_indikator.perspekif_id}">${item_indikator.perspektif ? item_indikator.perspektif : '-'}</td>
+                  {% else %}
+                  <td id="aspek-${item_indikator.id}">${item_indikator.aspek ? item_indikator.aspek : '-'}</td>
+                  {% endif %}
                 </tr>
                 `
               })
@@ -896,11 +913,8 @@
             }
 
             let induk_elem = `
-            <td rowspan="{% if penilai_view %}${item.indikator.length+1}{% else %}${item.indikator.length+2}{% endif %}">
+                <td rowspan="{% if penilai_view %}${item.indikator.length+1}{% else %}${item.indikator.length+2}{% endif %}">
                   ${item?.induk ? item.induk.rencana_kerja : ''}
-                  {% if obj.status == 1 %}
-                  <button type="button" class="btn btn-sm btn-block btn-light-success font-weight-bold" data-rhk_id="${item.id}" onclick="onOpenModalRHKPimpinan($(this))">Set RHK Pimpinan</button>  
-                  {% endif %}
                 </td>
               `
 
@@ -916,7 +930,7 @@
                   ${item.rencana_kerja}
                   {% if obj.status == 1 %}
                   <div class="mt-3">
-                    <button class="btn btn-icon btn-warning mr-1" data-rhk_id="${item.id}" data-edit="true" data-toggle="modal" data-target="#tambahrhk">
+                    <button class="btn btn-icon btn-warning mr-1" data-rhk_id="${item.id}" data-pimpinan_id="${item.induk?.id}" data-edit="true" data-toggle="modal" data-target="#tambahrhk">
                       <i class="flaticon2-pen"></i>
                     </button>
                     ${delete_html}
@@ -946,7 +960,6 @@
         jenis: 2
       },
       success: function(response){
-        console.log({response})
         delete_html = ""
         if(response.length > 0){
           let html_ = `<tr class="bg-dark">
@@ -964,16 +977,11 @@
               item.indikator.map(item_indikator => {
                 indikator += `
                 <tr>
-                  {% if obj.jenis_jabatan == 1 %}
-                  <td id="perspektif-${item_indikator.indikator_id}">${item_indikator.perspektif ? item_indikator.perspektif : '-'}</td>
-                  {% else %}
-                  <td id="aspek-${item_indikator.indikator_id}">${item_indikator.aspek ? item_indikator.aspek : '-'}</td>
-                  {% endif %}
                   <td>
-                    <span id="indikator-${item_indikator.indikator_id}" >${item_indikator.indikator}</span>
+                    <span id="indikator-${item_indikator.id}" >${item_indikator.indikator}</span>
                     {% if obj.status == 1 %}
                     <div class="d-flex justify-content-center mt-3">
-                      <button class="btn btn-icon btn-warning mr-1" data-rhk_id="${item.id}" data-edit="true" data-indikator_id="${item_indikator.indikator_id}"  onclick="set_rhk_indikator($(this))">
+                      <button class="btn btn-icon btn-warning mr-1" data-rhk_id="${item.id}" data-edit="true" data-indikator_id="${item_indikator.id}" onclick="set_rhk_indikator($(this))">
                         <i class="flaticon2-pen"></i>
                       </button>
                       <a onclick="delete_action('${item_indikator.delete_url}')" class="btn btn-icon btn-danger">
@@ -982,7 +990,12 @@
                     </div>
                     {% endif %}
                   </td>
-                  <td id="target-${item_indikator.indikator_id}">${item_indikator.target}</td>
+                  <td id="target-${item_indikator.id}">${item_indikator.target}</td>
+                  {% if obj.jenis_jabatan == 1 %}
+                  <td id="perspektif-${item_indikator.id}" data-perspektif="${item_indikator.perspekif_id}">${item_indikator.perspektif ? item_indikator.perspektif : '-'}</td>
+                  {% else %}
+                  <td id="aspek-${item_indikator.id}">${item_indikator.aspek ? item_indikator.aspek : '-'}</td>
+                  {% endif %}
                 </tr>
                 `
               })
@@ -1022,9 +1035,6 @@
             let induk_elem = `
                 <td rowspan="{% if penilai_view %}${item.indikator.length+1}{% else %}${item.indikator.length+2}{% endif %}">
                   ${item?.induk ? item.induk.rencana_kerja : ''}
-                  {% if obj.status == 1 %}
-                  <button type="button" class="btn btn-sm btn-block btn-light-success font-weight-bold" data-rhk_id="${item.id}" onclick="onOpenModalRHKPimpinan($(this))">Set RHK Pimpinan</button>  
-                  {% endif %}
                 </td>
                 `
                 
@@ -1040,7 +1050,7 @@
                   ${item.rencana_kerja} ${item.penugasan_dari ? `(Penugasan dari ${item.penugasan_dari})` : ''}
                   {% if obj.status == 1 %}
                   <div class="mt-3">
-                    <button class="btn btn-icon btn-warning mr-1" data-rhk_id="${item.id}" data-edit="true" data-toggle="modal" data-target="#tambahrhk">
+                    <button class="btn btn-icon btn-warning mr-1" data-rhk_id="${item.id}" data-pimpinan_id="${item.induk?.id}" data-edit="true" data-toggle="modal" data-target="#tambahrhk">
                       <i class="flaticon2-pen"></i>
                     </button>
                     ${delete_html}
@@ -1063,7 +1073,6 @@
       url: "{% url 'admin:skp_indikator_get_by_skp' obj.id %}",
       type: 'GET',
       success: function(response){
-        console.log({response})
         if (response.length > 0){
           let html_ = '';
           response.map(item => {
@@ -1082,18 +1091,36 @@
     })
   }
 
+  const handleLoadRHKPimpinan = (selected=null) => {
+    $.ajax({
+      url: '{% url "admin:skp_rencanahasilkerja_loadrhkpimpinan" %}?skp_id={{obj.id}}',
+      type: 'GET',
+      success: function(response){
+        if(response.length > 0){
+          let options = '<option value="0">Pilih RHK Pimpinan</option>'
+          response.map(item => {
+            options += `
+            <option value="${item.id}">${item.rencana_kerja}</option>
+            `
+          })
+          $('#rhk_pimpinan').html(options);
+          if(selected != "undefined"){
+            $('#rhk_pimpinan').val(selected).trigger('change')
+          }
+        }
+      }
+    })
+  }
   const onOpenModalRHKPimpinan = (elem) => {
-    console.log('modal_set_rhk_pimpinan_id')
     let rhk_id = elem.data('rhk_id');
     let modal = $('#modal_set_rhk_pimpinan_id')
     
     if(typeof rhk_id !== "undefined"){
       modal.find('input[name=rhk_id]').val(rhk_id)
       $.ajax({
-        url: '{% url "admin:skp_rencanahasilkerja_loadrhkpimpinan" %}',
+        url: '{% url "admin:skp_rencanahasilkerja_loadrhkpimpinan" %}?skp_id={{obj.id}}',
         type: 'GET',
         success: function(response){
-          console.log({response})
           if(response.length > 0){
             let options = '<option value="0">Pilih RHK Pimpinan</option>'
             response.map(item => {
@@ -1238,7 +1265,6 @@
         rhk_pimpinan_id: rhk_pimpinan_id
       },
       success: function(response){
-        console.log({response})
         if(response.success){
           toastr.success('Berhasil menambahkan rhk pimpinan');
           window.location.reload()
@@ -1268,6 +1294,7 @@
     let formData = {
       skp_id: '{{ obj.id }}',
       rhk_id: modal.find('#rhk_id').val(),
+      pimpinan_id: modal.find('#rhk_pimpinan').val(),
       klasifikasi: klasifikasi,
       jenis: modal.find('select[name=jenis]').val(),
       rencana_kerja: modal.find('input[name=rencana_kerja]').val(),
@@ -1284,9 +1311,8 @@
       type: 'POST',
       data: formData,
       success: function(response){
-        console.log({response})
         if(response.success){
-          if(rhk_id && rhk_id != ""){
+          if(modal.find('#rhk_id').val() && modal.find('#rhk_id').val() != ""){
             toastr.success('Berhasil merubah rhk pimpinan');
           }else{
             toastr.success('Berhasil menambahkan rhk pimpinan');
@@ -1322,5 +1348,41 @@
       }
     })
   })
+  const handleSyncPegawai = (elem) => {
+    console.log(elem.data('jenis'))
+    var card_pegawai
+    if(elem.data('jenis') == "pegawai"){
+      card_pegawai = new KTCard('card-pegawai');
+    }else if(elem.data('jenis') == "atasan_penilai"){
+      card_pegawai = new KTCard('card-penilai');
+    }
+    $.ajax({
+      url:elem.data('url'),
+      method: "GET",
+      data:{
+        jenis:elem.data('jenis'),
+        skp_id:"{{obj.id}}",
+      },
+      beforeSend:function(){
+        KTApp.block(card_pegawai.getSelf(), {
+          overlayColor: '#ffffff',
+          type: 'loader',
+          state: 'primary',
+          opacity: 0.3,
+          size: 'lg'
+        });
+      },
+      success:function(res){
+        keys = Object.keys(res.data)
+        keys.map((item, idx)=>{
+          $("#"+elem.data('jenis')).find(`.${item}`).html(res.data[item])
+        })
+      },
+      complete:function(){
+        // console.log("down")
+        setTimeout(KTApp.unblock(card_pegawai.getSelf()), 10000);
+      }
+    })
+  }
 </script>
 {% endblock custom_js %}

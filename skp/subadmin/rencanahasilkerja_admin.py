@@ -16,6 +16,7 @@ def rencana_aksi_list(skp_obj, rhk_obj, periode):
             rencana_aksi.append(rencana_item.rencana_aksi)
     return rencana_aksi
 
+
 def bukti_dukung_list(indikator_obj, periode):
     bukti_dukung = None
     if periode and periode != "":
@@ -26,15 +27,14 @@ def bukti_dukung_list(indikator_obj, periode):
             bukti_item = bukti_dukung_list.last()
             bukti_dukung = {
                 "delete_url": reverse_lazy(
-                    "admin:skp_buktidukung_hapus", kwargs={
-                        "id": bukti_item.id
-                    }
+                    "admin:skp_buktidukung_hapus", kwargs={"id": bukti_item.id}
                 ),
                 "id": bukti_item.id,
                 "nama": bukti_item.nama_bukti_dukung,
                 "link": bukti_item.link,
             }
     return bukti_dukung
+
 
 def realisasi_list(indikator_obj, periode):
     realisasi = None
@@ -46,9 +46,7 @@ def realisasi_list(indikator_obj, periode):
             realisasi_item = realisasi_list.last()
             realisasi = {
                 "delete_url": reverse_lazy(
-                    "admin:skp_realisasi_hapus", kwargs={
-                        "id": realisasi_item.id
-                    }
+                    "admin:skp_realisasi_hapus", kwargs={"id": realisasi_item.id}
                 ),
                 "id": realisasi_item.id,
                 "realisasi": realisasi_item.realisasi,
@@ -87,13 +85,13 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
                 data = []
                 if status_edit == "true":
                     data = {
-                        'id': obj.id,
-                        'rencana_hasil': obj.rencana_kerja,
-                        'penugasan_dari': obj.penugasan_dari,
-                        'jenis': obj.jenis,
-                        'klasifikasi': obj.klasifikasi,
-                        'unor': obj.unor.id if obj.unor else None,
-                        'aspek': obj.aspek
+                        "id": obj.id,
+                        "rencana_hasil": obj.rencana_kerja,
+                        "penugasan_dari": obj.penugasan_dari,
+                        "jenis": obj.jenis,
+                        "klasifikasi": obj.klasifikasi,
+                        "unor": obj.unor.id if obj.unor else None,
+                        "aspek": obj.aspek,
                     }
                 else:
                     indikator_list = IndikatorKinerjaIndividu.objects.filter(
@@ -142,9 +140,8 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
                             indikator.append(
                                 {
                                     "delete_url": reverse_lazy(
-                                        'admin:skp_indikator_hapus', kwargs={
-                                            "id": item_indikator.id
-                                        }
+                                        "admin:skp_indikator_hapus",
+                                        kwargs={"id": item_indikator.id},
                                     ),
                                     "id": item_indikator.id,
                                     "indikator": item_indikator.indikator,
@@ -159,16 +156,19 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
                                     "perspektif": item_indikator.perspektif.__str__()
                                     if item_indikator.perspektif
                                     else None,
+                                    "perspekif_id": item_indikator.perspektif.id
+                                    if item_indikator.perspektif
+                                    else None,
                                 }
                             )
 
                     respon.append(
                         {
                             "delete_url": reverse_lazy(
-                                'admin:skp_rhk_hapus', kwargs={
-                                    "id": item.id
-                                }
-                            ) if len(indikator) <= 0 else "",
+                                "admin:skp_rhk_hapus", kwargs={"id": item.id}
+                            )
+                            if len(indikator) <= 0
+                            else "",
                             "id": item.id,
                             "induk": rencana_kerja_induk,
                             "rencana_kerja": item.rencana_kerja,
@@ -182,9 +182,13 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
 
     def load_rhk_pimpinan(self, request):
         respon = []
-        atasan_id = request.user.atasan.id if request.user.atasan else None
-        if atasan_id:
-            rhk_list = RencanaHasilKerja.objects.filter(skp__pegawai_id=atasan_id)
+        skp_id = request.GET.get('skp_id')
+        find_skp = SasaranKinerja.objects.get(pk=skp_id)
+        if find_skp.induk:
+            rhk_list = RencanaHasilKerja.objects.filter(
+                skp_id=find_skp.induk.id
+            )
+
             if rhk_list.exists():
                 for item in rhk_list:
                     respon.append(
@@ -219,45 +223,44 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
         jenis = request.POST.get("jenis", None)
         rencana_kerja = request.POST.get("rencana_kerja", None)
         penugasan_dari = request.POST.get("penugasan_dari", None)
+        pimpinan_id = request.POST.get("pimpinan_id", None)
         if rhk_id and rhk_id != "":
             try:
                 obj = RencanaHasilKerja.objects.get(pk=rhk_id)
             except RencanaHasilKerja.DoesNotExist:
-                obj = RencanaHasilKerja(
-                    skp_id=skp_id
-                )
+                obj = RencanaHasilKerja(skp_id=skp_id)
             except Exception as e:
-                respon = {"success": False, 'pesan': str(e)}
+                respon = {"success": False, "pesan": str(e)}
                 return JsonResponse(respon, safe=False)
         else:
-            obj = RencanaHasilKerja(
-                skp_id=skp_id
-            )
+            obj = RencanaHasilKerja(skp_id=skp_id)
 
         obj.klasifikasi = klasifikasi
         obj.unor_id = unitkerja
         obj.jenis = int(jenis)
         obj.rencana_kerja = rencana_kerja
         obj.penugasan_dari = penugasan_dari
+        if pimpinan_id and pimpinan_id != "":
+            obj.induk_id = pimpinan_id
         obj.save()
         respon = {"success": True}
         return JsonResponse(respon, safe=True)
 
     def rhk_delete(self, reqeust, id):
-        respon = {'success': False, 'pesan': "Terjadi kesalahan sistem"}
+        respon = {"success": False, "pesan": "Terjadi kesalahan sistem"}
         try:
             obj = RencanaHasilKerja.objects.get(pk=id)
         except RencanaHasilKerja.DoesNotExist:
-            respon = {'success': False, 'pesan': "Rencana Hasil Kerja Tidak Ditemukan"}
+            respon = {"success": False, "pesan": "Rencana Hasil Kerja Tidak Ditemukan"}
             return JsonResponse(respon, safe=False)
         except Exception as e:
-            respon = {'success': False, 'pesan': str(e)}
+            respon = {"success": False, "pesan": str(e)}
             return JsonResponse(respon, safe=False)
         else:
             obj.delete()
             respon = {
-                'success': True,
-                'pesan': "Berhasil Menghapus Rencana Hasil Kerja"
+                "success": True,
+                "pesan": "Berhasil Menghapus Rencana Hasil Kerja",
             }
         return JsonResponse(respon, safe=False)
 
