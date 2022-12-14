@@ -1,0 +1,256 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
+    <link href="{% static 'metronic/assets' %}/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
+    <link href="{% static 'metronic/assets' %}/plugins/custom/prismjs/prismjs.bundle.css" rel="stylesheet"
+        type="text/css" />
+    <link href="{% static 'metronic/assets' %}/css/style.bundle.css" rel="stylesheet" type="text/css" />
+    <link href="{% static 'metronic/' %}assets/css/themes/layout/header/base/light.css" rel="stylesheet" type="text/css" />
+    <link href="{% static 'metronic/' %}assets/css/themes/layout/header/menu/light.css" rel="stylesheet" type="text/css" />
+    <title>{{ title }}</title>
+    <style>
+      @media print{@page {size: landscape}}
+
+      body {
+        background-color: white;
+      }
+      .d-grid {
+        display: grid;
+      }
+    
+      .table-matriks-hasil {
+        font-size: 11px;
+      }
+      .table-bordered td, .table-bordered th {
+        border: 1px solid #181d32;
+      }
+
+      .table thead th {
+        border-bottom: 2px solid #181d32;
+      }
+
+      .action-list {
+        position: fixed;
+        bottom: 10%;
+        display: grid;
+        background-color: #181d32;
+        padding: 10px;
+        border-top-right-radius: 5px;
+        border-bottom-right-radius: 5px;
+      }
+
+      .text {
+        mso-number-format: "\@";
+      }
+    </style>
+
+  <style type="text/css" media="print">
+    .action-list {
+      display: none;
+    }
+
+    .table thead th {
+      color: black;
+    }
+
+    .conten-page {
+      padding: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="action-list">
+    <button class="btn btn-primary btn-sm mb-2" id="cetak_pdf_id"><i class="flaticon2-printer"></i> Cetak PDF</button>
+    <button class="btn btn-warning btn-sm mb-2" id="export_excel_id"><i class="far fa-file-excel"></i> Export Excel</button>
+    <a href="javascript:history.back()" class="btn btn-secondary btn-sm"><i class="flaticon2-fast-back"></i> Kembali</a>
+  </div>
+
+  <div class="p-5 conten-page">
+    <table class="table table-striped table-bordered table-matriks-hasil">
+      <thead class="bg-dark text-white">
+        <tr>
+          <th>PEGAWAI</th>
+          <th>JABATAN</th>
+          <th colspan="{{ obj.rencanahasilkerja_set.all.count }}" class="text-center">OUTCOME ANTARA / OUTPUT / LAYANAN</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="text">
+            <b class="text-nowrap">{{ obj.detailsasarankinerja.nama_pegawai }}</b><br>
+            <!-- <span class="text-muted text">NIP: {{ obj.detailsasarankinerja.nip_pegawai }}</span> -->
+          </td>
+          <td>
+            {{ obj.detailsasarankinerja.jabatan_pegawai }}
+          </td>
+          {% for item in obj.rencanahasilkerja_set.all %}
+          <td>{{ item.rencana_kerja }}</td>
+          {% endfor %}
+        </tr>
+        {% for item in skp_childs %}
+        <tr data-status="unload" data-id="{{item.id}}">
+          <td class="data-pegawai">
+            <b class="text-nowrap">{{ item.detailsasarankinerja.nama_pegawai }}</b><br>
+            <!-- <span class="text-muted">NIP: {{ item.detailsasarankinerja.nip_pegawai }}</span> -->
+          </td>
+          <td class="data-jabatan">
+            {{ item.detailsasarankinerja.jabatan_pegawai }}
+          </td>
+          {% for rhk_parent in obj.rencanahasilkerja_set.all %}
+          <td data-parent_id="{{ rhk_parent.id }}"></td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <script>
+    var KTAppSettings = {
+        "breakpoints": {
+            "sm": 576,
+            "md": 768,
+            "lg": 992,
+            "xl": 1200,
+            "xxl": 1400
+        },
+        "colors": {
+            "theme": {
+                "base": {
+                    "white": "#ffffff",
+                    "primary": "#3699FF",
+                    "secondary": "#E5EAEE",
+                    "success": "#749F82",
+                    "info": "#8950FC",
+                    "warning": "#FFA800",
+                    "danger": "#F64E60",
+                    "light": "#E4E6EF",
+                    "dark": "#181C32"
+                },
+                "light": {
+                    "white": "#ffffff",
+                    "primary": "#E1F0FF",
+                    "secondary": "#EBEDF3",
+                    "success": "#749F82",
+                    "info": "#EEE5FF",
+                    "warning": "#FFF4DE",
+                    "danger": "#FFE2E5",
+                    "light": "#F3F6F9",
+                    "dark": "#D6D6E0"
+                },
+                "inverse": {
+                    "white": "#ffffff",
+                    "primary": "#ffffff",
+                    "secondary": "#3F4254",
+                    "success": "#ffffff",
+                    "info": "#ffffff",
+                    "warning": "#ffffff",
+                    "danger": "#ffffff",
+                    "light": "#464E5F",
+                    "dark": "#ffffff"
+                }
+            },
+            "gray": {
+                "gray-100": "#F3F6F9",
+                "gray-200": "#EBEDF3",
+                "gray-300": "#E4E6EF",
+                "gray-400": "#D1D3E0",
+                "gray-500": "#B5B5C3",
+                "gray-600": "#7E8299",
+                "gray-700": "#5E6278",
+                "gray-800": "#3F4254",
+                "gray-900": "#181C32"
+            }
+        },
+        "font-family": "Poppins"
+    };
+  </script>
+  <!--end::Global Config-->
+  <!--begin::Global Theme Bundle(used by all pages)-->
+  <script src="{% static 'metronic/assets' %}/plugins/global/plugins.bundle.js"></script>
+  <script src="{% static 'metronic/assets' %}/js/scripts.bundle.js"></script>
+  <script src="{% static 'metronic/assets' %}/plugins/custom/prismjs/prismjs.bundle.js"></script>
+  <script src="{% static 'export-excel/jquery.table2excel.js' %}"></script>
+  <!--end::Global Theme Bundle-->
+  <script type="text/javascript">
+    let BASE_URL = window.location.origin;
+    // Untuk set data per td perlu diperbaiki karena ada kemungkinan set datanya tidak sesuai dengan parent atasnya
+    $(function(){
+      let selector__ = '.table-matriks-hasil tbody tr[data-status=unload]';
+      let base_element = $(selector__);
+  
+      const getData = (element) => {
+        let data_id = element.data('id');
+        if (typeof data_id !== "undefined"){
+          $.ajax({
+            url: `${BASE_URL}/admin/skp/sasarankinerja/${data_id}/get-rhk-childs`,
+            type: 'GET',
+            success: function(respon){
+              if (respon.success){
+                let terbesar = respon.terbesar;
+                // let elem_data_pegawai = element.find('td.data-pegawai')
+                // elem_data_pegawai.attr('rowspan', terbesar);
+                let html_tr_ = '';
+                for (let i = 0; i < terbesar; i++) {
+                  if (i == 0){ // jika loopingan pertama tambahkan data pegawai
+                    html_tr_ += `<tr data-status="loaded">
+                      <td class="data-pegawai" rowspan="${terbesar}">${element.find('td.data-pegawai').html()}</td>
+                      <td class="data-jabatan" rowspan="${terbesar}">${element.find('td.data-jabatan').html()}</td>
+                      `
+                  } else {
+                    html_tr_ += `<tr>`
+                  }
+                  for (let j = 0; j < 5; j++) {
+                    let text_item = respon.results[j]?.childs[i]?.text;
+                    if (typeof text_item === "undefined" || typeof text_item === undefined) {
+                      text_item = '';
+                    }
+                    html_tr_ += `<td>${text_item}</td>`;
+                  }
+                  html_tr_ += `</tr>` 
+                }
+                element.replaceWith(html_tr_)
+              }
+              // element.attr('data-status', 'loaded')
+              if ($(selector__).length > 0) {
+                if ($(selector__).eq(0) != 'undefined') {
+                  getData($(selector__).eq(0));
+                }
+              }
+            },
+            error: function(){
+              element.attr('data-status', 'loaded')
+              if ($(selector__).length > 0) {
+                if ($(selector__).eq(0) != 'undefined') {
+                  getData($(selector__).eq(0));
+                }
+              }
+            }
+          })
+        }
+      }
+  
+      if ($(selector__).length > 0) {
+        if ($(selector__).eq(0) != 'undefined') {
+          getData($(selector__).eq(0));
+        }
+      }
+    })
+
+    $('#cetak_pdf_id').on('click', function(){
+      window.print();
+    })
+
+    $('#export_excel_id').on('click', function(){
+      $("table.table-matriks-hasil").table2excel({
+        exclude: ".noExport",
+        filename: "name-of-the-file",
+    });
+    })
+  </script>
+</body>
+</html>
