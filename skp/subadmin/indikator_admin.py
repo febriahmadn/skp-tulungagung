@@ -76,8 +76,11 @@ class IndikatorAdmin(admin.ModelAdmin):
         obj.target = target
 
         if perspektif:
-            if perspektif != "0" or perspektif != 0:
+            if perspektif != "0" and perspektif != 0:
                 obj.perspektif_id = perspektif
+            else:
+                obj.perspektif_id = None
+                
         obj.save()
         respon = {"success": True}
         return JsonResponse(respon, safe=False)

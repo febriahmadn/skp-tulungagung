@@ -159,6 +159,9 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
                                     "perspektif": item_indikator.perspektif.__str__()
                                     if item_indikator.perspektif
                                     else None,
+                                    "perspekif_id": item_indikator.perspektif.id
+                                    if item_indikator.perspektif
+                                    else None,
                                 }
                             )
 
@@ -184,7 +187,7 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
         respon = []
         atasan_id = request.user.atasan.id if request.user.atasan else None
         if atasan_id:
-            rhk_list = RencanaHasilKerja.objects.filter(skp__pegawai_id=atasan_id)
+            rhk_list = RencanaHasilKerja.objects.filter(skp__pejabat_penilai_id=atasan_id)
             if rhk_list.exists():
                 for item in rhk_list:
                     respon.append(

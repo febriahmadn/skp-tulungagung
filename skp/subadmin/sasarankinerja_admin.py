@@ -2,11 +2,12 @@ import calendar
 
 import requests
 from django.contrib import admin
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.shortcuts import get_object_or_404, render
 from django.urls import path, resolve, reverse_lazy
 from django.utils.safestring import mark_safe
 
+from usom.models import Account
 from services.models import Configurations
 from skp.forms.sasarankinerja_form import SasaranKinerjaForm
 from skp.models import (
@@ -15,6 +16,7 @@ from skp.models import (
     Perspektif,
     RencanaHasilKerja,
     SasaranKinerja,
+    DetailSasaranKinerja,
 )
 from skp.utils import FULL_BULAN
 
@@ -267,7 +269,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         respon = {"success": False}
         skp_id = request.GET.get("skp_id", None)
         status = request.GET.get("status", None)
-        keterangan = request.GET.get("status", None)
+        keterangan = None
         if request.POST:
             skp_id = request.POST.get("skp_id", None)
             status = request.POST.get("status", None)
@@ -558,6 +560,44 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                 respon = {"success": True, "results": results, "terbesar": terbesar}
         return JsonResponse(respon)
 
+    def sinkron_data_pegawai_local(self, request, id):
+        respon = {}
+        # jenis => pegawai / atasan_penilai
+        jenis = request.GET.get('jenis', None)
+        skp = request.GET.get('skp_id', None)
+        try:
+            obj = Account.objects.get(pk=id)
+        except Account.DoesNotExist or Exception as e:
+            print(e)
+            raise Http404
+        
+        find_detail_skp = DetailSasaranKinerja.objects.filter(skp__id=skp)
+        if find_detail_skp.exists():
+            detail_obj = find_detail_skp.last()
+            if jenis == "pegawai":
+                detail_obj.nama_pegawai=obj.get_complete_name()
+                detail_obj.nip_pegawai=obj.username
+                detail_obj.jabatan_pegawai=obj.jabatan
+                detail_obj.golongan_pegawai=obj.golongan
+                detail_obj.unor_pegawai=obj.unitkerja.unitkerja
+            elif jenis == "atasan_penilai":
+                detail_obj.nama_pejabat=obj.get_complete_name()
+                detail_obj.nip_pejabat=obj.username
+                detail_obj.jabatan_pejabat=obj.jabatan
+                detail_obj.golongan_pejabat=obj.golongan
+                detail_obj.unor_pejabat=obj.unitkerja.unitkerja
+            detail_obj.save()
+            data = {
+                'nama':obj.get_complete_name(),
+                'nip':obj.username,
+                'jabatan':obj.jabatan,
+                'golongan':obj.golongan,
+                'unitkerja':obj.unitkerja.unitkerja,
+                'jenis':jenis
+            }
+            respon = {"success": True, "data": data}
+        return JsonResponse(respon)
+
     def get_urls(self):
         admin_url = super(SasaranKinerjaAdmin, self).get_urls()
         custom_url = [
@@ -610,6 +650,11 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                 "change-status",
                 self.admin_site.admin_view(self.action_change_status_skp),
                 name="skp_sasarankinerja_changestatus",
+            ),
+            path(
+                "sync-data-local/<int:id>",
+                self.admin_site.admin_view(self.sinkron_data_pegawai_local),
+                name="skp_sasarankinerja_sync_data_pegawai",
             ),
             # path("skpdata/", self.view_custom, name="list_skp_admin"),
             # path("skpdata/add/", self.add_skp, name="add_skp_admin"),
