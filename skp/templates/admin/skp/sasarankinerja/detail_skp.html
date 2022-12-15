@@ -633,6 +633,7 @@
     }else{
       handleLoadRHKPimpinan(pimpinan_id)
     }
+
     if(edit){
       $('#rhk-label').html("Ubah RHK")
       $.ajax({
@@ -1109,6 +1110,8 @@
           $('#rhk_pimpinan').html(options);
           if(selected != "undefined"){
             $('#rhk_pimpinan').val(selected).trigger('change')
+          }else{
+            $('#rhk_pimpinan').val(0).trigger('change')
           }
         }
       }

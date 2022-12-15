@@ -241,7 +241,7 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
         if (
             pimpinan_id
             and pimpinan_id != ""
-            and pimpinan_id != "   "
+            and pimpinan_id != "0"
             and pimpinan_id != 0
         ):
             obj.induk_id = pimpinan_id
