@@ -182,12 +182,10 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
 
     def load_rhk_pimpinan(self, request):
         respon = []
-        skp_id = request.GET.get('skp_id')
+        skp_id = request.GET.get("skp_id")
         find_skp = SasaranKinerja.objects.get(pk=skp_id)
         if find_skp.induk:
-            rhk_list = RencanaHasilKerja.objects.filter(
-                skp_id=find_skp.induk.id
-            )
+            rhk_list = RencanaHasilKerja.objects.filter(skp_id=find_skp.induk.id)
 
             if rhk_list.exists():
                 for item in rhk_list:
@@ -240,7 +238,12 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
         obj.jenis = int(jenis)
         obj.rencana_kerja = rencana_kerja
         obj.penugasan_dari = penugasan_dari
-        if pimpinan_id and pimpinan_id != "":
+        if (
+            pimpinan_id
+            and pimpinan_id != ""
+            and pimpinan_id != "   "
+            and pimpinan_id != 0
+        ):
             obj.induk_id = pimpinan_id
         obj.save()
         respon = {"success": True}
