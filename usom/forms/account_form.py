@@ -4,11 +4,12 @@ from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.contrib.auth.models import Group
 from django.utils.translation import gettext_lazy as _
 
-from usom.models import Account
+from usom.models import Account, UnitKerja
 
 
 class AccountForm(forms.ModelForm):
-    atasan = forms.ModelChoiceField(queryset=Account.objects.all(), required=False)
+    unitkerja = forms.ModelChoiceField(queryset=UnitKerja.objects.all(), required=False)
+    atasan = forms.ModelChoiceField(queryset=Account.objects.none(), required=False)
     nama_lengkap = forms.CharField(
         label="",
         required=True,
@@ -59,11 +60,10 @@ class AccountForm(forms.ModelForm):
         password = self.fields.get("password")
         if password:
             password.help_text = password.help_text.format("../password/")
-        if self.instance.pk:
-            self.fields["atasan"].queryset = Account.objects.all().exclude(
-                pk=self.instance.pk
+        if "atasan" in self.data:
+            self.fields["atasan"].queryset = Account.objects.filter(
+                pk=self.data.get("atasan", None)
             )
-
 
 class EditProfilPegawai(forms.ModelForm):
     class Meta:

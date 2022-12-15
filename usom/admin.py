@@ -63,11 +63,11 @@ class AccountAdmin(UserAdmin):
             "Informasi",
             {
                 "fields": (
+                    "unitkerja",
                     "atasan",
                     ("gelar_depan", "nama_lengkap", "gelar_belakang"),
                     "jabatan",
                     "jenis_jabatan",
-                    "unitkerja",
                     "golongan",
                     "eselon",
                     "jenis_pegawai",
