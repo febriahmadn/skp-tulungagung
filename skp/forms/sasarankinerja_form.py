@@ -10,6 +10,9 @@ class SasaranKinerjaForm(forms.ModelForm):
     pejabat_penilai = forms.ModelChoiceField(
         queryset=Account.objects.none(), required=False
     )
+    jenis_jabatan = forms.ChoiceField(
+        choices=SasaranKinerja.JenisJabatan.choices, required=False
+    )
     unor = forms.ModelChoiceField(queryset=UnitKerja.objects.none(), required=False)
     nama = forms.CharField(
         max_length=255,
@@ -92,8 +95,8 @@ class SasaranKinerjaForm(forms.ModelForm):
             # self.fields["pejabat_penilai"].widget = forms.HiddenInput()
 
     def clean(self):
-        periode_awal = self.cleaned_data.get('periode_awal', None)
-        periode_akhir = self.cleaned_data.get('periode_akhir', None)
+        periode_awal = self.cleaned_data.get("periode_awal", None)
+        periode_akhir = self.cleaned_data.get("periode_akhir", None)
 
         if periode_awal.year != periode_akhir.year:
             raise forms.ValidationError("Tahun Periode Tidak Sama".title())
