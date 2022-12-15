@@ -47,10 +47,10 @@
     <div class="card-body p-2 m-0">
         <ul class="nav nav-pills" id="pills-tab" role="tablist">
             <li class="nav-item">
-                <a class="nav-link active" id="diri-tab" data-toggle="pill" href="#pills-diri" role="tab" aria-controls="pills-diri" aria-selected="true">Penilaian Diri</a>
+                <a class="nav-link active" id="diri-tab" data-toggle="pill" href="#pills-diri" role="tab" aria-controls="pills-diri" aria-selected="true">Pelaksana Kinerja</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" id="bawahan-tab" data-toggle="pill" href="#pills-bawahan" role="tab" aria-controls="pills-bawahan" aria-selected="false">Penilaian Bawahan</a>
+                <a class="nav-link" id="bawahan-tab" data-toggle="pill" href="#pills-bawahan" role="tab" aria-controls="pills-bawahan" aria-selected="false">Pemantauan dan Evalusai</a>
             </li>
         </ul>
     </div>
@@ -123,7 +123,7 @@
                     data.map((val, idx)=>{
                         html += `
                             <tr>
-                                <td>${val.bulan}<br>${val.range}<br>{{batas_input|date:"d-m-Y"}}</td>
+                                <td>${val.bulan}<br>${val.range}<br>Batas: {{batas_input|date:"d-m-Y"}}</td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
@@ -165,7 +165,7 @@
                     data.map((val, idx)=>{
                         html += `
                             <tr>
-                                <td>${val.bulan}<br>${val.range}<br>{{batas_input|date:"d-m-Y"}}</td>
+                                <td>${val.bulan}<br>${val.range}<br>Batas: {{batas_input|date:"d-m-Y"}}</td>
                                 <td>
                                     <div style="display: inline-grid">
                                         <a href="${val.penilaian_bawahan_url}?b64=${btoa(val.range)}" target="_blank" class="btn btn-sm btn-primary m-1" >Penilaian Bawahan</a>
