@@ -112,7 +112,7 @@
           }
 
           if (response.success) {
-            toastr.success("Berhasil menambahkan atasan");
+            toastr.success("berhasil sinkron data SIPO");
             for (const [key, value] of Object.entries(response.data)) {
               let value_ = value ? value : '-';
               card_elem.find(`.data-${key}`).text(value_)
