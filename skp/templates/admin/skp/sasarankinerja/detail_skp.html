@@ -225,7 +225,11 @@
               </td>
               <td>
                 {% if penilai_view %}
+                {% if obj.status == 3 %}
+                {% daftar_ekspetasi item.id obj.id "ya" %}
+                {% else %}
                 {% daftar_ekspetasi item.id obj.id "tidak" %}
+                {% endif %}
                 {% else %}
                 {% if obj.status == 2  %}
                 {% daftar_ekspetasi item.id obj.id "tidak" %}
