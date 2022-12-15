@@ -1,0 +1,57 @@
+{% extends 'admin/change_form.html' %}
+{% load static %}
+
+{% block content %}
+{{ block.super }}
+{% endblock content %}
+
+{% block custom_js %}
+{{ block.super }}
+<script src="{% static 'loading-overlay/loadingoverlay.min.js' %}"></script>
+<script>
+    $('#id_unitkerja').on('change', function(e){
+        let value = e.target.value;
+        $.ajax({
+          url: '{% url "admin:usom_account_as_json" %}',
+          type: 'GET',
+          data: {
+            unor_id: value
+          },
+          beforeSend: function(){
+            $(".field-atasan").LoadingOverlay("show", {
+                background  : "rgba(212, 212, 212, 0.31)"
+            });
+            $('#id_atasan').prop('disabled','disabled')
+            
+        },
+        success: function(response){
+            if (response.success){
+                let options = '<option value="0">Pilih Unor Atasan</option>'
+                var atasan_id;
+                {% if original %}{% if original.atasan %}atasan_id = "{{original.atasan.id}}"{% endif %}{% endif %}
+                response.results.map((item, index) => {
+                    selected = ""
+                    if(item.id == parseInt(atasan_id)){
+                        selected = "selected"
+                    }
+                    options += `<option ${selected} value="${item.id}">${item.text}</option>`;
+                })
+                $('#id_atasan').html(options)
+                $('#id_atasan').select2();
+            }
+        },
+         complete:function(){
+            $(".field-atasan").LoadingOverlay('hide')
+            $('#id_atasan').prop('disabled','')
+         }
+        })
+      })
+      $(function(){
+        {% if original %}
+        {% if original.unitkerja %}
+        $("#id_unitkerja").val("{{original.unitkerja.id}}").trigger('change') 
+        {% endif %}
+        {% endif %}
+      })
+</script>
+{% endblock custom_js %}
