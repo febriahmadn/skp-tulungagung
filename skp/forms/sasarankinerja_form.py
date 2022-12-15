@@ -10,6 +10,7 @@ class SasaranKinerjaForm(forms.ModelForm):
     pejabat_penilai = forms.ModelChoiceField(
         queryset=Account.objects.none(), required=False
     )
+    jenis_jabatan = forms.ChoiceField(choices=SasaranKinerja.JenisJabatan.choices, required=False)
     unor = forms.ModelChoiceField(queryset=UnitKerja.objects.none(), required=False)
     nama = forms.CharField(
         max_length=255,
