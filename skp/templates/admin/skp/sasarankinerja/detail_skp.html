@@ -332,11 +332,12 @@
           <label for="">Rencana Hasil Kerja</label>
           <input type="text" class="form-control" name="rencana_kerja" id="rencana_id">
         </div>
-
+        {% if obj.jenis_jabatan == 1 %}
         <div class="form-group">
           <label for="">Penugasan Dari</label>
           <input type="text" class="form-control" name="penugasan_dari" id="penugasan_id">
         </div>
+        {% endif %}
 
       </div>
       <div class="modal-footer">
