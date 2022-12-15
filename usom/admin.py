@@ -13,6 +13,8 @@ from usom.models import Account, UnitKerja
 
 class UnitKerjaAdmin(admin.ModelAdmin):
     list_display = ("id", "unitkerja", "id_sipo", "aktif")
+    search_fields = ("unitkerja",)
+    list_filter = ("aktif",)
 
     def load_data_json(self, request):
         respon = []
