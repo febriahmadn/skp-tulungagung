@@ -55,6 +55,21 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         delete_skp,
     ]
 
+    def has_add_permission(self, request):
+        user = request.user
+        if not user.is_superuser:
+            if user.unitkerja and user.jabatan and user.jenis_jabatan:
+                return True
+            else:
+                messages.add_message(
+                    request,
+                    messages.ERROR,
+                    "Unit Kerja, Jabatan atau Jenis Jabatan Kosong",
+                )
+                return False
+        else:
+            return True
+
     def get_actions(self, request):
         actions = super().get_actions(request)
         if "delete_selected" in actions:
@@ -337,9 +352,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
 
     def view_skp_bawahan(self, request, id):
         obj = get_object_or_404(SasaranKinerja, pk=id)
-        list_skp_bawahan = SasaranKinerja.objects.filter(
-            induk=obj
-        )
+        list_skp_bawahan = SasaranKinerja.objects.filter(induk=obj)
         show_detail = [
             SasaranKinerja.Status.PENGAJUAN,
             SasaranKinerja.Status.PERSETUJUAN,
