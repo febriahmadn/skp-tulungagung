@@ -221,7 +221,7 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
         jenis = request.POST.get("jenis", None)
         rencana_kerja = request.POST.get("rencana_kerja", None)
         penugasan_dari = request.POST.get("penugasan_dari", None)
-        pimpinan_id = int(request.POST.get("pimpinan_id", None))
+        pimpinan_id = request.POST.get("pimpinan_id", None)
         if rhk_id and rhk_id != "":
             try:
                 obj = RencanaHasilKerja.objects.get(pk=rhk_id)
@@ -238,7 +238,7 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
         obj.jenis = int(jenis)
         obj.rencana_kerja = rencana_kerja
         obj.penugasan_dari = penugasan_dari
-        if pimpinan_id:
+        if pimpinan_id.isnumeric():
             obj.induk_id = pimpinan_id
         obj.save()
         respon = {"success": True}
