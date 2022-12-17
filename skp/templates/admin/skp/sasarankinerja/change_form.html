@@ -1,0 +1,44 @@
+{% extends 'admin/change_form.html' %}
+
+{% block content %}
+{{ block.super }}
+{% endblock content %}
+
+{% block custom_js %}
+{{ block.super }}
+{% if not has_delete_permission and not has_change_permission and original %}
+<script>
+    const HandleLoadData = () =>{
+        let card_sasaran_kinerja = new KTCard('card-sasaran_kinerja');
+        $.ajax({
+            url:"{% url 'admin:skp_sasarankinerja_view' id=obj.id %}",
+            method: "GET",
+            beforeSend: function(){
+                KTApp.block(card_sasaran_kinerja.getSelf(), {
+                    overlayColor: '#ffffff',
+                    type: 'loader',
+                    state: 'primary',
+                    opacity: 0.3,
+                    size: 'lg'
+                });
+            },
+            success: function(res){
+                keys = Object.keys(res.data)
+                console.log(keys)
+                keys.map((item, idx)=>{
+                    $("#value-"+item).html(res.data[item])
+                })
+            },
+            complete: function(){
+                console.log("complete")
+                setTimeout(KTApp.unblock(card_sasaran_kinerja.getSelf()), 1000);
+            }
+        })
+    }
+    $(function(){
+        $("#sasarankinerja_form").find('.card-custom').attr("id","card-sasaran_kinerja")
+        HandleLoadData()
+    })
+</script>
+{% endif %}
+{% endblock custom_js %}

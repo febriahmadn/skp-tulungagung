@@ -198,6 +198,32 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
             qs = qs.filter(pegawai=request.user)
         return qs
 
+    def view_changeform_skp(self, request, id=None):
+        respon = {"success": False}
+        obj = get_object_or_404(SasaranKinerja, pk=id)
+        if obj:
+            data = {
+                "nama": obj.detailsasarankinerja.nama_pegawai,
+                "jabatan": obj.detailsasarankinerja.jabatan_pegawai,
+                "unit_kerja": obj.detailsasarankinerja.unor_pegawai,
+                "nama_atasan": obj.detailsasarankinerja.nama_pejabat,
+                "jabatan_atasan": obj.detailsasarankinerja.jabatan_pejabat,
+                "unit_kerja_atasan": obj.detailsasarankinerja.unor_pejabat,
+            }
+            respon = {"success": True, "data": data}
+        return JsonResponse(respon, safe=False)
+
+    def change_view(self, request, object_id, form_url="", extra_context={}):
+        obj = get_object_or_404(SasaranKinerja, pk=object_id)
+        extra_context.update({"obj": obj})
+        self.request = request
+        return super().change_view(
+            request,
+            object_id,
+            form_url,
+            extra_context=extra_context,
+        )
+
     def view_detail_skp(self, request, id=None):
         obj = get_object_or_404(SasaranKinerja, pk=id)
         perilaku_kerja_list = PerilakuKerja.objects.filter(is_active=True)
@@ -687,6 +713,11 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                 "sync-data-local/<int:id>",
                 self.admin_site.admin_view(self.sinkron_data_pegawai_local),
                 name="skp_sasarankinerja_sync_data_pegawai",
+            ),
+            path(
+                "<int:id>/view",
+                self.admin_site.admin_view(self.view_changeform_skp),
+                name="skp_sasarankinerja_view",
             ),
             # path("skpdata/", self.view_custom, name="list_skp_admin"),
             # path("skpdata/add/", self.add_skp, name="add_skp_admin"),
