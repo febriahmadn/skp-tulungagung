@@ -26,7 +26,7 @@
                     {% else %}
                         {{ field.label_tag}}
                     {% if field.is_readonly %}
-                    <p>{{ field.contents|linebreaksbr }}</p>
+                    <p id="{% if field.field.name %}value-{{ field.field.name }}{% endif %}">{{ field.contents|linebreaksbr }}</p>
                     {% else %}
                         {% if field.field|is_select %}
                             {{ field.field|addcls:"form-control" }}

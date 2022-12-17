@@ -54,6 +54,9 @@ class SasaranKinerjaForm(forms.ModelForm):
         request = self.request
 
         user = request.user
+        if self.instance.pk:
+            user = self.instance.pegawai
+        print(user)
         self.fields["pegawai"].initial = user.id
         self.fields["pegawai"].queryset = Account.objects.filter(id=user.id)
         self.fields["pegawai"].widget = forms.HiddenInput()
@@ -68,8 +71,8 @@ class SasaranKinerjaForm(forms.ModelForm):
                 request, messages.ERROR, "Jenis Jabatan Kosong".title()
             )
             # return redirect(reverse("admin:skp_sasarankinerja_changelist"))
-
-        self.fields["nama"].initial = user.get_complete_name
+        print(user.get_complete_name())
+        self.fields["nama"].initial = user.get_complete_name()
         if user.jabatan:
             self.fields["jabatan"].initial = user.jabatan if user.jabatan else "---"
         else:
@@ -89,12 +92,12 @@ class SasaranKinerjaForm(forms.ModelForm):
             messages.add_message(request, messages.ERROR, "Unit Kerja Kosong".title())
             # return redirect(reverse("admin:skp_sasarankinerja_changelist"))
 
+        self.fields["pejabat_penilai"].widget = forms.HiddenInput()
         if user.atasan:
             self.fields["pejabat_penilai"].initial = user.atasan.id
             self.fields["pejabat_penilai"].queryset = Account.objects.filter(
                 id=user.atasan.id
             )
-            self.fields["pejabat_penilai"].widget = forms.HiddenInput()
 
             self.fields["nama_atasan"].initial = user.atasan.get_complete_name
             self.fields["jabatan_atasan"].initial = (

@@ -11,40 +11,44 @@
 <script>
     $('#id_unitkerja').on('change', function(e){
         let value = e.target.value;
-        $.ajax({
-          url: '{% url "admin:usom_account_as_json" %}',
-          type: 'GET',
-          data: {
-            unor_id: value
+        if(value != ""){
+          $.ajax({
+            url: '{% url "admin:usom_account_as_json" %}',
+            type: 'GET',
+            data: {
+              unor_id: value
+            },
+            beforeSend: function(){
+              $(".field-atasan").LoadingOverlay("show", {
+                  background  : "rgba(212, 212, 212, 0.31)"
+              });
+              $('#id_atasan').prop('disabled','disabled')
+              
           },
-          beforeSend: function(){
-            $(".field-atasan").LoadingOverlay("show", {
-                background  : "rgba(212, 212, 212, 0.31)"
-            });
-            $('#id_atasan').prop('disabled','disabled')
-            
-        },
-        success: function(response){
-            if (response.success){
-                let options = '<option value="0">Pilih Unor Atasan</option>'
-                var atasan_id;
-                {% if original %}{% if original.atasan %}atasan_id = "{{original.atasan.id}}"{% endif %}{% endif %}
-                response.results.map((item, index) => {
-                    selected = ""
-                    if(item.id == parseInt(atasan_id)){
-                        selected = "selected"
-                    }
-                    options += `<option ${selected} value="${item.id}">${item.text}</option>`;
-                })
-                $('#id_atasan').html(options)
-                $('#id_atasan').select2();
+          success: function(response){
+              if (response.success){
+                  let options = '<option value readonly>Pilih Unor Atasan</option>'
+                  var atasan_id;
+                  {% if original %}{% if original.atasan %}atasan_id = "{{original.atasan.id}}"{% endif %}{% endif %}
+                  response.results.map((item, index) => {
+                      selected = ""
+                      if(item.id == parseInt(atasan_id)){
+                          selected = "selected"
+                      }
+                      options += `<option ${selected} value="${item.id}">${item.text}</option>`;
+                  })
+                  $('#id_atasan').html(options)
+                  $('#id_atasan').select2();
+              }
+          },
+           complete:function(){
+              $(".field-atasan").LoadingOverlay('hide')
+              $('#id_atasan').prop('disabled','')
             }
-        },
-         complete:function(){
-            $(".field-atasan").LoadingOverlay('hide')
-            $('#id_atasan').prop('disabled','')
-         }
-        })
+          })
+        }else{
+          $('#id_atasan').prop('disabled','disabled')
+        }
       })
       $(function(){
         {% if original %}

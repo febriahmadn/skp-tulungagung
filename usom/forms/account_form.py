@@ -61,9 +61,11 @@ class AccountForm(forms.ModelForm):
         if password:
             password.help_text = password.help_text.format("../password/")
         if "atasan" in self.data:
-            self.fields["atasan"].queryset = Account.objects.filter(
-                pk=self.data.get("atasan", None)
-            )
+            atasan = self.data.get("atasan", None)
+            if atasan.isnumeric() and int(atasan) != 0:
+                self.fields["atasan"].queryset = Account.objects.filter(
+                    pk=self.data.get("atasan", None)
+                )
 
 class EditProfilPegawai(forms.ModelForm):
     class Meta:
