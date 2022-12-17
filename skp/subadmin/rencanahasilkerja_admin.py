@@ -235,7 +235,9 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
 
         obj.klasifikasi = klasifikasi
         obj.unor_id = unitkerja
-        obj.jenis = int(jenis)
+        if jenis.is_numeric():
+            if int(jenis) != 0:
+                obj.jenis = int(jenis)
         obj.rencana_kerja = rencana_kerja
         obj.penugasan_dari = penugasan_dari
         if pimpinan_id.isnumeric():

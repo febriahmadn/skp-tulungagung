@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib import messages
 
 from skp.models import SasaranKinerja
 from skp.utils import string_to_int
@@ -57,22 +58,36 @@ class SasaranKinerjaForm(forms.ModelForm):
         self.fields["pegawai"].queryset = Account.objects.filter(id=user.id)
         self.fields["pegawai"].widget = forms.HiddenInput()
 
-        self.fields["jenis_jabatan"].initial = string_to_int(
-            SasaranKinerja.JenisJabatan, user.get_jenis_jabatan_display()
-        )
         self.fields["jenis_jabatan"].widget = forms.HiddenInput()
+        if user.jenis_jabatan:
+            self.fields["jenis_jabatan"].initial = string_to_int(
+                SasaranKinerja.JenisJabatan, user.get_jenis_jabatan_display()
+            )
+        else:
+            messages.add_message(
+                request, messages.ERROR, "Jenis Jabatan Kosong".title()
+            )
+            # return redirect(reverse("admin:skp_sasarankinerja_changelist"))
 
         self.fields["nama"].initial = user.get_complete_name
-        self.fields["jabatan"].initial = user.jabatan if user.jabatan else "---"
+        if user.jabatan:
+            self.fields["jabatan"].initial = user.jabatan if user.jabatan else "---"
+        else:
+            messages.add_message(request, messages.ERROR, "Jabatan Kosong".title())
+            # return redirect(reverse_lazy("admin:skp_sasarankinerja_changelist"))
+
         self.fields["unit_kerja"].initial = (
             user.unitkerja.unitkerja if user.unitkerja else "---"
         )
         if user.unitkerja:
-            self.fields["unor"].initial = user.unitkerja.id if user.unitkerja else None
             self.fields["unor"].widget = forms.HiddenInput()
+            self.fields["unor"].initial = user.unitkerja.id if user.unitkerja else None
             self.fields["unor"].queryset = UnitKerja.objects.filter(
                 id=user.unitkerja.id
             )
+        else:
+            messages.add_message(request, messages.ERROR, "Unit Kerja Kosong".title())
+            # return redirect(reverse("admin:skp_sasarankinerja_changelist"))
 
         if user.atasan:
             self.fields["pejabat_penilai"].initial = user.atasan.id
@@ -105,6 +120,7 @@ class SasaranKinerjaForm(forms.ModelForm):
             raise forms.ValidationError(
                 "periode akhir lebih dahulu dari pada tanggal awal".title()
             )
+
         return self.cleaned_data
 
     class Meta:
