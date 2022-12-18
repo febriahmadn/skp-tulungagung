@@ -173,6 +173,7 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
                             "induk": rencana_kerja_induk,
                             "rencana_kerja": item.rencana_kerja,
                             "penugasan_dari": item.penugasan_dari,
+                            "klasifikasi_rhk": item.get_klasifikasi_display(),
                             "indikator": indikator,
                             "rencana_aksi": rencana_aksi_list(obj, item, periode),
                         }
