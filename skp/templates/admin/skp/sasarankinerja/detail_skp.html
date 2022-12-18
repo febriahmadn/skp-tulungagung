@@ -1189,9 +1189,15 @@
     let status = $("#status").val()
     let keterangan = $("#keterangan").val()
     let csrf = modal.find('input[name=csrfmiddlewaretoken]').val();
-    $.ajax({
-      url: '{% url "admin:skp_sasarankinerja_changestatus" %}',
-      type: 'POST',
+    let error = false
+    if(status == "1" && keterangan == ""){
+      error = true
+    }
+    if(!error){
+
+      $.ajax({
+        url: '{% url "admin:skp_sasarankinerja_changestatus" %}',
+        type: 'POST',
       data: {
         csrfmiddlewaretoken: csrf,
         skp_id: "{{obj.id}}",
@@ -1207,6 +1213,9 @@
         }
       }
     })  
+  }else{
+    toastr.warning("Keterangan Tidak Boleh Kosong");
+  }
   }
   const save_lampiran = () => {
     let modal = $("#modal_tambah_lampiran")
