@@ -99,13 +99,16 @@
 {% block custom_js %}
 {{ block.super }}
 <script>
+    let skp_id = "{{obj.id}}"
+    let batas_input = `{{batas_input|date:"d-m-Y"}}`
+
     let card_penilaian = new KTCard('card-penilaian');
     const handleLoadPenilaianDiri = () =>{
         $.ajax({
-            url:"{% url 'admin:skp_sasarankinerja_penilaian_load' %}",
+            url:`${BASE_URL}/admin/skp/sasarankinerja/load-penilaian`,
             type:"GET",
             data:{
-                id:"{{obj.id}}",
+                id:skp_id,
             },
             beforeSend:function(){
                 KTApp.block(card_penilaian.getSelf(), {
@@ -123,7 +126,7 @@
                     data.map((val, idx)=>{
                         html += `
                             <tr>
-                                <td>${val.bulan}<br>${val.range}<br>Batas: {{batas_input|date:"d-m-Y"}}</td>
+                                <td>${val.bulan}<br>${val.range}<br>Batas: ${batas_input}</td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
@@ -145,10 +148,10 @@
     }
     const handleLoadPenilaianBawahan = () =>{
         $.ajax({
-            url:"{% url 'admin:skp_sasarankinerja_penilaian_load' %}",
+            url:`${BASE_URL}/admin/skp/sasarankinerja/load-penilaian`,
             type:"GET",
             data:{
-                id:"{{obj.id}}",
+                id:skp_id,
             },
             beforeSend:function(){
                 KTApp.block(card_penilaian.getSelf(), {
@@ -166,7 +169,7 @@
                     data.map((val, idx)=>{
                         html += `
                             <tr>
-                                <td>${val.bulan}<br>${val.range}<br>Batas: {{batas_input|date:"d-m-Y"}}</td>
+                                <td>${val.bulan}<br>${val.range}<br>Batas: ${batas_input}</td>
                                 <td>
                                     <div style="display: inline-grid">
                                         <a href="${val.penilaian_bawahan_url}?b64=${btoa(val.range)}" target="_blank" class="btn btn-sm btn-primary m-1" >Penilaian Bawahan</a>

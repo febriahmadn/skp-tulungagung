@@ -195,6 +195,9 @@
 {% block custom_js %}
 {{ block.super }}
 <script type="text/javascript">
+  let skp_id = "{{obj.id}}"
+  let periode = "{{periode}}"
+
   $("#modal_rencana_aksi").on('show.bs.modal', function (event) {
     let button = $(event.relatedTarget)
     let rhk = button.data('rhk')
@@ -216,12 +219,12 @@
     let csrf = modal.find('input[name=csrfmiddlewaretoken]').val();
     if(rencana_aksi != ""){
       $.ajax({
-        url: `${BASE_URL}{% url "admin:rencana-aksi-create" %}`,
+        url: `${BASE_URL}/admin/skp/rencanaaksi/create/`,
         type: 'POST',
         data: {
           csrfmiddlewaretoken: csrf,
-          skp_id: "{{obj.id}}",
-          periode: "{{periode}}",
+          skp_id: skp_id,
+          periode: periode,
           rencana_id: rencana_id,
           rhk_id: rhk_id,
           rencana_aksi: rencana_aksi,

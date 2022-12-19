@@ -529,7 +529,7 @@
   let skp_id = "{{obj.id}}"
   let jenis_jabatan = "{{obj.jenis_jabatan}}"
   let status = "{{obj.status}}"
-  let penilai_view= "{{penilai_view}}".toLowerCase()
+  let penilai_view= "{{penilai_view}}"
 
   $('.field-keterangan').hide()
   const onchangeStatus = (elem) =>{
@@ -539,7 +539,7 @@
       $('.field-keterangan').hide()
     }
   }
-  $("#status").val(status).trigger('change')
+  $("#status").val("{{obj.status}}").trigger('change')
   const changeStatus = (status=1) => {
     return new Promise((resolve, reject) => {
       $.ajax({
@@ -830,13 +830,12 @@
       success: function(response){
         delete_html = ""
         if(response.length > 0){
-          let colspan = `<td colspan="5">`
-          if (jenis_jabatan != "1") {
-            colspan = `<td colspan="6">`
-          }
-          
           let html_ = `<tr class="bg-dark">
-                        ${colspan}
+                        {% if obj.jenis_jabatan != 1 %}
+                        <td colspan="6">
+                        {% else %}
+                        <td colspan="5">
+                        {% endif %}
                           <span class="font-weight-bold text-white">Utama<span>
                         </td>
                       </tr>`
@@ -844,7 +843,11 @@
             let indikator =  '';
             if (item.indikator.length > 0){
               item.indikator.map(item_indikator => {
-                let aksi = `
+                indikator += `
+                <tr>
+                  <td>
+                    <span id="indikator-${item_indikator.id}" >${item_indikator.indikator}</span>
+                    {% if obj.status == 1 %}
                     <div class="d-flex justify-content-center mt-3">
                       <button class="btn btn-icon btn-warning mr-1" data-rhk_id="${item.id}" data-edit="true" data-indikator_id="${item_indikator.id}" onclick="set_rhk_indikator($(this))">
                         <i class="flaticon2-pen"></i>
@@ -853,24 +856,14 @@
                         <i class="flaticon-delete-1"></i>
                       </a>
                     </div>
-                `
-                if(status != "1"){
-                  aksi = ""
-                }
-
-                let indikator_isi = `<td id="aspek-${item_indikator.id}">${item_indikator.aspek ? item_indikator.aspek : '-'}</td>`
-                if(jenis_jabatan == "1"){
-                  indikator_isi = `<td id="perspektif-${item_indikator.id}" data-perspektif="${item_indikator.perspekif_id}">${item_indikator.perspektif ? item_indikator.perspektif : '-'}</td>`
-                }
-
-                indikator += `
-                <tr>
-                  <td>
-                    <span id="indikator-${item_indikator.id}" >${item_indikator.indikator}</span>
-                    ${aksi}
+                    {% endif %}
                   </td>
                   <td id="target-${item_indikator.id}">${item_indikator.target}</td>
-                  ${indikator_isi}
+                  {% if obj.jenis_jabatan == 1 %}
+                  <td id="perspektif-${item_indikator.id}" data-perspektif="${item_indikator.perspekif_id}">${item_indikator.perspektif ? item_indikator.perspektif : '-'}</td>
+                  {% else %}
+                  <td id="aspek-${item_indikator.id}">${item_indikator.aspek ? item_indikator.aspek : '-'}</td>
+                  {% endif %}
                 </tr>
                 `
               })
@@ -880,36 +873,40 @@
                   <i class="flaticon-delete-1"></i>
                 </a>
               `
-              let button_tambah_indikator = `<button class="btn btn-sm btn-light-primary btn-block" data-rhk_id="${item.id}" data-edit="false" onclick="set_rhk_indikator($(this))">Tambah Indikator</button>`
-              if (status == "1") {
-                if(penilai_view == "true"){
-                  button_tambah_indikator = ""
-                }
-                indikator += `
-                <tr>
-                  <td colspan="3">
-                    ${button_tambah_indikator}
-                  </td>
-                </tr>
-                `
-              }
+              indikator += `
+              {% if obj.status == 1 %}
+              <tr>
+                <td colspan="3">
+                  {% if not penilai_view %}
+                  <button class="btn btn-sm btn-light-primary btn-block" data-rhk_id="${item.id}" data-edit="false" onclick="set_rhk_indikator($(this))">Tambah Indikator</button>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endif %}
+              `
             }
 
+            // indikator += `
+            //   <tr>
+            //     <td colspan="3"></td>
+            //     <td colspan="3">
+            //       <button class="btn btn-sm btn-primary btn-block" data-rhk_id="${item.id}" onclick="set_rhk_indikator($(this))">Pilih Indikator</button>
+            //     </td>
+            //   </tr>
+            // `
             
             if (item.indikator.length > 0){
-              let button_tambah_indikator = `<button class="btn btn-sm btn-light-primary btn-block" data-rhk_id="${item.id}" data-edit="false" onclick="set_rhk_indikator($(this))">Tambah Indikator</button>`
-              if (status == "1") {
-                if(penilai_view == "true"){
-                  button_tambah_indikator = ""
-                }
-                indikator += `
+              indikator += `
+                {% if obj.status == 1 %}
                 <tr>
                   <td colspan="3">
-                    ${button_tambah_indikator}
+                    {% if not penilai_view %}
+                    <button class="btn btn-sm btn-light-primary btn-block" data-rhk_id="${item.id}" onclick="set_rhk_indikator($(this))">Tambah Indikator</button>
+                    {% endif %}
                   </td>
                 </tr>
-                `
-              }
+                {% endif %}
+              `
             }
             let klasifikasi = "";
             if(item.klasifikasi_rhk == "Organisasi"){
@@ -917,45 +914,31 @@
               <br><span class="label label-primary label-inline font-weight-bolder mr-2">${item.klasifikasi_rhk}</span>
               `
             }
-            let indikator_length = item.indikator.length+2
-            if (penilai_view == "true") {
-              indikator_length = item.indikator.length+1
-              
-            }
             let induk_elem = `
-                <td rowspan="${indikator_length}">
+                <td rowspan="{% if penilai_view %}${item.indikator.length+1}{% else %}${item.indikator.length+2}{% endif %}">
                   ${item?.induk ? item.induk.rencana_kerja : ''}
                 </td>
               `
-            if(jenis_jabatan == "1"){
-              induk_elem = ""
-            }
-            
-            let html_rowspan = `
-            <td rowspan="${indikator_length}">${no}</td>
-            `
-            let skp_aksi = `
-            <div class="mt-1">
-              <button class="btn btn-icon btn-warning mr-1" data-rhk_id="${item.id}" data-pimpinan_id="${item.induk?.id}" data-edit="true" data-toggle="modal" data-target="#tambahrhk">
-                <i class="flaticon2-pen"></i>
-              </button>
-              ${delete_html}
-            </div>
-            `
-            if(status != "1"){
-              skp_aksi = ""
-              html_rowspan = `<td rowspan="${item.indikator.length+1}">${no}</td>`
-            }else{
-              html_rowspan = `<td rowspan="${indikator_length}">${no}</td>`
-            }
+
             html_ += `
               <tr>
-                ${html_rowspan}
-                ${induk_elem}
-                <td rowspan="${indikator_length}">
+                {% if obj.status != 1 %}
+                <td rowspan="${item.indikator.length+1}">${no}</td>
+                {% else %}
+                <td rowspan="{% if penilai_view %}${item.indikator.length+1}{% else %}${item.indikator.length+2}{% endif %}">${no}</td>
+                {% endif %}
+                {% if obj.jenis_jabatan != 1 %}${induk_elem}{% endif %}
+                <td rowspan="{% if penilai_view %}${item.indikator.length+1}{% else %}${item.indikator.length+2}{% endif %}">
                   <b>${item.rencana_kerja}</b><br><span class="text-muted">${item.penugasan_dari ? `Penugasan dari ${item.penugasan_dari}` : ''}</span>
                   ${klasifikasi}
-                  ${skp_aksi}
+                  {% if obj.status == 1 %}
+                  <div class="mt-1">
+                    <button class="btn btn-icon btn-warning mr-1" data-rhk_id="${item.id}" data-pimpinan_id="${item.induk?.id}" data-edit="true" data-toggle="modal" data-target="#tambahrhk">
+                      <i class="flaticon2-pen"></i>
+                    </button>
+                    ${delete_html}
+                  </div>
+                  {% endif %}
                 </td>
               </tr>
               ${indikator}
@@ -982,21 +965,24 @@
       success: function(response){
         delete_html = ""
         if(response.length > 0){
-          let colspan = `<td colspan="5">`
-            if (jenis_jabatan != "1") {
-              colspan = `<td colspan="6">`
-            }
-            
-            let html_ = `<tr class="bg-dark">
-                          ${colspan}
-                            <span class="font-weight-bold text-white">Tambahan<span>
-                          </td>
-                        </tr>`
+          let html_ = `<tr class="bg-dark">
+                        {% if obj.jenis_jabatan != 1 %}
+                        <td colspan="6">
+                        {% else %}
+                        <td colspan="5">
+                        {% endif %}
+                          <span class="font-weight-bold text-white">Tambahan<span>
+                        </td>
+                      </tr>`
           response.map((item, index) => {
             let indikator =  '';
             if (item.indikator.length > 0){
               item.indikator.map(item_indikator => {
-                let aksi = `
+                indikator += `
+                <tr>
+                  <td>
+                    <span id="indikator-${item_indikator.id}" >${item_indikator.indikator}</span>
+                    {% if obj.status == 1 %}
                     <div class="d-flex justify-content-center mt-3">
                       <button class="btn btn-icon btn-warning mr-1" data-rhk_id="${item.id}" data-edit="true" data-indikator_id="${item_indikator.id}" onclick="set_rhk_indikator($(this))">
                         <i class="flaticon2-pen"></i>
@@ -1005,62 +991,48 @@
                         <i class="flaticon-delete-1"></i>
                       </a>
                     </div>
-                `
-                if(status != "1"){
-                  aksi = ""
-                }
-
-                let indikator_isi = `<td id="aspek-${item_indikator.id}">${item_indikator.aspek ? item_indikator.aspek : '-'}</td>`
-                if(jenis_jabatan == "1"){
-                  indikator_isi = `<td id="perspektif-${item_indikator.id}" data-perspektif="${item_indikator.perspekif_id}">${item_indikator.perspektif ? item_indikator.perspektif : '-'}</td>`
-                }
-
-                indikator += `
-                <tr>
-                  <td>
-                    <span id="indikator-${item_indikator.id}" >${item_indikator.indikator}</span>
-                    ${aksi}
+                    {% endif %}
                   </td>
                   <td id="target-${item_indikator.id}">${item_indikator.target}</td>
-                  ${indikator_isi}
+                  {% if obj.jenis_jabatan == 1 %}
+                  <td id="perspektif-${item_indikator.id}" data-perspektif="${item_indikator.perspekif_id}">${item_indikator.perspektif ? item_indikator.perspektif : '-'}</td>
+                  {% else %}
+                  <td id="aspek-${item_indikator.id}">${item_indikator.aspek ? item_indikator.aspek : '-'}</td>
+                  {% endif %}
                 </tr>
                 `
               })
             } else {
               delete_html = `
-                <a onclick="delete_action('${item.delete_url}')" class="btn btn-icon btn-danger">
-                  <i class="flaticon-delete-1"></i>
-                </a>
+              <a onclick="delete_action('${item.delete_url}')" class="btn btn-icon btn-danger">
+                <i class="flaticon-delete-1"></i>
+              </a>
               `
-              let button_tambah_indikator = `<button class="btn btn-sm btn-light-primary btn-block" data-rhk_id="${item.id}" data-edit="false" onclick="set_rhk_indikator($(this))">Tambah Indikator</button>`
-              if (status == "1") {
-                if(penilai_view == "true"){
-                  button_tambah_indikator = ""
-                }
-                indikator += `
-                <tr>
-                  <td colspan="3">
-                    ${button_tambah_indikator}
-                  </td>
-                </tr>
-                `
-              }
+              indikator += `
+              {% if obj.status == 1 %}
+              <tr>
+                <td colspan="3">
+                  {% if not penilai_view %}
+                  <button class="btn btn-sm btn-light-primary btn-block" data-rhk_id="${item.id}" data-edit="false" onclick="set_rhk_indikator($(this))">Tambah Indikator</button>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endif %}
+              `
             }
 
             if (item.indikator.length > 0){
-              let button_tambah_indikator = `<button class="btn btn-sm btn-light-primary btn-block" data-rhk_id="${item.id}" data-edit="false" onclick="set_rhk_indikator($(this))">Tambah Indikator</button>`
-              if (status == "1") {
-                if(penilai_view == "true"){
-                  button_tambah_indikator = ""
-                }
-                indikator += `
+              indikator += `
+                {% if obj.status == 1 %}
                 <tr>
                   <td colspan="3">
-                    ${button_tambah_indikator}
+                    {% if not penilai_view %}
+                    <button class="btn btn-sm btn-light-primary btn-block" data-rhk_id="${item.id}" data-edit="false" onclick="set_rhk_indikator($(this))">Tambah Indikator</button>
+                    {% endif %}
                   </td>
                 </tr>
-                `
-              }
+                {% endif %}
+              `
             }
             let klasifikasi = "";
             if(item.klasifikasi_rhk == "Organisasi"){
@@ -1068,47 +1040,32 @@
               <br><span class="label label-primary label-inline font-weight-bolder mr-2">${item.klasifikasi_rhk}</span>
               `
             }
-
-            let indikator_length = item.indikator.length+2
-            if (penilai_view == "true") {
-              indikator_length = item.indikator.length+1
-              
-            }
-
             let induk_elem = `
-                <td rowspan="${indikator_length}">
+                <td rowspan="{% if penilai_view %}${item.indikator.length+1}{% else %}${item.indikator.length+2}{% endif %}">
                   ${item?.induk ? item.induk.rencana_kerja : ''}
                 </td>
-              `
-              if(jenis_jabatan == "1"){
-                induk_elem = ""
-              }
-              
-              let html_rowspan = `
-              <td rowspan="${indikator_length}">${no}</td>
-              `
-              let skp_aksi = `
-              <div class="mt-1">
-                <button class="btn btn-icon btn-warning mr-1" data-rhk_id="${item.id}" data-pimpinan_id="${item.induk?.id}" data-edit="true" data-toggle="modal" data-target="#tambahrhk">
-                  <i class="flaticon2-pen"></i>
-                </button>
-                ${delete_html}
-              </div>
-              `
-              if(status != "1"){
-                skp_aksi = ""
-                html_rowspan = `<td rowspan="${item.indikator.length+1}">${no}</td>`
-              }else{
-                html_rowspan = `<td rowspan="${indikator_length}">${no}</td>`
-              }
-            html_ += `
+                `
+                
+              html_ += `
               <tr>
-                ${html_rowspan}
-                ${induk_elem}
-                <td rowspan="${indikator_length}">
+                {% if obj.status != 1 %}
+                <td rowspan="${item.indikator.length+1}">${no}</td>
+                {% else %}
+                <td rowspan="{% if penilai_view %}${item.indikator.length+1}{% else %}${item.indikator.length+2}{% endif %}">${no}</td>
+                {% endif %}
+
+                {% if obj.jenis_jabatan != 1 %}${induk_elem}{% endif %}
+                <td rowspan="{% if penilai_view %}${item.indikator.length+1}{% else %}${item.indikator.length+2}{% endif %}">
                   <b>${item.rencana_kerja}</b><br><span class="text-muted">${item.penugasan_dari ? `Penugasan dari ${item.penugasan_dari}` : ''}</span>
                   ${klasifikasi}
-                  ${skp_aksi}
+                  {% if obj.status == 1 %}
+                  <div class="mt-1">
+                    <button class="btn btn-icon btn-warning mr-1" data-rhk_id="${item.id}" data-pimpinan_id="${item.induk?.id}" data-edit="true" data-toggle="modal" data-target="#tambahrhk">
+                      <i class="flaticon2-pen"></i>
+                    </button>
+                    ${delete_html}
+                  </div>
+                  {% endif %}
                 </td>
               </tr>
               ${indikator}

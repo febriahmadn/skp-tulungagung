@@ -267,6 +267,10 @@
 {% block custom_js %}
 {{ block.super }}
 <script type="text/javascript">
+  let skp_id = "{{obj.id}}"
+  let periode = "{{periode}}"
+  let jenis_jabatan = "{{obj.jenis_jabatan}}"
+
   const validURL = (myURL) => {
     //regular expression for URL
     let pattern = /(?:^|[ \t])((https?:\/\/)?(?:localhost|[\w-]+(?:\.[\w-]+)+)(:\d+)?(\/\S*)?)/;
@@ -301,21 +305,26 @@
     no = 1
     // 1: Utama, 2: Tambahan
     await $.ajax({
-      url: `${BASE_URL}{% url 'admin:skp_rencarahasilkerja_get_by_skp' obj.id %}`,
+      url: `${BASE_URL}/admin/skp/rencanahasilkerja/get-data-skp/${skp_id}`,
       type: 'GET',
       data: {
         jenis: jenis,
-        periode: "{{periode}}"
+        periode: periode
       },
       success: function(response){
         console.log({response})
         delete_html = ""
         if(response.length > 0){
-          let html_ = `<tr class="bg-dark">
-                        <td colspan="9">
-                          <span class="font-weight-bold text-white">Utama<span>
-                        </td>
-                      </tr>`
+          let colspan = `<td colspan="8">`
+            if (jenis_jabatan != "1") {
+              colspan = `<td colspan="9">`
+            }
+            
+            let html_ = `<tr class="bg-dark">
+                          ${colspan}
+                            <span class="font-weight-bold text-white">Utama<span>
+                          </td>
+                        </tr>`
           response.map((item, index) => {
             let indikator =  '';
             let bukti_dukung =  '';
@@ -351,13 +360,13 @@
                     </td>
                   `
                 }
+                let html_jenis_jabatan = `<td id="aspek-${item_indikator.id}">${item_indikator.aspek ? item_indikator.aspek : '-'}</td>`
+                if(jenis_jabatan == "1"){
+                  html_jenis_jabatan = `<td id="perspektif-${item_indikator.id}">${item_indikator.perspektif ? item_indikator.perspektif : '-'}</td>`
+                }
                 indikator += `
                 <tr>
-                  {% if obj.jenis_jabatan == 1 %}
-                  <td id="perspektif-${item_indikator.id}">${item_indikator.perspektif ? item_indikator.perspektif : '-'}</td>
-                  {% else %}
-                  <td id="aspek-${item_indikator.id}">${item_indikator.aspek ? item_indikator.aspek : '-'}</td>
-                  {% endif %}
+                  ${html_jenis_jabatan}
                   <td>
                     <span  id="indikator-${item_indikator.id}" >${item_indikator.indikator}</span>
                   </td>
@@ -413,25 +422,26 @@
   const loadDataRHKTambahan = async () => {
     no = 1
     await $.ajax({
-      url: `${BASE_URL}{% url 'admin:skp_rencarahasilkerja_get_by_skp' obj.id %}`,
+      url: `${BASE_URL}/admin/skp/rencanahasilkerja/get-data-skp/${skp_id}`,
       type: 'GET',
       data: {
         jenis: 2,
-        periode: "{{periode}}"
+        periode: periode
       },
       success: function(response){
         console.log({response})
         delete_html = ""
         if(response.length > 0){
-          let html_ = `<tr class="bg-dark">
-                        {% if obj.jenis_jabatan != 1 %}
-                        <td colspan="9">
-                        {% else %}
-                        <td colspan="8">
-                        {% endif %}
-                          <span class="font-weight-bold text-white">Tambahan<span>
-                        </td>
-                      </tr>`
+          let colspan = `<td colspan="8">`
+            if (jenis_jabatan != "1") {
+              colspan = `<td colspan="9">`
+            }
+            
+            let html_ = `<tr class="bg-dark">
+                          ${colspan}
+                            <span class="font-weight-bold text-white">Tambahan<span>
+                          </td>
+                        </tr>`
           response.map((item, index) => {
             let indikator =  '';
             let bukti_dukung =  '';
@@ -475,13 +485,13 @@
                     </td>
                   `
                 }
+                let html_jenis_jabatan = `<td id="aspek-${item_indikator.id}">${item_indikator.aspek ? item_indikator.aspek : '-'}</td>`
+                if(jenis_jabatan == "1"){
+                  html_jenis_jabatan = `<td id="perspektif-${item_indikator.id}">${item_indikator.perspektif ? item_indikator.perspektif : '-'}</td>`
+                }
                 indikator += `
                 <tr>
-                  {% if obj.jenis_jabatan == 1 %}
-                  <td id="perspektif-${item_indikator.id}">${item_indikator.perspektif ? item_indikator.perspektif : '-'}</td>
-                  {% else %}
-                  <td id="aspek-${item_indikator.id}">${item_indikator.aspek ? item_indikator.aspek : '-'}</td>
-                  {% endif %}
+                  ${html_jenis_jabatan}
                   <td>
                     <span  id="indikator-${item_indikator.id}" >${item_indikator.indikator}</span>
                   </td>
@@ -513,10 +523,13 @@
                   ${item?.induk ? item.induk.rencana_kerja : ''}
                 </td>
               `
+            if(jenis_jabatan == "1"){
+              induk_elem = ""
+            }
             html_ += `
             <tr>
                 <td rowspan="${item.indikator.length+1}">${no}</td>
-                {% if obj.jenis_jabatan != 1 %}${induk_elem}{% endif %}
+                ${induk_elem}
                 <td rowspan="${item.indikator.length+1}">
                   ${item.rencana_kerja} ${item.penugasan_dari ? `(Penugasan dari ${item.penugasan_dari})` : ''}
                 </td>
@@ -556,14 +569,14 @@
     if(hasil_id != ""){
 
       $.ajax({
-        url: `${BASE_URL}{% url "admin:penilaian-bawahan-create" %}`,
+        url: `${BASE_URL}/admin/skp/penilaianbawahan/create/`,
       type: 'POST',
       data: {
         csrfmiddlewaretoken: csrf,
-        skp_id: "{{obj.id}}",
+        skp_id: skp_id,
         jenis: jenis,
         penilaianbawahan: penilaianbawahan_id,
-        periode: "{{periode}}",
+        periode: periode,
         hasil: hasil_id,
       },
       success: function(response){
