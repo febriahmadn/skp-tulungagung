@@ -9,6 +9,9 @@ def forwards_func(apps, schema_editor):
     print('forwards')
     if not Hasil.objects.exists():
         call_command('generate_master_hasil', verbosity=0)
+    else:
+        print('Hasil Exists')
+
 
 def reverse_func(apps, schema_editor):
     print('reverse')

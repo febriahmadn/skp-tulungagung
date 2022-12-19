@@ -163,6 +163,32 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
         )
         return render(request, "admin/skp/penilaianbawahan/cetak.html", extra_context)
 
+    def form_cetak_penilaian(self, request, skp_id, periode, extra_context={}):
+        try:
+            obj = SasaranKinerja.objects.get(pk=skp_id)
+        except Exception as e:
+            messages.error(request, str(e))
+            return redirect(
+                reverse(
+                    "admin:penilaian-bawahan-skp",
+                    kwargs={"skp_id": skp_id, "periode": periode},
+                )
+            )
+        try:
+            penilaian_bawah_obj = PenilaianBawahan.objects.get(skp=obj, periode=periode)
+        except PenilaianBawahan.DoesNotExist:
+            penilaian_bawah_obj = None
+        extra_context.update(
+            {
+                "title": "Form Penilaian",
+                "periode": periode,
+                "obj": obj,
+                "penilaianbawah": penilaian_bawah_obj,
+                "perilaku_kerja_list": PerilakuKerja.objects.filter(is_active=True),
+            }
+        )
+        return render(request, "admin/skp/penilaianbawahan/form_cetak.html", extra_context)
+
     def export_view(self, request, skp_id, periode, extra_context={}):
         try:
             obj = SasaranKinerja.objects.get(pk=skp_id)
@@ -247,6 +273,11 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
                 "<int:skp_id>/penilaian-bawahan/<int:periode>/cetak",
                 self.admin_site.admin_view(self.cetak_penilaian_bawahan),
                 name="penilaian-bawahan-skp-cetak",
+            ),
+            path(
+                "<int:skp_id>/form-penilaian/<int:periode>/cetak",
+                self.admin_site.admin_view(self.form_cetak_penilaian),
+                name="form-penilaian-skp-cetak",
             ),
             path(
                 "<int:skp_id>/penilaian-bawahan/<int:periode>/export",
