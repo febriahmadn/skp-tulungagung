@@ -216,7 +216,7 @@
     let csrf = modal.find('input[name=csrfmiddlewaretoken]').val();
     if(rencana_aksi != ""){
       $.ajax({
-        url: '{% url "admin:rencana-aksi-create" %}',
+        url: `${BASE_URL}{% url "admin:rencana-aksi-create" %}`,
         type: 'POST',
         data: {
           csrfmiddlewaretoken: csrf,

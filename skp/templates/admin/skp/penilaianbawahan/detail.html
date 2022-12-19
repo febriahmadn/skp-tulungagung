@@ -301,7 +301,7 @@
     no = 1
     // 1: Utama, 2: Tambahan
     await $.ajax({
-      url: "{% url 'admin:skp_rencarahasilkerja_get_by_skp' obj.id %}",
+      url: `${BASE_URL}{% url 'admin:skp_rencarahasilkerja_get_by_skp' obj.id %}`,
       type: 'GET',
       data: {
         jenis: jenis,
@@ -413,7 +413,7 @@
   const loadDataRHKTambahan = async () => {
     no = 1
     await $.ajax({
-      url: "{% url 'admin:skp_rencarahasilkerja_get_by_skp' obj.id %}",
+      url: `${BASE_URL}{% url 'admin:skp_rencarahasilkerja_get_by_skp' obj.id %}`,
       type: 'GET',
       data: {
         jenis: 2,
@@ -556,7 +556,7 @@
     if(hasil_id != ""){
 
       $.ajax({
-        url: '{% url "admin:penilaian-bawahan-create" %}',
+        url: `${BASE_URL}{% url "admin:penilaian-bawahan-create" %}`,
       type: 'POST',
       data: {
         csrfmiddlewaretoken: csrf,

@@ -23,14 +23,14 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
 
         try:
             skp_obj = SasaranKinerja.objects.get(pk=skp_id)
-        except Exception as e:
-            respon = {"success": False, "pesan": str(e)}
+        except SasaranKinerja.DoesNotExist:
+            respon = {"success": False, "pesan": "Sasaran Kinerja Tidak Ditemukan"}
             return JsonResponse(respon, safe=False)
 
         try:
             hasil_obj = Hasil.objects.get(pk=hasil)
-        except Exception as e:
-            respon = {"success": False, "pesan": str(e)}
+        except Hasil.DoesNotExist:
+            respon = {"success": False, "pesan": "Hasil Tidak Ditemukan"}
             return JsonResponse(respon, safe=False)
 
         try:
@@ -57,8 +57,8 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
     def page_penilaian_bawahan(self, request, skp_id, periode, extra_context={}):
         try:
             obj = SasaranKinerja.objects.get(pk=skp_id)
-        except Exception as e:
-            messages.error(request, str(e))
+        except SasaranKinerja.DoesNotExist:
+            messages.error(request, "Sasaran Kinerja Tidak Ditemukan")
             return redirect(
                 reverse("admin:skp_sasarankinerja_penilaian", kwargs={"id": skp_id})
             )
@@ -110,8 +110,8 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
     def detail_penilaian_bawahan(self, request, skp_id, periode, extra_context={}):
         try:
             obj = SasaranKinerja.objects.get(pk=skp_id)
-        except Exception as e:
-            messages.error(request, str(e))
+        except SasaranKinerja.DoesNotExist:
+            messages.error(request, "Sasaran Kinerja Tidak Ditemukan")
             return redirect(
                 reverse("admin:skp_sasarankinerja_penilaian", kwargs={"id": skp_id})
             )
@@ -140,8 +140,8 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
     def cetak_penilaian_bawahan(self, request, skp_id, periode, extra_context={}):
         try:
             obj = SasaranKinerja.objects.get(pk=skp_id)
-        except Exception as e:
-            messages.error(request, str(e))
+        except SasaranKinerja.DoesNotExist:
+            messages.error(request, "Sasaran Kinerja Tidak Ditemukan")
             return redirect(
                 reverse(
                     "admin:penilaian-bawahan-skp",
@@ -166,8 +166,8 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
     def form_cetak_penilaian(self, request, skp_id, periode, extra_context={}):
         try:
             obj = SasaranKinerja.objects.get(pk=skp_id)
-        except Exception as e:
-            messages.error(request, str(e))
+        except PenilaianBawahan.DoesNotExist:
+            messages.error(request, "Sasaran Kinerja Tidak Ditemukan")
             return redirect(
                 reverse(
                     "admin:penilaian-bawahan-skp",

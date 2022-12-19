@@ -538,7 +538,7 @@
   const changeStatus = (status=1) => {
     return new Promise((resolve, reject) => {
       $.ajax({
-        url: "{% url 'admin:skp_sasarankinerja_changestatus' %}",
+        url: `${BASE_URL}{% url 'admin:skp_sasarankinerja_changestatus' %}`,
         type: "GET",
         data: {
           skp_id: '{{ obj.id }}',
@@ -641,7 +641,7 @@
     if(edit){
       $('#rhk-label').html("Ubah RHK")
       $.ajax({
-        url: '{% url "admin:load-rhk" %}',
+        url: `${BASE_URL}{% url "admin:load-rhk" %}`,
         type: 'GET',
         data:{
           id:id,
@@ -703,7 +703,7 @@
   })
   const handleLoadUnitkerja = async (id=null) => {
     await $.ajax({
-      url: '{% url "admin:usom_unitkerja_loaddata" %}',
+      url: `${BASE_URL}{% url "admin:usom_unitkerja_loaddata" %}`,
       type: 'GET',
       success: function(response){
         if(response.length > 0){
@@ -757,7 +757,7 @@
     console.log({formData})
     
     $.ajax({
-      url: '{% url "admin:skp_indikator_set_indikator_rhk" %}',
+      url: `${BASE_URL}{% url "admin:skp_indikator_set_indikator_rhk" %}`,
       type: 'POST',
       data: formData,
       success: function(response){
@@ -833,7 +833,7 @@
   const loadDataRHKUtama = async (jenis=1) => {
     // 1: Utama, 2: Tambahan
     await $.ajax({
-      url: "{% url 'admin:skp_rencarahasilkerja_get_by_skp' obj.id %}",
+      url: `${BASE_URL}{% url 'admin:skp_rencarahasilkerja_get_by_skp' obj.id %}`,
       type: 'GET',
       data: {
         jenis: jenis
@@ -968,7 +968,7 @@
 
   const loadDataRHKTambahan = async () => {
     await $.ajax({
-      url: "{% url 'admin:skp_rencarahasilkerja_get_by_skp' obj.id %}",
+      url: `${BASE_URL}{% url 'admin:skp_rencarahasilkerja_get_by_skp' obj.id %}`,
       type: 'GET',
       data: {
         jenis: 2
@@ -1090,7 +1090,7 @@
 
   const loadIndikatorRHKNone = async () => {
     await $.ajax({
-      url: "{% url 'admin:skp_indikator_get_by_skp' obj.id %}",
+      url: `${BASE_URL}{% url 'admin:skp_indikator_get_by_skp' obj.id %}`,
       type: 'GET',
       success: function(response){
         if (response.length > 0){
@@ -1113,7 +1113,7 @@
 
   const handleLoadRHKPimpinan = (selected=null) => {
     $.ajax({
-      url: '{% url "admin:skp_rencanahasilkerja_loadrhkpimpinan" %}?skp_id={{obj.id}}',
+      url: `${BASE_URL}{% url "admin:skp_rencanahasilkerja_loadrhkpimpinan" %}?skp_id={{obj.id}}`,
       type: 'GET',
       success: function(response){
         if(response.length > 0){
@@ -1140,7 +1140,7 @@
     if(typeof rhk_id !== "undefined"){
       modal.find('input[name=rhk_id]').val(rhk_id)
       $.ajax({
-        url: '{% url "admin:skp_rencanahasilkerja_loadrhkpimpinan" %}?skp_id={{obj.id}}',
+        url: `${BASE_URL}{% url "admin:skp_rencanahasilkerja_loadrhkpimpinan" %}?skp_id={{obj.id}}`,
         type: 'GET',
         success: function(response){
           if(response.length > 0){
@@ -1165,7 +1165,7 @@
     let isi = $("#ekspetasi").val()
     let csrf = modal.find('input[name=csrfmiddlewaretoken]').val();
     $.ajax({
-      url: '{% url "admin:skp_daftarperilakuerjapegawai_post" %}',
+      url: `${BASE_URL}{% url "admin:skp_daftarperilakuerjapegawai_post" %}`,
       type: 'POST',
       data: {
         csrfmiddlewaretoken: csrf,
@@ -1196,7 +1196,7 @@
     if(!error){
 
       $.ajax({
-        url: '{% url "admin:skp_sasarankinerja_changestatus" %}',
+        url: `${BASE_URL}{% url "admin:skp_sasarankinerja_changestatus" %}`,
         type: 'POST',
       data: {
         csrfmiddlewaretoken: csrf,
@@ -1224,7 +1224,7 @@
     let edit_lampiran = $("#edit_lampiran").val()
     let csrf = modal.find('input[name=csrfmiddlewaretoken]').val();
     $.ajax({
-      url: '{% url "admin:skp_daftarlampiran_post" %}',
+      url: `${BASE_URL}{% url "admin:skp_daftarlampiran_post" %}`,
       type: 'POST',
       data: {
         csrfmiddlewaretoken: csrf,
@@ -1289,7 +1289,7 @@
     let rhk_id = modal.find('input[name=rhk_id]').val()
     let rhk_pimpinan_id = modal.find('select[name=rhk_pimpinan]').val()
     $.ajax({
-      url: '{% url "admin:skp_rencanahasilkerja_set_rhk_pimpinan" %}',
+      url: `${BASE_URL}{% url "admin:skp_rencanahasilkerja_set_rhk_pimpinan" %}`,
       type: 'GET',
       data: {
         rhk_id: rhk_id,
@@ -1338,7 +1338,7 @@
     }
 
     $.ajax({
-      url: "{% url 'admin:skp_rencanahasilkerja_action_add_or_change' %}",
+      url: `${BASE_URL}{% url 'admin:skp_rencanahasilkerja_action_add_or_change' %}`,
       type: 'POST',
       data: formData,
       success: function(response){
@@ -1362,7 +1362,7 @@
 
   $('#btn_action_sinkron_ekinerja_id').on('click', function(){
     $.ajax({
-      url: '{% url "admin:skp_sasarankinerja_sinkron" obj.id %}',
+      url: `${BASE_URL}{% url "admin:skp_sasarankinerja_sinkron" obj.id %}`,
       type: 'GET',
       success: function(response){
         console.log({response})
@@ -1388,7 +1388,7 @@
       card_pegawai = new KTCard('card-penilai');
     }
     $.ajax({
-      url:elem.data('url'),
+      url: BASE_URL+elem.data('url'),
       method: "GET",
       data:{
         jenis:elem.data('jenis'),

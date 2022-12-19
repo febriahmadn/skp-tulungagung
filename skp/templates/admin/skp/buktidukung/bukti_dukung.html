@@ -317,7 +317,7 @@
     no = 1
     // 1: Utama, 2: Tambahan
     await $.ajax({
-      url: "{% url 'admin:skp_rencarahasilkerja_get_by_skp' obj.id %}",
+      url: `${BASE_URL}{% url 'admin:skp_rencarahasilkerja_get_by_skp' obj.id %}`,
       type: 'GET',
       data: {
         jenis: jenis,
@@ -461,7 +461,7 @@
   const loadDataRHKTambahan = async () => {
     no = 1
     await $.ajax({
-      url: "{% url 'admin:skp_rencarahasilkerja_get_by_skp' obj.id %}",
+      url: `${BASE_URL}{% url 'admin:skp_rencarahasilkerja_get_by_skp' obj.id %}`,
       type: 'GET',
       data: {
         jenis: 2,
@@ -621,7 +621,7 @@
     let csrf = modal.find('input[name=csrfmiddlewaretoken]').val();
     if(validURL(link)){
       $.ajax({
-        url: '{% url "admin:bukti-dukung-create" %}',
+        url: `${BASE_URL}{% url "admin:bukti-dukung-create" %}`,
         type: 'POST',
         data: {
           csrfmiddlewaretoken: csrf,
@@ -651,7 +651,7 @@
     let csrf = modal.find('input[name=csrfmiddlewaretoken]').val();
     if(realisasi != "" && sumber != ""){
       $.ajax({
-        url: '{% url "admin:realisasi-create" %}',
+        url: `${BASE_URL}{% url "admin:realisasi-create" %}`,
         type: 'POST',
         data: {
           csrfmiddlewaretoken: csrf,
