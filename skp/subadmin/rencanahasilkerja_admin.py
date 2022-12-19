@@ -186,19 +186,20 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
         skp_id = request.GET.get("skp_id")
         find_skp = SasaranKinerja.objects.get(pk=skp_id)
         if find_skp.induk:
-            rhk_list = RencanaHasilKerja.objects.filter(
-                skp_id=find_skp.induk.id,
-                klasifikasi=RencanaHasilKerja.Klasifikasi.ORGANISASI
-            )
+            if find_skp.status == SasaranKinerja.Status.PERSETUJUAN:
+                rhk_list = RencanaHasilKerja.objects.filter(
+                    skp_id=find_skp.induk.id,
+                    klasifikasi=RencanaHasilKerja.Klasifikasi.ORGANISASI,
+                )
 
-            if rhk_list.exists():
-                for item in rhk_list:
-                    respon.append(
-                        {
-                            "id": item.id,
-                            "rencana_kerja": item.rencana_kerja,
-                        }
-                    )
+                if rhk_list.exists():
+                    for item in rhk_list:
+                        respon.append(
+                            {
+                                "id": item.id,
+                                "rencana_kerja": item.rencana_kerja,
+                            }
+                        )
         return JsonResponse(respon, safe=False)
 
     def set_rhk_pimpinan(self, request):
