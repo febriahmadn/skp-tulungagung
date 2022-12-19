@@ -173,6 +173,7 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
                             "induk": rencana_kerja_induk,
                             "rencana_kerja": item.rencana_kerja,
                             "penugasan_dari": item.penugasan_dari,
+                            "klasifikasi_rhk": item.get_klasifikasi_display(),
                             "indikator": indikator,
                             "rencana_aksi": rencana_aksi_list(obj, item, periode),
                         }
@@ -185,16 +186,20 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
         skp_id = request.GET.get("skp_id")
         find_skp = SasaranKinerja.objects.get(pk=skp_id)
         if find_skp.induk:
-            rhk_list = RencanaHasilKerja.objects.filter(skp_id=find_skp.induk.id)
+            if find_skp.status == SasaranKinerja.Status.PERSETUJUAN:
+                rhk_list = RencanaHasilKerja.objects.filter(
+                    skp_id=find_skp.induk.id,
+                    klasifikasi=RencanaHasilKerja.Klasifikasi.ORGANISASI,
+                )
 
-            if rhk_list.exists():
-                for item in rhk_list:
-                    respon.append(
-                        {
-                            "id": item.id,
-                            "rencana_kerja": item.rencana_kerja,
-                        }
-                    )
+                if rhk_list.exists():
+                    for item in rhk_list:
+                        respon.append(
+                            {
+                                "id": item.id,
+                                "rencana_kerja": item.rencana_kerja,
+                            }
+                        )
         return JsonResponse(respon, safe=False)
 
     def set_rhk_pimpinan(self, request):

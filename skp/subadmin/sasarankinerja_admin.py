@@ -446,6 +446,13 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                     )
                     if sasaran_obj.status == 3
                     else "#",
+                    "cetak_form_penilaian_url": reverse_lazy(
+                        "admin:form-penilaian-skp-cetak",
+                        kwargs={
+                            "skp_id": sasaran_obj.id,
+                            "periode": awal.month,
+                        },
+                    ),
                 }
             )
         else:
@@ -488,6 +495,13 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                             )
                             if sasaran_obj.status == 3
                             else "#",
+                            "cetak_form_penilaian_url": reverse_lazy(
+                                "admin:form-penilaian-skp-cetak",
+                                kwargs={
+                                    "skp_id": sasaran_obj.id,
+                                    "periode": awal.month,
+                                },
+                            ),
                         }
                     )
                 elif i == akhir.month:
@@ -527,6 +541,13 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                             )
                             if sasaran_obj.status == 3
                             else "#",
+                            "cetak_form_penilaian_url": reverse_lazy(
+                                "admin:form-penilaian-skp-cetak",
+                                kwargs={
+                                    "skp_id": sasaran_obj.id,
+                                    "periode": awal.month,
+                                },
+                            ),
                         }
                     )
                 else:
@@ -567,6 +588,13 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                             )
                             if sasaran_obj.status == 3
                             else "#",
+                            "cetak_form_penilaian_url": reverse_lazy(
+                                "admin:form-penilaian-skp-cetak",
+                                kwargs={
+                                    "skp_id": sasaran_obj.id,
+                                    "periode": awal.month,
+                                },
+                            ),
                         }
                     )
         respon = {"success": True, "data": bulan_list}

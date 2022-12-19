@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from skp.models import Perspektif
+from skp.models import Lampiran
 
 
 class Command(BaseCommand):
@@ -12,8 +12,8 @@ class Command(BaseCommand):
             "SKEMA PERTANGGUNGJAWABAN",
             "KONSEKUENSI",
         ]
-        self.stdout.write(self.style.NOTICE("PROSES DATA MASTER PERSPEKTIF"))
+        self.stdout.write(self.style.NOTICE("PROSES DATA MASTER LAMPIRAN"))
         for i in hasil_list:
-            kategori_obj, created = Perspektif.objects.get_or_create(nama=i)
-            kategori_obj.save()
+            lampiran_obj, created = Lampiran.objects.get_or_create(nama=i)
+            lampiran_obj.save()
         self.stdout.write(self.style.SUCCESS("SELESAI"))
