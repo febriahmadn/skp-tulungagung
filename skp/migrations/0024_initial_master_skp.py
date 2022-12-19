@@ -2,7 +2,7 @@
 from django.core.management import call_command
 from django.db import migrations
 
-from skp.models import Perspektif, PerilakuKerja, Lampiran
+from skp.models import Lampiran, PerilakuKerja, Perspektif
 
 
 def forwards_func(apps, schema_editor):

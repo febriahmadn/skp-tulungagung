@@ -187,7 +187,9 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
                 "perilaku_kerja_list": PerilakuKerja.objects.filter(is_active=True),
             }
         )
-        return render(request, "admin/skp/penilaianbawahan/form_cetak.html", extra_context)
+        return render(
+            request, "admin/skp/penilaianbawahan/form_cetak.html", extra_context
+        )
 
     def export_view(self, request, skp_id, periode, extra_context={}):
         try:
