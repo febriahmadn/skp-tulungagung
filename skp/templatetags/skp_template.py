@@ -5,7 +5,7 @@ from django.utils.safestring import mark_safe
 from skp.models import (BuktiDukung, DaftarLampiran,
                         DaftarPerilakuKerjaPegawai, PenilaianBawahan,
                         Realisasi, RencanaAksi, RencanaHasilKerja,
-                        SasaranKinerja)
+                        SasaranKinerja, UmpanBalikPegawai)
 from skp.utils import FULL_BULAN
 
 register = template.Library()
@@ -70,41 +70,71 @@ def daftar_lampiran(lampiran_id, skp_id, cetak):
 
 
 @register.simple_tag
-def daftar_ekspetasi(perilaku_id, skp_id, cetak):
+def daftar_ekspetasi(perilaku_id, skp, cetak, user=None):
     isi = ""
+    ol = ""
+    ekspetasi_list = []
     find_ekspetasi = None
     try:
         find_ekspetasi = DaftarPerilakuKerjaPegawai.objects.get(
-            skp__id=skp_id, perilaku_kerja__id=perilaku_id
+            skp=skp, perilaku_kerja__id=perilaku_id
         )
     except DaftarPerilakuKerjaPegawai.DoesNotExist:
         tambah = True
     else:
         tambah = False
         isi = find_ekspetasi.isi
+        if find_ekspetasi.ekspetasi_tambahan.count() > 1:
+            ekspetasi_list = list(
+                find_ekspetasi.ekspetasi_tambahan.all().values_list("id", flat=True)
+            )
+            ol = """<table class="table table-borderless">"""
+            for idx, i in enumerate(find_ekspetasi.ekspetasi_tambahan.all()):
+                ol += """
+                    <tr>
+                        <td>{}.</td>
+                        <td>{}</td>
+                    </tr>
+                """.format(
+                    idx + 1, i.ekspetasi
+                )
+            ol += "</table>"
     if cetak == "tidak":
+        aksi = ""
+        if skp.jenis_jabatan == 1 or user == skp.pejabat_penilai:
+            aksi = """
+                <br>
+                <button type="button"
+                data-id="{}" data-ekspetasi="{}" data-tambah="{}"
+                data-ekspetasi_multiple="{}"
+                class="mt-3 ml-3 btn btn-{} btn-sm"
+                data-toggle="modal"
+                data-target="#modal_tambah_ekspetasi">
+                    {} Ekspektasi
+                </button>
+            """.format(
+                perilaku_id,
+                find_ekspetasi.id if find_ekspetasi else "",
+                tambah,
+                ekspetasi_list,
+                "primary" if tambah else "warning",
+                "Tambah" if tambah else "Edit",
+            )
         html = """
+            <span id="ekspetasi-multile-{}">{}</span>
+            Ekspetasi Lainnya:&nbsp;
             <span id="ekspetasi-{}">{}</span>
-            <br>
-            <button type="button"
-            data-id="{}" data-ekspetasi="{}" data-tambah="{}"
-            class="mt-3 ml-3 btn btn-{} btn-sm"
-            data-toggle="modal"
-            data-target="#modal_tambah_ekspetasi">
-                {} Ekspektasi
-            </button>
+            {}
         """.format(
-            perilaku_id,
-            isi,
-            perilaku_id,
-            find_ekspetasi.id if find_ekspetasi else "",
-            tambah,
-            "primary" if tambah else "warning",
-            "Tambah" if tambah else "Edit",
+            perilaku_id, ol, perilaku_id, isi, aksi
         )
     else:
-        html = "<span>{}</span>".format(
-            isi,
+        html = """
+            <span>{}</span>
+            Ekspetasi Lainnya:&nbsp;
+            <span>{}</span>
+        """.format(
+            ol, isi
         )
     return mark_safe(html)
 
@@ -241,6 +271,25 @@ def get_realisasi(indikator_obj, periode):
     if realisasi_list.exists():
         return realisasi_list.last()
     return None
+
+
+@register.simple_tag
+def get_umpan_balik(indikator_obj, periode):
+    umpan_balik_list = UmpanBalikPegawai.objects.filter(
+        indikator=indikator_obj, periode=periode
+    )
+    ol = ""
+    if umpan_balik_list.exists():
+        obj = umpan_balik_list.last()
+        if obj.umpan_balik.count() > 0:
+            ol = """<ol style="padding-inline-start: 15px;margin-block-start:unset">"""
+            for i in obj.umpan_balik.all():
+                ol += "<li>{}</li>".format(i.nama)
+            ol += "</ol>"
+            ol += "<span>Umpan Balik Tambahan:<br>{}</span>".format(
+                obj.umpan_balik_tambahan
+            )
+    return mark_safe(ol)
 
 
 @register.simple_tag

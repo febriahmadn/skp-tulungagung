@@ -179,11 +179,12 @@
                 {% endif %}
                 <th valign="center" style="min-width: 250px;">Bukti Dukung</th>
                 <th valign="center" style="min-width: 250px;">Realisasi</th>
+                <th valign="center" style="min-width: 250px;">UMPAN BALIK BERKELANJUTAN BERDASARKAN BUKTI DUKUNG</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td colspan="8" style="text-align: center;">Tidak Ada Data</td>
+                <td colspan="9" style="text-align: center;">Tidak Ada Data</td>
               </tr>
             </tbody>
           </table>
@@ -252,6 +253,36 @@
     </div>
   </div>
 </div>
+<div class="modal fade" id="tambahumpanbalikpegawai" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="umpan_title">Tambah Umpan Balik</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        {% csrf_token %}
+        <input type="hidden" name="umpan_id" id="umpan_id">
+        <input type="hidden" name="indikator_id_umpan" id="indikator_id_umpan">
+        <div class="form-group m-0">
+          <label for="umpan_multiple">Umpan Balik</label>
+          <select class="form-control" id="umpan_multiple" name="umpan_multiple[]" multiple="multiple" style="width: 100%;">
+          </select>
+        </div>
+        <div class="form-group mt-2">
+          <label for="umpan_balik_tambahan">Umpan Balik Tambahan</label>
+          <input type="text" class="form-control" id="umpan_balik_tambahan">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" onclick="save_umpan()">Submit</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 {% endblock content %}
 
@@ -261,6 +292,7 @@
   let skp_id = "{{obj.id}}"
   let periode = "{{periode}}"
   let status = "{{obj.status}}"
+  let jenis_jabatan = "{{obj.jenis_jabatan}}"
   let penilai_view= "{{penilai_view}}".toLowerCase()
 
   const validURL = (myURL) => {
@@ -273,7 +305,47 @@
         return false;
     }
   };
-  
+  const handleLoadUmpanBalik = (selected=null) => {
+    $.ajax({
+      url:`${BASE_URL}/admin/skp/umpanbalik/load`,
+      method:"GET",
+      success:function(res){
+        if(res.success){
+          html = ""
+          res.data.map( item => {
+            html += `<option value="${item.id}" >${item.nama}</option>`
+          })
+          $("#umpan_multiple").html(html).select2({
+            width: 'resolve',
+            closeOnSelect: false
+          })
+          if(selected.length > 0){
+            $("#umpan_multiple").val(selected).trigger('change')
+          }
+        }
+      }
+    })
+  }
+  $("#tambahumpanbalikpegawai").on('show.bs.modal', function (event) {
+    let modal = $("#tambahumpanbalikpegawai")
+    let button = $(event.relatedTarget)
+    let indikator = button.data('indikator_id')
+    let edit = button.data('edit')
+    let id = button.data('id')
+    let umpan_multiple_id = button.data('umpan_multiple_id')
+
+    $("#indikator_id_umpan").val(indikator)
+    $("#umpan_title").html("Tambah Umpan Balik")
+    $("#umpan_id").val(id)
+    handleLoadUmpanBalik(umpan_multiple_id)
+    if(edit){
+      $("#umpan_title").html("Ubah Umpan Balik")
+      let isi = $(`#umpan-balik-${id}`)
+      $("#umpan_balik_tambahan").val(isi.html())
+    }else{
+      $("#umpan_balik_tambahan").val("")
+    }
+  })
   $("#tambahbuktidukung").on('show.bs.modal', function (event) {
     let modal = $("#tambahbuktidukung")
     let button = $(event.relatedTarget)
@@ -332,9 +404,9 @@
         console.log({response})
         delete_html = ""
         if(response.length > 0){
-          let colspan = `<td colspan="8">`
+          let colspan = `<td colspan="9">`
           if (jenis_jabatan != "1") {
-            colspan = `<td colspan="9">`
+            colspan = `<td colspan="10">`
           }
           
           let html_ = `<tr class="bg-dark">
@@ -346,6 +418,7 @@
             let indikator =  '';
             let bukti_dukung =  '';
             let realisasi=  '';
+            let umpanbalik=  '<td>x</td>';
             var tambahan = 0;
             if (item.indikator.length > 0){
               item.indikator.map(item_indikator => {
@@ -359,6 +432,47 @@
                   Tambah
                 </button>
                 `
+
+                let button_umpan = `
+                <button style="width: 70%" class="btn btn-sm btn-primary mr-1" data-indikator_id="${item_indikator.id}" data-edit="false" data-toggle="modal" data-target="#tambahumpanbalikpegawai">
+                  Tambah
+                </button>
+                `
+                if(item_indikator.umpan_balik){
+                  let id_umpan = []
+                  let ol_umpan = ""
+                  if(item_indikator.umpan_balik.umpan_balik.length > 0){
+                    ol_umpan = "<ol>"
+                      item_indikator.umpan_balik.umpan_balik.map(item => {
+                        id_umpan.push(item.id)
+                        ol_umpan += `<li>${item.nama}</li>`
+                      })
+                    ol_umpan += "</ol>"
+                  }else{
+                    html = ""
+                  }
+                  umpanbalik = `
+                  <td>
+                    ${ol_umpan}
+                    Umpan Balik Tambahan: <br><span id="umpan-balik-${item_indikator.umpan_balik.id}">${item_indikator.umpan_balik.umpan_balik_tambahan ? item_indikator.umpan_balik.umpan_balik_tambahan : ''}</span>
+                    <div class="d-flex justify-content-center pt-3">
+                      <button class="btn btn-sm btn-warning mr-1" data-id="${item_indikator.umpan_balik.id}" data-indikator_id="${item_indikator.id}" data-edit="true" data-umpan_multiple_id="[${id_umpan}]" data-toggle="modal" data-target="#tambahumpanbalikpegawai">
+                        <i class="flaticon2-pen"></i>
+                      </button>
+                      <a onclick="delete_action('${item_indikator.umpan_balik.delete_url}')" class="btn btn-icon btn-danger">
+                        <i class="flaticon-delete-1"></i>
+                      </a>
+                    </div>
+                </td>
+                  `
+                }else{
+                  umpanbalik = `
+                    <td style="text-align: center">
+                      ${button_umpan}
+                    </td>
+                  `
+                }
+
                 if(item_indikator.bukti_dukung){
                   bukti_dukung = `
                   <td>
@@ -418,6 +532,7 @@
                   <td id="target-${item_indikator.id}">${item_indikator.target}</td>
                   ${bukti_dukung}
                   ${realisasi}
+                  ${umpanbalik}
                 </tr>
                 `
               })
@@ -480,9 +595,9 @@
         console.log({response})
         delete_html = ""
         if(response.length > 0){
-          let colspan = `<td colspan="8">`
+          let colspan = `<td colspan="9">`
           if (jenis_jabatan != "1") {
-            colspan = `<td colspan="9">`
+            colspan = `<td colspan="10">`
           }
           
           let html_ = `<tr class="bg-dark">
@@ -494,19 +609,59 @@
             let indikator =  '';
             let bukti_dukung =  '';
             let realisasi=  '';
+            let umpanbalik=  '';
             var tambahan = 0;
             if (item.indikator.length > 0){
               item.indikator.map(item_indikator => {
                 let button_bukti = `
-                <button class="btn btn-sm btn-block btn-primary mr-1" data-indikator_id="${item_indikator.id}" data-edit="false" data-toggle="modal" data-target="#tambahbuktidukung">
+                <button style="width: 70%" class="btn btn-sm btn-primary mr-1" data-indikator_id="${item_indikator.id}" data-edit="false" data-toggle="modal" data-target="#tambahbuktidukung">
                   Tambah
                 </button>
                 `
                 let button_realisasi = `
-                <button class="btn btn-sm btn-block btn-primary mr-1" data-indikator_id="${item_indikator.id}" data-edit="false" data-toggle="modal" data-target="#tambahrealisasi">
+                <button style="width: 70%" class="btn btn-sm btn-primary mr-1" data-indikator_id="${item_indikator.id}" data-edit="false" data-toggle="modal" data-target="#tambahrealisasi">
                   Tambah
                 </button>
                 `
+                let button_umpan = `
+                <button style="width: 70%" class="btn btn-sm btn-primary mr-1" data-indikator_id="${item_indikator.id}" data-edit="false" data-toggle="modal" data-target="#tambahumpanbalikpegawai">
+                  Tambah
+                </button>
+                `
+                if(item_indikator.umpan_balik){
+                  let id_umpan = []
+                  let ol_umpan = ""
+                  if(item_indikator.umpan_balik.umpan_balik.length > 0){
+                    ol_umpan = "<ol>"
+                      item_indikator.umpan_balik.umpan_balik.map(item => {
+                        id_umpan.push(item.id)
+                        ol_umpan += `<li>${item.nama}</li>`
+                      })
+                    ol_umpan += "</ol>"
+                  }else{
+                    html = ""
+                  }
+                  umpanbalik = `
+                  <td>
+                    ${ol_umpan}
+                    Umpan Balik Tambahan: <br><span id="umpan-balik-${item_indikator.umpan_balik.id}">${item_indikator.umpan_balik.umpan_balik_tambahan ? item_indikator.umpan_balik.umpan_balik_tambahan : ''}</span>
+                    <div class="d-flex justify-content-center pt-3">
+                      <button class="btn btn-sm btn-warning mr-1" data-id="${item_indikator.umpan_balik.id}" data-indikator_id="${item_indikator.id}" data-edit="true" data-umpan_multiple_id="[${id_umpan}]" data-toggle="modal" data-target="#tambahumpanbalikpegawai">
+                        <i class="flaticon2-pen"></i>
+                      </button>
+                      <a onclick="delete_action('${item_indikator.umpan_balik.delete_url}')" class="btn btn-icon btn-danger">
+                        <i class="flaticon-delete-1"></i>
+                      </a>
+                    </div>
+                </td>
+                  `
+                }else{
+                  umpanbalik = `
+                    <td style="text-align: center">
+                      ${button_umpan}
+                    </td>
+                  `
+                }
                 if(item_indikator.bukti_dukung){
                   bukti_dukung = `
                   <td>
@@ -523,7 +678,7 @@
                   `
                 }else{
                   bukti_dukung = `
-                    <td>
+                    <td style="text-align: center">
                       ${button_bukti}
                     </td>
                   `
@@ -548,7 +703,7 @@
                   `
                 }else{
                   realisasi = `
-                    <td>
+                    <td style="text-align: center">
                       ${button_realisasi}
                     </td>
                   `
@@ -566,6 +721,7 @@
                   <td id="target-${item_indikator.id}">${item_indikator.target}</td>
                   ${bukti_dukung}
                   ${realisasi}
+                  ${umpanbalik}
                 </tr>
                 `
               })
@@ -664,7 +820,7 @@
     let csrf = modal.find('input[name=csrfmiddlewaretoken]').val();
     if(realisasi != "" && sumber != ""){
       $.ajax({
-        url: `${BASE_URL}{% url "admin:realisasi-create" %}`,
+        url: `${BASE_URL}/admin/skp/realisasi/create`,
         type: 'POST',
         data: {
           csrfmiddlewaretoken: csrf,
@@ -685,6 +841,34 @@
         }
       })  
     }
+  }
+  const save_umpan = () => {
+    let modal = $("#tambahumpanbalikpegawai")
+    let umpan_id = $("#umpan_id").val()
+    let indikator_id = $("#indikator_id_umpan").val()
+    let umpan_multiple = $("#umpan_multiple").val()
+    let umpan_balik_tambahan = $("#umpan_balik_tambahan").val()
+    let csrf = modal.find('input[name=csrfmiddlewaretoken]').val();
+    $.ajax({
+      url: `${BASE_URL}/admin/skp/umpanbalikpegawai/create`,
+      type: 'POST',
+      data: {
+        csrfmiddlewaretoken: csrf,
+        indikator_id: indikator_id,
+        periode: periode,
+        umpan_id: umpan_id,
+        umpan_list: JSON.stringify(umpan_multiple),
+        umpan_balik_tambahan: umpan_balik_tambahan,
+      },
+      success: function(response){
+        if(response.success){
+          toastr.success(response.pesan);
+          window.location.reload()
+        } else {
+          toastr.warning(response.pesan);
+        }
+      }
+    })  
   }
   const delete_action = (url) => {
     Swal.fire({

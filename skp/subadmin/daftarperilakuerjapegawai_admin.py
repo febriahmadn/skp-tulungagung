@@ -1,10 +1,19 @@
+import ast
+
 from django.contrib import admin
 from django.http import JsonResponse
 from django.urls import path
 
-from skp.models import (DaftarPerilakuKerjaPegawai, PerilakuKerja,
-                        SasaranKinerja)
+from skp.models import (DaftarEkspetasi, DaftarPerilakuKerjaPegawai,
+                        PerilakuKerja, SasaranKinerja)
 
+
+def set_daftar_ekspetasi(obj, list_multiple):
+    find_ekspetasi = DaftarEkspetasi.objects.filter(pk__in=list_multiple)
+    if obj.ekspetasi_tambahan.count() > 0:
+        obj.ekspetasi_tambahan.clear()
+    for ekp_obj in find_ekspetasi:
+        obj.ekspetasi_tambahan.add(ekp_obj)
 
 class DaftarPerilakuKerjaPegawaiAdmin(admin.ModelAdmin):
     list_display = ("pk", "skp", "perilaku_kerja", "isi", "created")
@@ -13,6 +22,7 @@ class DaftarPerilakuKerjaPegawaiAdmin(admin.ModelAdmin):
         respon = {'success': False, 'pesan': "Terjadi kesalahan sistem"}
         skp = request.POST.get('skp_id', None)
         perilaku_id = request.POST.get('perilaku_id', None)
+        perilaku_multiple = request.POST.get('perilaku_multiple', None)
         ekspetasi_id = request.POST.get('ekspetasi_id', None)
         isi = request.POST.get('isi', None)
         tambah = False
@@ -45,6 +55,8 @@ class DaftarPerilakuKerjaPegawaiAdmin(admin.ModelAdmin):
             tambah = True
         obj.isi = isi
         obj.save()
+        list_multiple = ast.literal_eval(perilaku_multiple)
+        set_daftar_ekspetasi(obj, list_multiple)
 
         if tambah:
             respon = {'success': True, 'pesan': "Berhasil Menambah Ekspetasi"}

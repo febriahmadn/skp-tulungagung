@@ -226,15 +226,15 @@
               <td>
                 {% if penilai_view %}
                 {% if obj.status == 3 %}
-                {% daftar_ekspetasi item.id obj.id "ya" %}
+                {% daftar_ekspetasi item.id obj "ya" request.user %}
                 {% else %}
-                {% daftar_ekspetasi item.id obj.id "tidak" %}
+                {% daftar_ekspetasi item.id obj "tidak" request.user %}
                 {% endif %}
                 {% else %}
                 {% if obj.status == 2  %}
-                {% daftar_ekspetasi item.id obj.id "tidak" %}
+                {% daftar_ekspetasi item.id obj "tidak" request.user %}
                 {% else %}
-                {% daftar_ekspetasi item.id obj.id "ya" %}
+                {% daftar_ekspetasi item.id obj "ya" request.user %}
                 {% endif %}
                 {% endif %}
               </td>
@@ -459,7 +459,7 @@
 </div>
 
 <div class="modal fade" id="modal_tambah_ekspetasi" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="lampiran_modal_ekspetasi">Tambah Perilaku</h5>
@@ -474,7 +474,15 @@
         <div class="form-group">
           <div class="form-group">
             <label for="isi" id="label-ekspetasi">Ekspektasi</label>
+            <select class="form-control" id="ekspetasi_multiple" name="ekspetasi_multiple[]" multiple="multiple" style="width: 100%;">
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="form-group">
+            <label for="isi" id="label-ekspetasi">Ekspektasi Lainnya</label>
             <input type="text" class="form-control" id="ekspetasi" name="ekspetasi"></input>
+            <span class="text-muted">Jika pilihan pada field ekspetasi tidak tersedia, bisa menginputkan secara manual melalui field ekspetasi lainnya</span>
           </div>
         </div>
       </div>
@@ -543,7 +551,7 @@
   const changeStatus = (status=1) => {
     return new Promise((resolve, reject) => {
       $.ajax({
-        url: `${BASE_URL}/admin/skp/sasarankinerja/change-status/`,
+        url: `${BASE_URL}/admin/skp/sasarankinerja/change-status`,
         type: "GET",
         data: {
           skp_id: skp_id,
@@ -637,7 +645,9 @@
     $("#jenis_id").val("")
     $("#rencana_id").val("")
     $("#penugasan_id").val("")
+    console.log(pimpinan_id)
     if(pimpinan_id == undefined){
+      console.log("Here")
       handleLoadRHKPimpinan()
     }else{
       handleLoadRHKPimpinan(pimpinan_id)
@@ -694,8 +704,10 @@
     let button = $(event.relatedTarget)
     let perilaku_id = button.data('id')
     let ekspetasi_id = button.data('ekspetasi')
+    let ekspetasi_multiple = button.data('ekspetasi_multiple')
     let tambah = button.data('tambah')
     $("#perilaku_id").val(perilaku_id)
+    handleLoadDaftarEkspetasi(perilaku_id, ekspetasi_multiple)
     $("#ekspetasi_id").val(ekspetasi_id)
     $("#ekspetasi").val("")
     if(tambah == "True"){
@@ -708,7 +720,7 @@
   })
   const handleLoadUnitkerja = async (id=null) => {
     await $.ajax({
-      url: `${BASE_URL}/admin/usom/unitkerja/load-data/`,
+      url: `${BASE_URL}/admin/usom/unitkerja/load-data`,
       type: 'GET',
       success: function(response){
         if(response.length > 0){
@@ -724,6 +736,38 @@
           html = "<option readonly >Unit Kerja Kosong</option>"
         }
         $('#unitkerja_id').html(html)
+      }
+    })
+  }
+
+  const handleLoadDaftarEkspetasi = async (perilaku_id, selected=null) => {
+    await $.ajax({
+      url:`${BASE_URL}/admin/skp/daftarekspetasi/load/`,
+      data:{
+        perilaku_id: perilaku_id
+      },
+      beforeSend:function(){
+        console.log("before send")
+      },
+      success:function(res){
+        if(res.success){
+          html = ""
+          res.data.map( item => {
+            html += `<option value="${item.id}" >${item.nama}</option>`
+          })
+          $("#ekspetasi_multiple").html(html).select2({
+            width: 'resolve',
+            closeOnSelect: false
+          })
+          if(selected.length > 0){
+            $("#ekspetasi_multiple").val(selected).trigger('change')
+          }
+        }else{
+          toastr.warning(res.pesan);
+        }
+      },
+      complete:function(){
+        console.log("Complete")
       }
     })
   }
@@ -1146,8 +1190,11 @@
 
   const handleLoadRHKPimpinan = (selected=null) => {
     $.ajax({
-      url: `${BASE_URL}/admin/skp/rencamahasilkerja/load-rhk-pimpinan/?skp_id=${skp_id}`,
+      url: `${BASE_URL}/admin/skp/rencanahasilkerja/load-rhk-pimpinan`,
       type: 'GET',
+      data:{
+        skp_id:skp_id
+      },
       success: function(response){
         if(response.length > 0){
           let options = '<option value="0">Pilih RHK Pimpinan</option>'
@@ -1173,8 +1220,11 @@
     if(typeof rhk_id !== "undefined"){
       modal.find('input[name=rhk_id]').val(rhk_id)
       $.ajax({
-        url: `${BASE_URL}/admin/skp/rencamahasilkerja/load-rhk-pimpinan/?skp_id=${skp_id}`,
+        url: `${BASE_URL}/admin/skp/rencanahasilkerja/load-rhk-pimpinan/`,
         type: 'GET',
+        data:{
+          skp_id:skp_id
+        },
         success: function(response){
           if(response.length > 0){
             let options = '<option value="0">Pilih RHK Pimpinan</option>'
@@ -1194,17 +1244,19 @@
   const save_ekspetasi = () => {
     let modal = $("#modal_tambah_ekspetasi")
     let perilaku_id = $("#perilaku_id").val()
+    let perilaku_multiple = $("#ekspetasi_multiple").val()
     let ekspetasi_id = $("#ekspetasi_id").val()
     let isi = $("#ekspetasi").val()
     let csrf = modal.find('input[name=csrfmiddlewaretoken]').val();
     $.ajax({
-      url: `${BASE_URL}/admin/skp/daftarperilakukerjapegawai/simpan/`,
+      url: `${BASE_URL}/admin/skp/daftarperilakukerjapegawai/simpan`,
       type: 'POST',
       data: {
         csrfmiddlewaretoken: csrf,
         skp_id: skp_id,
         perilaku_id: perilaku_id,
         ekspetasi_id: ekspetasi_id,
+        perilaku_multiple: JSON.stringify(perilaku_multiple),
         isi: isi,
       },
       success: function(response){
@@ -1257,7 +1309,7 @@
     let edit_lampiran = $("#edit_lampiran").val()
     let csrf = modal.find('input[name=csrfmiddlewaretoken]').val();
     $.ajax({
-      url: `${BASE_URL}/admin/daftarlampiran/simpan/`,
+      url: `${BASE_URL}/admin/skp/daftarlampiran/simpan/`,
       type: 'POST',
       data: {
         csrfmiddlewaretoken: csrf,
