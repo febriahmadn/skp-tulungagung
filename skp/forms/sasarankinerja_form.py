@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib import messages
+from django.utils.safestring import mark_safe
 
 from skp.models import SasaranKinerja
 from skp.utils import string_to_int
@@ -70,7 +71,7 @@ class SasaranKinerjaForm(forms.ModelForm):
             messages.add_message(
                 request, messages.ERROR, "Jenis Jabatan Kosong".title()
             )
-
+        self.fields["nama"].initial = user.get_complete_name()
         if user.jabatan:
             self.fields["jabatan"].initial = user.jabatan if user.jabatan else "---"
         else:
@@ -118,13 +119,16 @@ class SasaranKinerjaForm(forms.ModelForm):
             pegawai=pegawai,
             periode_awal__gte=periode_awal,
             periode_akhir__lte=periode_akhir,
+            status=SasaranKinerja.Status.PERSETUJUAN
         )
         if find_skp.exists:
             raise forms.ValidationError(
-                "Terdapat Sasaran Kinerja Ganda di periode {} - {}".format(
+                mark_safe("Mohon maaf, Sasaran Kinerja Pegawai pada periode {} - {} telah digunakan.<br>Silahkan menggunakan periode diluar periode {} - {}".format(
                     periode_awal.strftime("%d/%m/%Y"),
                     periode_akhir.strftime("%d/%m/%Y"),
-                )
+                    periode_awal.strftime("%d/%m/%Y"),
+                    periode_akhir.strftime("%d/%m/%Y"),
+                ))
             )
 
         if periode_awal.year != periode_akhir.year:
