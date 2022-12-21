@@ -119,16 +119,22 @@ class SasaranKinerjaForm(forms.ModelForm):
             pegawai=pegawai,
             periode_awal__gte=periode_awal,
             periode_akhir__lte=periode_akhir,
-            status=SasaranKinerja.Status.PERSETUJUAN
+            status=SasaranKinerja.Status.PERSETUJUAN,
         )
         if find_skp.exists:
             raise forms.ValidationError(
-                mark_safe("Mohon maaf, Sasaran Kinerja Pegawai pada periode {} - {} telah digunakan.<br>Silahkan menggunakan periode diluar periode {} - {}".format(
-                    periode_awal.strftime("%d/%m/%Y"),
-                    periode_akhir.strftime("%d/%m/%Y"),
-                    periode_awal.strftime("%d/%m/%Y"),
-                    periode_akhir.strftime("%d/%m/%Y"),
-                ))
+                mark_safe(
+                    """
+                    Mohon maaf, Sasaran Kinerja Pegawai pada periode {} - {}
+                    telah digunakan.
+                    <br>Silahkan menggunakan periode diluar periode {} - {}
+                    """.format(
+                        periode_awal.strftime("%d/%m/%Y"),
+                        periode_akhir.strftime("%d/%m/%Y"),
+                        periode_awal.strftime("%d/%m/%Y"),
+                        periode_akhir.strftime("%d/%m/%Y"),
+                    )
+                )
             )
 
         if periode_awal.year != periode_akhir.year:
