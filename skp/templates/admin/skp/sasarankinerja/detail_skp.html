@@ -804,12 +804,17 @@
       csrfmiddlewaretoken: csrf
     }
     console.log({formData})
-    if(perspektif && perspektif != ""){
-
+    let error = false
+    if(jenis_jabatan == "1"){
+      if(perspektif && perspektif != ""){
+      error = true
+      }
+    }
+    if(!error){
       $.ajax({
         url: `${BASE_URL}/admin/skp/indikatorkinerjaindividu/set-rhk`,
-      type: 'POST',
-      data: formData,
+        type: 'POST',
+        data: formData,
       success: function(response){
         console.log({response})
         if(response.success){
@@ -829,7 +834,7 @@
   }else{
     toastr.warning("isian Perspektif tidak boleh kosong");
   }
-  }
+}
 
   const set_rhk_indikator = async (elem) => {
     let rhk_id = elem.data('rhk_id')
