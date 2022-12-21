@@ -150,7 +150,6 @@ def daftar_ekspetasi(perilaku_id, skp, cetak, user=None):
             html_isi = """
                 Ekspetasi Lainnya:&nbsp;
                 <span>{}</span>
-            
             """.format(
                 isi
             )
