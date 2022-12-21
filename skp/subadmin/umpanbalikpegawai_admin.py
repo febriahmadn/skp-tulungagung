@@ -91,7 +91,7 @@ class UmpanBalikPegawaiAdmin(admin.ModelAdmin):
         return JsonResponse(respon, safe=False)
 
     def get_urls(self):
-        admin_url = super(UmpanBalikPegawaiAdmin, self).get_urls()
+        admin_url = super().get_urls()
         custom_url = [
             path(
                 "create",
