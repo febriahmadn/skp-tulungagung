@@ -179,7 +179,7 @@
                 {% endif %}
                 <th valign="center" style="min-width: 250px;">Bukti Dukung</th>
                 <th valign="center" style="min-width: 250px;">Realisasi</th>
-                <th valign="center" style="min-width: 250px;">UMPAN BALIK BERKELANJUTAN BERDASARKAN BUKTI DUKUNG</th>
+                <th valign="center" style="min-width: 250px;">Umpan Balik Berkelanjutan Berdasarkan Bukti Dukung</th>
               </tr>
             </thead>
             <tbody>
@@ -284,7 +284,6 @@
     </div>
   </div>
 </div>
-
 {% endblock content %}
 
 {% block custom_js %}
@@ -419,7 +418,7 @@
             let indikator =  '';
             let bukti_dukung =  '';
             let realisasi=  '';
-            let umpanbalik=  '<td>x</td>';
+            let umpanbalik=  '';
             var tambahan = 0;
             if (item.indikator.length > 0){
               item.indikator.map(item_indikator => {
@@ -449,9 +448,8 @@
                         ol_umpan += `<li>${item.nama}</li>`
                       })
                     ol_umpan += "</ol>"
-                  }else{
-                    html = ""
                   }
+                  
                   umpanbalik = `
                   <td>
                     ${ol_umpan}
