@@ -227,17 +227,19 @@
               </td>
               <td>
                 {% if penilai_view %}
-                {% if obj.status == 3 %}
-                {% daftar_ekspetasi item.id obj "ya" request.user %}
+                  {% if obj.status == 3 %}
+                    {% daftar_ekspetasi item.id obj "ya" request.user %}
+                  {% else %}
+                    {% daftar_ekspetasi item.id obj "tidak" request.user %}
+                  {% endif %}
                 {% else %}
-                {% daftar_ekspetasi item.id obj "tidak" request.user %}
-                {% endif %}
-                {% else %}
-                {% if obj.status == 2  %}
-                {% daftar_ekspetasi item.id obj "tidak" request.user %}
-                {% else %}
-                {% daftar_ekspetasi item.id obj "ya" request.user %}
-                {% endif %}
+                  {% if obj.status == 2  %}
+                    {% daftar_ekspetasi item.id obj "tidak" request.user %}
+                  {% elif obj.status == 1 and obj.jenis_jabatan == 1 %}
+                    {% daftar_ekspetasi item.id obj "tidak" request.user %}
+                  {% else %}
+                    {% daftar_ekspetasi item.id obj "ya" request.user %}
+                  {% endif %}
                 {% endif %}
               </td>
             </tr>
