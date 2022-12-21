@@ -14,6 +14,7 @@ def set_daftar_ekspetasi(obj, list_multiple):
         obj.ekspetasi_tambahan.clear()
     for ekp_obj in find_ekspetasi:
         obj.ekspetasi_tambahan.add(ekp_obj)
+    obj.save()
 
 class DaftarPerilakuKerjaPegawaiAdmin(admin.ModelAdmin):
     list_display = ("pk", "skp", "perilaku_kerja", "isi", "created")

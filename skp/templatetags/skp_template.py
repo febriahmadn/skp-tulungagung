@@ -2,10 +2,17 @@ from django import template
 from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 
-from skp.models import (BuktiDukung, DaftarLampiran,
-                        DaftarPerilakuKerjaPegawai, PenilaianBawahan,
-                        Realisasi, RencanaAksi, RencanaHasilKerja,
-                        SasaranKinerja, UmpanBalikPegawai)
+from skp.models import (
+    BuktiDukung,
+    DaftarLampiran,
+    DaftarPerilakuKerjaPegawai,
+    PenilaianBawahan,
+    Realisasi,
+    RencanaAksi,
+    RencanaHasilKerja,
+    SasaranKinerja,
+    UmpanBalikPegawai,
+)
 from skp.utils import FULL_BULAN
 
 register = template.Library()
@@ -120,21 +127,38 @@ def daftar_ekspetasi(perilaku_id, skp, cetak, user=None):
                 "primary" if tambah else "warning",
                 "Tambah" if tambah else "Edit",
             )
+        if isi and isi != "":
+            html_isi = """
+            Ekspetasi Lainnya:&nbsp;
+                <span id="ekspetasi-{}">{}</span>
+            """.format(
+                perilaku_id,
+                isi,
+            )
+        else:
+            html_isi = ""
         html = """
             <span id="ekspetasi-multile-{}">{}</span>
-            Ekspetasi Lainnya:&nbsp;
-            <span id="ekspetasi-{}">{}</span>
+            {}
             {}
         """.format(
-            perilaku_id, ol, perilaku_id, isi, aksi
+            perilaku_id, ol, html_isi, aksi
         )
     else:
+        if isi and isi != "":
+            html_isi = """
+                Ekspetasi Lainnya:&nbsp;
+                <span>{}</span>
+            
+            """.format(
+                isi
+            )
         html = """
-            <span>{}</span>
-            Ekspetasi Lainnya:&nbsp;
+            {}
             <span>{}</span>
         """.format(
-            ol, isi
+            html_isi,
+            ol,
         )
     return mark_safe(html)
 
