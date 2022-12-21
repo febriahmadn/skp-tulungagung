@@ -26,7 +26,6 @@ class Command(BaseCommand):
             )
             if find_perilaku.exists():
                 perilaku_obj = find_perilaku.last()
-                print(perilaku, isi)
                 obj, created = DaftarEkspetasi.objects.get_or_create(
                     ekspetasi=isi.strip(), perilaku_kerja=perilaku_obj
                 )

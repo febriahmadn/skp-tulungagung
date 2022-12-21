@@ -173,7 +173,6 @@ class AccountAdmin(UserAdmin):
                     request, "Berhasil merubah {}".format(obj.get_complete_name())
                 )
             else:
-                print(form.errors)
                 messages.error(request, form.errors)
 
         extra_context = {

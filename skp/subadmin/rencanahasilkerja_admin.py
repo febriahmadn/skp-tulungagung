@@ -210,13 +210,14 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
         respon = []
         skp_id = request.GET.get("skp_id")
         find_skp = SasaranKinerja.objects.get(pk=skp_id)
+        print(find_skp.induk)
         if find_skp.induk:
-            if find_skp.status == SasaranKinerja.Status.PERSETUJUAN:
+            if find_skp.induk.status == SasaranKinerja.Status.PERSETUJUAN:
                 rhk_list = RencanaHasilKerja.objects.filter(
-                    skp_id=find_skp.induk.id,
+                    skp=find_skp.induk,
                     klasifikasi=RencanaHasilKerja.Klasifikasi.ORGANISASI,
                 )
-
+                print(rhk_list)
                 if rhk_list.exists():
                     for item in rhk_list:
                         respon.append(

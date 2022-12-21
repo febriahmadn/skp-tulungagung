@@ -641,13 +641,13 @@
     var modal = $("#tambahrhk")
     $("#rhk_id").val("")
     $("#klasifikasi_id").val($("#klasifikasi_id option:first").val()).trigger('change')
+    $("#rhk_pimpinan").val($("#rhk_pimpinan option:first").val()).trigger('change')
     $("#unitkerja_id").val($("#unitkerja_id option:first").val()).trigger('change')
-    $("#jenis_id").val("")
+    $("#jenis_id").val($("#jenis_id option:first").val()).trigger('change')
     $("#rencana_id").val("")
     $("#penugasan_id").val("")
     console.log(pimpinan_id)
     if(pimpinan_id == undefined){
-      console.log("Here")
       handleLoadRHKPimpinan()
     }else{
       handleLoadRHKPimpinan(pimpinan_id)
@@ -804,9 +804,10 @@
       csrfmiddlewaretoken: csrf
     }
     console.log({formData})
-    
-    $.ajax({
-      url: `${BASE_URL}/admin/skp/indikatorkinerjaindividu/set-rhk`,
+    if(perspektif && perspektif != ""){
+
+      $.ajax({
+        url: `${BASE_URL}/admin/skp/indikatorkinerjaindividu/set-rhk`,
       type: 'POST',
       data: formData,
       success: function(response){
@@ -825,6 +826,9 @@
         toastr.warning("Terjadi kesalahan server");
       }
     })
+  }else{
+    toastr.warning("isian Perspektif tidak boleh kosong");
+  }
   }
 
   const set_rhk_indikator = async (elem) => {
@@ -955,12 +959,9 @@
                 `
               }
             }
-            let klasifikasi = "";
-            if(item.klasifikasi_rhk == "Organisasi"){
-              klasifikasi = `
-              <br><span class="label label-primary label-inline font-weight-bolder mr-2">${item.klasifikasi_rhk}</span>
-              `
-            }
+            let klasifikasi = `
+            <br><span class="label label-primary label-inline font-weight-bolder mr-2">${item.klasifikasi_rhk}</span>
+            `
             let indikator_length = item.indikator.length+2
             if (penilai_view == "true") {
               indikator_length = item.indikator.length+1
@@ -1204,10 +1205,8 @@
             `
           })
           $('#rhk_pimpinan').html(options);
-          if(selected != "undefined"){
+          if(selected){
             $('#rhk_pimpinan').val(selected).trigger('change')
-          }else{
-            $('#rhk_pimpinan').val(0).trigger('change')
           }
         }
       }
@@ -1309,7 +1308,7 @@
     let edit_lampiran = $("#edit_lampiran").val()
     let csrf = modal.find('input[name=csrfmiddlewaretoken]').val();
     $.ajax({
-      url: `${BASE_URL}/admin/skp/daftarlampiran/simpan/`,
+      url: `${BASE_URL}/admin/skp/daftarlampiran/simpan`,
       type: 'POST',
       data: {
         csrfmiddlewaretoken: csrf,
@@ -1407,12 +1406,13 @@
     let modal = $('#tambahrhk');
     klasifikasi = modal.find('select[name=klasifikasi]').val(),
     unitkerja = modal.find('select[name=unitkerja]').val()
+    jenis = modal.find('select[name=jenis]').val()
     let formData = {
       skp_id: skp_id,
       rhk_id: modal.find('#rhk_id').val(),
       pimpinan_id: modal.find('#rhk_pimpinan').val(),
       klasifikasi: klasifikasi,
-      jenis: modal.find('select[name=jenis]').val(),
+      jenis: jenis,
       rencana_kerja: modal.find('input[name=rencana_kerja]').val(),
       penugasan_dari: modal.find('input[name=penugasan_dari]').val(),
       csrfmiddlewaretoken: modal.find('input[name=csrfmiddlewaretoken]').val(),
@@ -1421,28 +1421,41 @@
     if (klasifikasi == 1 || klasifikasi == "1"){
       formData = {...formData, unitkerja: unitkerja}
     }
-
-    $.ajax({
-      url: `${BASE_URL}/admin/skp/rencanahasilkerja/action-add-or-create`,
-      type: 'POST',
-      data: formData,
-      success: function(response){
-        if(response.success){
-          if(modal.find('#rhk_id').val() && modal.find('#rhk_id').val() != ""){
-            toastr.success('Berhasil merubah rhk pimpinan');
-          }else{
-            toastr.success('Berhasil menambahkan rhk pimpinan');
-          }
-          window.location.reload()
-        }else{
-          toastr.warning('Terjadi kesalahan');
+    if(jenis && jenis != "0" || klasifikasi != "" && klasifikasi != "0"){
+      let error = false
+      if (klasifikasi == 1 || klasifikasi == "1"){
+        if(unitkerja != 0 || unitkerja != "0"){
+          error = true
         }
-      },
-      error: function(error){
-        console.log({error})
-        toastr.warning('Terjadi kesalahan server');
+      if(!error){
+        $.ajax({
+          url: `${BASE_URL}/admin/skp/rencanahasilkerja/action-add-or-create`,
+          type: 'POST',
+          data: formData,
+          success: function(response){
+            if(response.success){
+              if(modal.find('#rhk_id').val() && modal.find('#rhk_id').val() != ""){
+                toastr.success('Berhasil merubah rhk pimpinan');
+              }else{
+                toastr.success('Berhasil menambahkan rhk pimpinan');
+              }
+              window.location.reload()
+            }else{
+              toastr.warning('Terjadi kesalahan');
+            }
+          },
+          error: function(error){
+            console.log({error})
+            toastr.warning('Terjadi kesalahan server');
+          }
+        })
+      }else{
+        toastr.warning('Kolom Jenis Unit Kerja Tidak Boleh Kosong');
       }
-    })
+  }else{
+    toastr.warning('Kolom Jenis dan Klasifikasi Tidak Boleh Kosong');
+  }
+  }
   }
 
   $('#btn_action_sinkron_ekinerja_id').on('click', function(){
