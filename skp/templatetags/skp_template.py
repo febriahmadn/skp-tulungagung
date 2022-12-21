@@ -80,6 +80,7 @@ def daftar_lampiran(lampiran_id, skp_id, cetak):
 def daftar_ekspetasi(perilaku_id, skp, cetak, user=None):
     isi = ""
     ol = ""
+    html_isi = ""
     ekspetasi_list = []
     find_ekspetasi = None
     try:

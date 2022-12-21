@@ -338,25 +338,37 @@ class DaftarLampiran(models.Model):
 @receiver(post_save, sender=SasaranKinerja)
 def handler_sasarankinerja_save(instance, created, **kwargs):
     if created:
-        detail = DetailSasaranKinerja(
-            skp=instance,
-            nama_pegawai=instance.pegawai.get_complete_name(),
-            nip_pegawai=instance.pegawai.username,
-            jabatan_pegawai=instance.pegawai.jabatan,
-            golongan_pegawai=instance.pegawai.golongan,
-            unor_pegawai=instance.pegawai.unitkerja.unitkerja,
-            nama_pejabat=instance.pejabat_penilai.get_complete_name(),
-            nip_pejabat=instance.pejabat_penilai.username,
-            jabatan_pejabat=instance.pejabat_penilai.jabatan,
-            golongan_pejabat=instance.pejabat_penilai.golongan,
-            unor_pejabat=instance.pejabat_penilai.unitkerja.unitkerja,
-        )
+        if "bupati" in instance.pegawai.jabatan.lower():
+            detail = DetailSasaranKinerja(
+                skp=instance,
+                nama_pegawai=instance.pegawai.get_complete_name(),
+                nip_pegawai=instance.pegawai.username,
+                jabatan_pegawai=instance.pegawai.jabatan,
+                golongan_pegawai=instance.pegawai.golongan,
+                unor_pegawai=instance.pegawai.unitkerja.unitkerja,
+            )
+        else:
+            detail = DetailSasaranKinerja(
+                skp=instance,
+                nama_pegawai=instance.pegawai.get_complete_name(),
+                nip_pegawai=instance.pegawai.username,
+                jabatan_pegawai=instance.pegawai.jabatan,
+                golongan_pegawai=instance.pegawai.golongan,
+                unor_pegawai=instance.pegawai.unitkerja.unitkerja,
+                nama_pejabat=instance.pejabat_penilai.get_complete_name(),
+                nip_pejabat=instance.pejabat_penilai.username,
+                jabatan_pejabat=instance.pejabat_penilai.jabatan,
+                golongan_pejabat=instance.pejabat_penilai.golongan,
+                unor_pejabat=instance.pejabat_penilai.unitkerja.unitkerja,
+            )
         detail.save()
-
-        skp_atasan = instance.pejabat_penilai.sasarankinerja_set.last()
-        if skp_atasan:
-            instance.induk = skp_atasan
-            instance.save()
+        if "bupati" in instance.pegawai.jabatan.lower():
+            pass
+        else:
+            skp_atasan = instance.pejabat_penilai.sasarankinerja_set.last()
+            if skp_atasan:
+                instance.induk = skp_atasan
+                instance.save()
 
 
 class RencanaAksi(models.Model):

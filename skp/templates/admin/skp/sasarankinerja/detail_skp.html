@@ -116,36 +116,38 @@
     <div class="card card-custom" id="card-penilai">
       <div class="card-header bg-primary">
           <h6 class="card-title text-white m-0">PEJABAT PENILAI KINERJA</h6>
+          {% if obj.pejabat_penilai %}
           <div class="card-toolbar m-0 p-0">
             <button class="btn btn-sm btn-warning" data-jenis="atasan_penilai" data-url="{% url 'admin:skp_sasarankinerja_sync_data_pegawai' obj.pejabat_penilai.id %}" data-id="{{obj.pejabat_penilai.id}}" onclick="handleSyncPegawai($(this))"><i class="fas fa-sync" ></i> Muat Ulang</button>
           </div>
+          {% endif %}
       </div>
       <div class="card-body p-0">
         <table class="table" id="atasan_penilai">
           <tr>
             <td style="width: 30%;">Nama</td>
             <td style="width: 5%;">:</td>
-            <td class="nama">{{obj.detailsasarankinerja.nama_pejabat}}</td>
+            <td class="nama">{{obj.detailsasarankinerja.nama_pejabat|default_if_none:""}}</td>
           </tr>
           <tr>
             <td>NIP</td>
             <td>:</td>
-            <td class="nip">{{obj.detailsasarankinerja.nip_pejabat}}</td>
+            <td class="nip">{{obj.detailsasarankinerja.nip_pejabat|default_if_none:""}}</td>
           </tr>
           <tr>
             <td>Pangkat / Gol. Ruang</td>
             <td>:</td>
-            <td class="golongan" >{{obj.detailsasarankinerja.golongan_pejabat}}</td>
+            <td class="golongan" >{{obj.detailsasarankinerja.golongan_pejabat|default_if_none:""}}</td>
           </tr>
           <tr>
             <td>Jabatan</td>
             <td>:</td>
-            <td class="jabatan" >{{obj.detailsasarankinerja.jabatan_pejabat}}</td>
+            <td class="jabatan" >{{obj.detailsasarankinerja.jabatan_pejabat|default_if_none:""}}</td>
           </tr>
           <tr>
             <td>Unit Kerja</td>
             <td>:</td>
-            <td class="unitkerja" >{{obj.detailsasarankinerja.unor_pejabat}}</td>
+            <td class="unitkerja" >{{obj.detailsasarankinerja.unor_pejabat|default_if_none:""}}</td>
           </tr>
         </table>
       </div>

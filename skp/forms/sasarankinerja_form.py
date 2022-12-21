@@ -121,7 +121,7 @@ class SasaranKinerjaForm(forms.ModelForm):
             periode_akhir__lte=periode_akhir,
             status=SasaranKinerja.Status.PERSETUJUAN,
         )
-        if find_skp.exists:
+        if find_skp.exists():
             raise forms.ValidationError(
                 mark_safe(
                     """
