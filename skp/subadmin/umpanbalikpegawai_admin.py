@@ -51,8 +51,7 @@ class UmpanBalikPegawaiAdmin(admin.ModelAdmin):
             try:
                 obj = UmpanBalikPegawai.objects.get(pk=umpan_id)
                 tambah = False
-            except Exception as e:
-                print(e)
+            except Exception:
                 obj = UmpanBalikPegawai(indikator=indikator_obj, periode=int(periode))
             obj.umpan_balik_tambahan = umpan_balik_tambahan
             obj.save()
