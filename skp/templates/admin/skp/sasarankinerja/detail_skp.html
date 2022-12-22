@@ -810,8 +810,8 @@
     console.log({formData})
     let error = false
     if(jenis_jabatan == "1"){
-      if(perspektif && perspektif != ""){
-      error = true
+      if(perspektif && perspektif == ""){
+        error = true
       }
     }
     if(!error){
@@ -1430,41 +1430,40 @@
     if (klasifikasi == 1 || klasifikasi == "1"){
       formData = {...formData, unitkerja: unitkerja}
     }
+    console.log(klasifikasi, jenis, unitkerja)
+    let error = false
     if(jenis && jenis != "0" || klasifikasi != "" && klasifikasi != "0"){
-      let error = false
       if (klasifikasi == 1 || klasifikasi == "1"){
-        if(unitkerja != 0 || unitkerja != "0"){
+        if(unitkerja == 0 || unitkerja == "0"){
           error = true
         }
-      if(!error){
-        $.ajax({
-          url: `${BASE_URL}/admin/skp/rencanahasilkerja/action-add-or-create`,
-          type: 'POST',
-          data: formData,
-          success: function(response){
-            if(response.success){
-              if(modal.find('#rhk_id').val() && modal.find('#rhk_id').val() != ""){
-                toastr.success('Berhasil merubah rhk pimpinan');
-              }else{
-                toastr.success('Berhasil menambahkan rhk pimpinan');
-              }
-              window.location.reload()
-            }else{
-              toastr.warning('Terjadi kesalahan');
-            }
-          },
-          error: function(error){
-            console.log({error})
-            toastr.warning('Terjadi kesalahan server');
-          }
-        })
-      }else{
-        toastr.warning('Kolom Jenis Unit Kerja Tidak Boleh Kosong');
       }
-  }else{
-    toastr.warning('Kolom Jenis dan Klasifikasi Tidak Boleh Kosong');
-  }
-  }
+    }
+    if(!error){
+      $.ajax({
+        url: `${BASE_URL}/admin/skp/rencanahasilkerja/action-add-or-create`,
+        type: 'POST',
+        data: formData,
+        success: function(response){
+          if(response.success){
+            if(modal.find('#rhk_id').val() && modal.find('#rhk_id').val() != ""){
+              toastr.success('Berhasil merubah rhk pimpinan');
+            }else{
+              toastr.success('Berhasil menambahkan rhk pimpinan');
+            }
+            window.location.reload()
+          }else{
+            toastr.warning('Terjadi kesalahan');
+          }
+        },
+        error: function(error){
+          console.log({error})
+          toastr.warning('Terjadi kesalahan server');
+        }
+      })
+    }else{
+      toastr.warning('Kolom Jenis Unit Kerja Tidak Boleh Kosong');
+    }
   }
 
   $('#btn_action_sinkron_ekinerja_id').on('click', function(){
