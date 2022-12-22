@@ -810,10 +810,21 @@
     console.log({formData})
     let error = false
     if(jenis_jabatan == "1"){
-      if(perspektif && perspektif == ""){
+      if(perspektif && perspektif == 0 && perspektif == "0"){
+        error = true
+      }
+    }else{
+      if(aspek == ""){
         error = true
       }
     }
+    if(target == ""){
+      error = true
+    }
+    if(indikator == ""){
+      error = true
+    }
+
     if(!error){
       $.ajax({
         url: `${BASE_URL}/admin/skp/indikatorkinerjaindividu/set-rhk`,
@@ -1116,12 +1127,9 @@
                 `
               }
             }
-            let klasifikasi = "";
-            if(item.klasifikasi_rhk == "Organisasi"){
-              klasifikasi = `
+            let klasifikasi = `
               <br><span class="label label-primary label-inline font-weight-bolder mr-2">${item.klasifikasi_rhk}</span>
               `
-            }
 
             let indikator_length = item.indikator.length+2
             if (penilai_view == "true") {
@@ -1316,8 +1324,10 @@
     let isi = $("#isi_lampiran").val()
     let edit_lampiran = $("#edit_lampiran").val()
     let csrf = modal.find('input[name=csrfmiddlewaretoken]').val();
-    $.ajax({
-      url: `${BASE_URL}/admin/skp/daftarlampiran/simpan`,
+    if(isi != ""){
+
+      $.ajax({
+        url: `${BASE_URL}/admin/skp/daftarlampiran/simpan`,
       type: 'POST',
       data: {
         csrfmiddlewaretoken: csrf,
@@ -1335,6 +1345,9 @@
         }
       }
     })  
+  }else{
+    toastr.warning("Isian Lampiran Tidak Boleh Kosong");
+  }
   }
   const delete_action = (url) => {
     Swal.fire({
@@ -1416,14 +1429,16 @@
     klasifikasi = modal.find('select[name=klasifikasi]').val(),
     unitkerja = modal.find('select[name=unitkerja]').val()
     jenis = modal.find('select[name=jenis]').val()
+    rencana = modal.find('input[name=rencana_kerja]').val()
+    penugasan_dari = modal.find('input[name=penugasan_dari]').val()
     let formData = {
       skp_id: skp_id,
       rhk_id: modal.find('#rhk_id').val(),
       pimpinan_id: modal.find('#rhk_pimpinan').val(),
       klasifikasi: klasifikasi,
       jenis: jenis,
-      rencana_kerja: modal.find('input[name=rencana_kerja]').val(),
-      penugasan_dari: modal.find('input[name=penugasan_dari]').val(),
+      rencana_kerja: rencana,
+      penugasan_dari: penugasan_dari,
       csrfmiddlewaretoken: modal.find('input[name=csrfmiddlewaretoken]').val(),
     }
 
@@ -1431,7 +1446,7 @@
       formData = {...formData, unitkerja: unitkerja}
     }
     console.log(klasifikasi, jenis, unitkerja)
-    let error = false
+    var error = false
     if(jenis && jenis != "0" || klasifikasi != "" && klasifikasi != "0"){
       if (klasifikasi == 1 || klasifikasi == "1"){
         if(unitkerja == 0 || unitkerja == "0"){
@@ -1439,6 +1454,13 @@
         }
       }
     }
+    if(rencana == ""){
+      error = true
+    }
+    if(penugasan_dari == ""){
+      error = true
+    }
+    console.log(error)
     if(!error){
       $.ajax({
         url: `${BASE_URL}/admin/skp/rencanahasilkerja/action-add-or-create`,
@@ -1462,7 +1484,7 @@
         }
       })
     }else{
-      toastr.warning('Kolom Jenis Unit Kerja Tidak Boleh Kosong');
+      toastr.warning('Kolom Jenis Unit Kerja ,Rencana Hasil Kerja atau Penugasan Tidak Boleh Kosong');
     }
   }
 
