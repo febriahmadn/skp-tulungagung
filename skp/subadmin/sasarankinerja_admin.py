@@ -376,7 +376,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                         obj.periode_akhir.strftime("%d/%m/%Y"),
                     )
                 )
-                respon = {'success':False, "pesan":pesan}
+                respon = {"success": False, "pesan": pesan}
         return JsonResponse(respon)
 
     def view_changelist_penilaian_skp(self, request):

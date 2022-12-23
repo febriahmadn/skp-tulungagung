@@ -1,6 +1,6 @@
 from django import forms
-from django.db.models import Q
 from django.contrib import messages
+from django.db.models import Q
 from django.utils.safestring import mark_safe
 
 from skp.models import SasaranKinerja
@@ -121,7 +121,8 @@ class SasaranKinerjaForm(forms.ModelForm):
             periode_awal__gte=periode_awal,
             periode_akhir__lte=periode_akhir,
         ).filter(
-            Q(status=SasaranKinerja.Status.PERSETUJUAN)|Q(status=SasaranKinerja.Status.PENGAJUAN),
+            Q(status=SasaranKinerja.Status.PERSETUJUAN)
+            | Q(status=SasaranKinerja.Status.PENGAJUAN),
         )
         if find_skp.exists():
             raise forms.ValidationError(
