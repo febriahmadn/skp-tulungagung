@@ -343,7 +343,18 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         except SasaranKinerja.DoesNotExist:
             pass
         else:
-            if status:
+            skp_exist = False
+            if status != 1 and status != "1":
+                find_skp = SasaranKinerja.objects.filter(
+                    pegawai=obj.pegawai,
+                    periode_awal__gte=obj.periode_awal,
+                    periode_akhir__lte=obj.periode_akhir,
+                    status=status,
+                )
+                if find_skp.exists():
+                    skp_exist = True
+
+            if status and not skp_exist:
                 try:
                     obj.status = status
                     obj.keterangan = keterangan
@@ -352,6 +363,20 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                     pass
                 else:
                     respon = {"success": True}
+            else:
+                pesan = mark_safe(
+                    """
+                    Mohon maaf, Sasaran Kinerja Pegawai pada periode {} - {}
+                    telah digunakan.
+                    <br>Silahkan menggunakan periode diluar periode {} - {}
+                    """.format(
+                        obj.periode_awal.strftime("%d/%m/%Y"),
+                        obj.periode_akhir.strftime("%d/%m/%Y"),
+                        obj.periode_awal.strftime("%d/%m/%Y"),
+                        obj.periode_akhir.strftime("%d/%m/%Y"),
+                    )
+                )
+                respon = {'success':False, "pesan":pesan}
         return JsonResponse(respon)
 
     def view_changelist_penilaian_skp(self, request):

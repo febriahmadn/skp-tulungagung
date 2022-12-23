@@ -1,4 +1,5 @@
 from django import forms
+from django.db.models import Q
 from django.contrib import messages
 from django.utils.safestring import mark_safe
 
@@ -119,7 +120,8 @@ class SasaranKinerjaForm(forms.ModelForm):
             pegawai=pegawai,
             periode_awal__gte=periode_awal,
             periode_akhir__lte=periode_akhir,
-            status=SasaranKinerja.Status.PERSETUJUAN,
+        ).filter(
+            Q(status=SasaranKinerja.Status.PERSETUJUAN)|Q(status=SasaranKinerja.Status.PENGAJUAN),
         )
         if find_skp.exists():
             raise forms.ValidationError(

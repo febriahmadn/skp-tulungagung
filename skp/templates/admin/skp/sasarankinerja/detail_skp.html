@@ -985,7 +985,9 @@
             let indikator_length = item.indikator.length+2
             if (penilai_view == "true") {
               indikator_length = item.indikator.length+1
-              
+            }
+            if(status != "1"){
+              indikator_length = item.indikator.length+1
             }
             let induk_elem = `
                 <td rowspan="${indikator_length}">
@@ -1161,7 +1163,7 @@
                 skp_aksi = ""
                 html_rowspan = `<td rowspan="${item.indikator.length+1}">${no}</td>`
               }else{
-                html_rowspan = `<td rowspan="${indikator_length}">${no}</td>`
+                html_rowspan = `<td rowspan="${indikator_length-1}">${no}</td>`
               }
             html_ += `
               <tr>
@@ -1310,7 +1312,11 @@
           toastr.success("Berhasil Merubah Status Sasaran Kinerja");
           window.location.reload()
         } else {
-          toastr.warning("Terjadi kesalahan");
+          if(response.pesan){
+            toastr.warning(response.pesan);
+          }else{
+            toastr.warning("Terjadi kesalahan");
+          }
         }
       }
     })  
