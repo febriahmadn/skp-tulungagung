@@ -3,7 +3,8 @@ from django.http import JsonResponse
 from django.urls import path, reverse_lazy
 
 from skp.models import (BuktiDukung, IndikatorKinerjaIndividu, Realisasi,
-                        RencanaAksi, RencanaHasilKerja, SasaranKinerja)
+                        RencanaAksi, RencanaHasilKerja, SasaranKinerja,
+                        UmpanBalikPegawai)
 
 
 def rencana_aksi_list(skp_obj, rhk_obj, periode):
@@ -53,6 +54,29 @@ def realisasi_list(indikator_obj, periode):
                 "sumber": realisasi_item.sumber,
             }
     return realisasi
+
+
+def umpan_list(indikator_obj, periode):
+    umpan = None
+    if periode and periode != "":
+        umpan_balik_list = UmpanBalikPegawai.objects.filter(
+            indikator=indikator_obj, periode=int(periode)
+        )
+        if umpan_balik_list.exists():
+            umpan_balik_obj = umpan_balik_list.last()
+            data = []
+            for i in umpan_balik_obj.umpan_balik.all():
+                data.append({"id": i.id, "nama": i.nama})
+            umpan = {
+                "delete_url": reverse_lazy(
+                    "admin:umpan-balik-pegawai-delete",
+                    kwargs={"id": umpan_balik_obj.id},
+                ),
+                "id": umpan_balik_obj.id,
+                "umpan_balik": data,
+                "umpan_balik_tambahan": umpan_balik_obj.umpan_balik_tambahan,
+            }
+    return umpan
 
 
 class RencanahasilkerjaAdmin(admin.ModelAdmin):
@@ -153,6 +177,7 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
                                     "bukti_dukung": bukti_dukung_list(
                                         item_indikator, periode
                                     ),
+                                    "umpan_balik": umpan_list(item_indikator, periode),
                                     "perspektif": item_indikator.perspektif.__str__()
                                     if item_indikator.perspektif
                                     else None,
@@ -185,13 +210,14 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
         respon = []
         skp_id = request.GET.get("skp_id")
         find_skp = SasaranKinerja.objects.get(pk=skp_id)
+        print(find_skp.induk)
         if find_skp.induk:
-            if find_skp.status == SasaranKinerja.Status.PERSETUJUAN:
+            if find_skp.induk.status == SasaranKinerja.Status.PERSETUJUAN:
                 rhk_list = RencanaHasilKerja.objects.filter(
-                    skp_id=find_skp.induk.id,
+                    skp=find_skp.induk,
                     klasifikasi=RencanaHasilKerja.Klasifikasi.ORGANISASI,
                 )
-
+                print(rhk_list)
                 if rhk_list.exists():
                     for item in rhk_list:
                         respon.append(

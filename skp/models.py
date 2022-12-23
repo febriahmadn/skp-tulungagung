@@ -235,6 +235,24 @@ class DaftarPerilakuKerja(models.Model):
         verbose_name_plural = "Daftar Perilaku Kerja"
 
 
+class DaftarEkspetasi(models.Model):
+    perilaku_kerja = models.ForeignKey(
+        PerilakuKerja, on_delete=models.CASCADE, verbose_name="Perilaku Kerja"
+    )
+    ekspetasi = models.TextField(null=True)
+    is_active = models.BooleanField(default=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return "{} - {}".format(
+            self.perilaku_kerja.perilaku_kerja, self.ekspetasi[:20] + "..."
+        )
+
+    class Meta:
+        verbose_name = "Daftar Ekspetasi"
+        verbose_name_plural = "Daftar Ekspetasi"
+
+
 class DaftarPerilakuKerjaPegawai(models.Model):
     # class Status(models.IntegerChoices):
     #     ACTIVE = 1, "Aktif"
@@ -250,6 +268,7 @@ class DaftarPerilakuKerjaPegawai(models.Model):
         null=True,
     )
     isi = models.TextField("Isi Ekspetasi", null=True, blank=True)
+    ekspetasi_tambahan = models.ManyToManyField(DaftarEkspetasi, blank=True)
     # status = models.IntegerField(choices=Status.choices, null=True, default=1)
     created = models.DateTimeField(auto_now_add=True)
 
@@ -280,6 +299,23 @@ class Lampiran(models.Model):
         verbose_name_plural = "Lampiran"
 
 
+class UmpanBalik(models.Model):
+    class Status(models.IntegerChoices):
+        ACTIVE = 1, "Aktif"
+        NONACTIVE = 2, "Non Aktif"
+
+    nama = models.TextField("Nama Umpan Balik", null=True)
+    status = models.IntegerField(choices=Status.choices, null=True, default=1)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return "{}".format(str(self.id))
+
+    class Meta:
+        verbose_name = "Umpan Balik"
+        verbose_name_plural = "Umpan Balik"
+
+
 class DaftarLampiran(models.Model):
     lampiran = models.ForeignKey(Lampiran, on_delete=models.CASCADE)
     skp = models.ForeignKey(
@@ -302,25 +338,37 @@ class DaftarLampiran(models.Model):
 @receiver(post_save, sender=SasaranKinerja)
 def handler_sasarankinerja_save(instance, created, **kwargs):
     if created:
-        detail = DetailSasaranKinerja(
-            skp=instance,
-            nama_pegawai=instance.pegawai.get_complete_name(),
-            nip_pegawai=instance.pegawai.username,
-            jabatan_pegawai=instance.pegawai.jabatan,
-            golongan_pegawai=instance.pegawai.golongan,
-            unor_pegawai=instance.pegawai.unitkerja.unitkerja,
-            nama_pejabat=instance.pejabat_penilai.get_complete_name(),
-            nip_pejabat=instance.pejabat_penilai.username,
-            jabatan_pejabat=instance.pejabat_penilai.jabatan,
-            golongan_pejabat=instance.pejabat_penilai.golongan,
-            unor_pejabat=instance.pejabat_penilai.unitkerja.unitkerja,
-        )
+        if "bupati" in instance.pegawai.jabatan.lower():
+            detail = DetailSasaranKinerja(
+                skp=instance,
+                nama_pegawai=instance.pegawai.get_complete_name(),
+                nip_pegawai=instance.pegawai.username,
+                jabatan_pegawai=instance.pegawai.jabatan,
+                golongan_pegawai=instance.pegawai.golongan,
+                unor_pegawai=instance.pegawai.unitkerja.unitkerja,
+            )
+        else:
+            detail = DetailSasaranKinerja(
+                skp=instance,
+                nama_pegawai=instance.pegawai.get_complete_name(),
+                nip_pegawai=instance.pegawai.username,
+                jabatan_pegawai=instance.pegawai.jabatan,
+                golongan_pegawai=instance.pegawai.golongan,
+                unor_pegawai=instance.pegawai.unitkerja.unitkerja,
+                nama_pejabat=instance.pejabat_penilai.get_complete_name(),
+                nip_pejabat=instance.pejabat_penilai.username,
+                jabatan_pejabat=instance.pejabat_penilai.jabatan,
+                golongan_pejabat=instance.pejabat_penilai.golongan,
+                unor_pejabat=instance.pejabat_penilai.unitkerja.unitkerja,
+            )
         detail.save()
-
-        skp_atasan = instance.pejabat_penilai.sasarankinerja_set.last()
-        if skp_atasan:
-            instance.induk = skp_atasan
-            instance.save()
+        if "bupati" in instance.pegawai.jabatan.lower():
+            pass
+        else:
+            skp_atasan = instance.pejabat_penilai.sasarankinerja_set.last()
+            if skp_atasan:
+                instance.induk = skp_atasan
+                instance.save()
 
 
 class RencanaAksi(models.Model):
@@ -392,6 +440,30 @@ class Realisasi(models.Model):
     class Meta:
         verbose_name = "Realisasi"
         verbose_name_plural = "Realisasi"
+
+
+class UmpanBalikPegawai(models.Model):
+    indikator = models.OneToOneField(
+        IndikatorKinerjaIndividu,
+        on_delete=models.CASCADE,
+        verbose_name="Indikator Kerja Individu",
+        null=True,
+    )
+    periode = models.IntegerField(
+        choices=[(k, v) for k, v in FULL_BULAN.items()], null=True
+    )
+    umpan_balik = models.ManyToManyField(UmpanBalik, blank=True)
+    umpan_balik_tambahan = models.CharField(
+        "Umpan Balik Tambahan", max_length=255, null=True, blank=True
+    )
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return "{}".format(str(self.id))
+
+    class Meta:
+        verbose_name = "Umpan Balik Tambahan"
+        verbose_name_plural = "Umpan Balik Tambahan"
 
 
 class Hasil(models.Model):

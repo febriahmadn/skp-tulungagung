@@ -96,15 +96,12 @@ class Command(BaseCommand):
         ]
         self.stdout.write(self.style.NOTICE("PROSES DATA MASTER PERILAKU KERJA"))
         for i in data:
-            print(i["nama"])
             obj, created = PerilakuKerja.objects.get_or_create(perilaku_kerja=i["nama"])
             obj.save()
-            print(obj)
             if created:
                 for anak in i["anak"]:
                     anak_obj, anak_created = DaftarPerilakuKerja.objects.get_or_create(
                         perilaku_kerja=obj, keterangan=anak["nama"]
                     )
                     anak_obj.save()
-                    print(anak_obj)
         self.stdout.write(self.style.SUCCESS("SELESAI"))

@@ -708,7 +708,7 @@
   })
   const handleLoadUnitkerja = async (id=null) => {
     await $.ajax({
-      url: `${BASE_URL}/admin/usom/unitkerja/load-data/`,
+      url: `${BASE_URL}/admin/usom/unitkerja/load-data`,
       type: 'GET',
       success: function(response){
         if(response.length > 0){
@@ -1103,7 +1103,7 @@
 
   const handleLoadRHKPimpinan = (selected=null) => {
     $.ajax({
-      url: `${BASE_URL}/admin/skp/rencamahasilkerja/load-rhk-pimpinan/?skp_id=${skp_id}`,
+      url: `${BASE_URL}/admin/skp/rencanahasilkerja/load-rhk-pimpinan/?skp_id=${skp_id}`,
       type: 'GET',
       success: function(response){
         if(response.length > 0){
@@ -1130,7 +1130,7 @@
     if(typeof rhk_id !== "undefined"){
       modal.find('input[name=rhk_id]').val(rhk_id)
       $.ajax({
-        url: `${BASE_URL}/admin/skp/rencamahasilkerja/load-rhk-pimpinan/?skp_id=${skp_id}`,
+        url: `${BASE_URL}/admin/skp/rencanahasilkerja/load-rhk-pimpinan/?skp_id=${skp_id}`,
         type: 'GET',
         success: function(response){
           if(response.length > 0){
@@ -1214,7 +1214,7 @@
     let edit_lampiran = $("#edit_lampiran").val()
     let csrf = modal.find('input[name=csrfmiddlewaretoken]').val();
     $.ajax({
-      url: `${BASE_URL}/admin/daftarlampiran/simpan/`,
+      url: `${BASE_URL}/admin/skp/daftarlampiran/simpan/`,
       type: 'POST',
       data: {
         csrfmiddlewaretoken: csrf,
@@ -1352,7 +1352,7 @@
 
   $('#btn_action_sinkron_ekinerja_id').on('click', function(){
     $.ajax({
-      url: `${BASE_URL}/admin/skp/rencanahasilkerja/${skp_id}/sinkron`,
+      url: `${BASE_URL}/admin/skp/rencanahasilkerja/${skp_id}/sinkron/`,
       type: 'GET',
       success: function(response){
         console.log({response})

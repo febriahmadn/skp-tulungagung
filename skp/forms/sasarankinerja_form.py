@@ -1,5 +1,7 @@
 from django import forms
 from django.contrib import messages
+from django.db.models import Q
+from django.utils.safestring import mark_safe
 
 from skp.models import SasaranKinerja
 from skp.utils import string_to_int
@@ -56,7 +58,7 @@ class SasaranKinerjaForm(forms.ModelForm):
         user = request.user
         if self.instance.pk:
             user = self.instance.pegawai
-        print(user)
+
         self.fields["pegawai"].initial = user.id
         self.fields["pegawai"].queryset = Account.objects.filter(id=user.id)
         self.fields["pegawai"].widget = forms.HiddenInput()
@@ -70,8 +72,6 @@ class SasaranKinerjaForm(forms.ModelForm):
             messages.add_message(
                 request, messages.ERROR, "Jenis Jabatan Kosong".title()
             )
-            # return redirect(reverse("admin:skp_sasarankinerja_changelist"))
-        print(user.get_complete_name())
         self.fields["nama"].initial = user.get_complete_name()
         if user.jabatan:
             self.fields["jabatan"].initial = user.jabatan if user.jabatan else "---"
@@ -115,6 +115,30 @@ class SasaranKinerjaForm(forms.ModelForm):
     def clean(self):
         periode_awal = self.cleaned_data.get("periode_awal", None)
         periode_akhir = self.cleaned_data.get("periode_akhir", None)
+        pegawai = self.cleaned_data.get("pegawai", None)
+        find_skp = SasaranKinerja.objects.filter(
+            pegawai=pegawai,
+            periode_awal__gte=periode_awal,
+            periode_akhir__lte=periode_akhir,
+        ).filter(
+            Q(status=SasaranKinerja.Status.PERSETUJUAN)
+            | Q(status=SasaranKinerja.Status.PENGAJUAN),
+        )
+        if find_skp.exists():
+            raise forms.ValidationError(
+                mark_safe(
+                    """
+                    Mohon maaf, Sasaran Kinerja Pegawai pada periode {} - {}
+                    telah digunakan.
+                    <br>Silahkan menggunakan periode diluar periode {} - {}
+                    """.format(
+                        periode_awal.strftime("%d/%m/%Y"),
+                        periode_akhir.strftime("%d/%m/%Y"),
+                        periode_awal.strftime("%d/%m/%Y"),
+                        periode_akhir.strftime("%d/%m/%Y"),
+                    )
+                )
+            )
 
         if periode_awal.year != periode_akhir.year:
             raise forms.ValidationError("Tahun Periode Tidak Sama".title())

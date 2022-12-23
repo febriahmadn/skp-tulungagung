@@ -92,7 +92,6 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
             penilaian_list = penilaian_list.filter(is_dinilai=True)
         elif status == "0":
             penilaian_list = penilaian_list.filter(is_dinilai=False)
-
         extra_context.update(
             {
                 "title": "Penilaian Bawahan",

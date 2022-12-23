@@ -317,7 +317,8 @@
                 {% get_realisasi indikator periode as realisasi %}
                 <td>{{realisasi.realisasi}}</td>
                 <td>{{realisasi.realisasi}} berdasarkan {{realisasi.sumber}}</td>
-                <td></td>
+                {% get_umpan_balik indikator periode as umpan_balik %}
+                <td>{{ umpan_balik }}</td>
                 {% comment %} <td>{{ indikator.perspektif|default:'-' }}</td>
                 {% if obj.jenis_jabatan != 1 %}
                 {% else %}
