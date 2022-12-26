@@ -112,7 +112,8 @@
 
             },
             legend: {
-                show: false
+                show: true,
+                showForSingleSeries: true,
             },
             dataLabels: {
                 enabled: false
@@ -151,13 +152,7 @@
                     }
                 },
                 tooltip: {
-                    enabled: true,
-                    formatter: undefined,
-                    offsetY: 0,
-                    style: {
-                        fontSize: '12px',
-                        fontFamily: KTApp.getSettings()['font-family']
-                    }
+                    enabled: false,
                 }
             },
             yaxis: {
