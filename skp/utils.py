@@ -27,46 +27,46 @@ def get_predikat_kerja(rating_obj, predikat_obj):
         rating_obj.nama == "Dibawah Ekspetasi"
         and predikat_obj.nama == "Dibawah Ekspetasi"
     ):
-        return "SANGAT KURANG"
+        return 1
     elif (
         rating_obj.nama == "Dibawah Ekspetasi"
         and predikat_obj.nama == "Sesuai Ekspetasi"
     ):
-        return "BUTUH PERBAIKAN"
+        return 2
     elif (
         rating_obj.nama == "Dibawah Ekspetasi"
         and predikat_obj.nama == "Diatas Ekspetasi"
     ):
-        return "BUTUH PERBAIKAN"
+        return 2
     elif (
         rating_obj.nama == "Sesuai Ekspetasi"
         and predikat_obj.nama == "Dibawah Ekspetasi"
     ):
-        return "KURANG"
+        return 3
     elif (
         rating_obj.nama == "Sesuai Ekspetasi"
         and predikat_obj.nama == "Sesuai Ekspetasi"
     ):
-        return "BAIK"
+        return 4
     elif (
         rating_obj.nama == "Sesuai Ekspetasi"
         and predikat_obj.nama == "Diatas Ekspetasi"
     ):
-        return "BAIK"
+        return 4
     elif (
         rating_obj.nama == "Diatas Ekspetasi"
         and predikat_obj.nama == "Dibawah Ekspetasi"
     ):
-        return "KURANG"
+        return 3
     elif (
         rating_obj.nama == "Diatas Ekspetasi"
         and predikat_obj.nama == "Sesuai Ekspetasi"
     ):
-        return "BAIK"
+        return 4
     elif (
         rating_obj.nama == "Diatas Ekspetasi"
         and predikat_obj.nama == "Diatas Ekspetasi"
     ):
-        return "SANGAT BAIK"
+        return 5
     else:
         return None

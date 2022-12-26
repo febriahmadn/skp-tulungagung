@@ -1,0 +1,229 @@
+{% extends 'admin/base_site.html' %}
+{% load skp_template %}
+
+{% block breadcrumbs %}
+<ul class="breadcrumb breadcrumb-transparent breadcrumb-dot font-weight-bold p-0 my-2 font-size-sm">
+    <li class="breadcrumb-item">
+        <a href="#" class="text-muted">Beranda</a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="#" class="text-muted">Skp</a> 
+    </li>
+    <li class="breadcrumb-item">
+        <a href="#" class="text-muted">Sasaran Kinerja</a> 
+    </li>
+    <li class="breadcrumb-item">
+        <a href="" class="text-muted active">Penilaian</a>
+    </li>
+</ul>
+{% endblock %}
+
+{% block content %}
+<h3 class="py-2 pl-2" >Kurva Penilaian Bawahan</h3>
+<div class="d-flex mt-2">
+    <div class="card mx-2" style="width: 50%;">
+        <div class="card-header">
+            <h3 class="card-title" style="margin: unset;">
+                Kurva Penilaian Bawahan untuk Periode {{obj.periode_awal.year}}
+            </h3>
+        </div>
+        <div class="card-body">
+            <!-- <select name="kurva" id="id_kurva" class="form-control">
+                <option readonly value="">Pilih Kurva</option>
+                <option value="1">Ideal untuk Capaian Kinerja Organisasi ISTIMEWA</option>
+                <option value="1">Ideal untuk Capaian Kinerja Organisasi BAIK</option>
+                <option value="1">Ideal untuk Capaian Kinerja Organisasi BUTUH PERBAIKAN</option>
+                <option value="1">Ideal untuk Capaian Kinerja Organisasi KURANG</option>
+                <option value="1">Ideal untuk Capaian Kinerja Organisasi SANGAT KURANG</option>
+            </select> -->
+            <div id="widget_curva"></div>
+        </div>
+    </div>
+    <div class="card mx-2" style="width: 50%;">
+        <div class="card-header">
+            <h3 class="card-title" style="margin: unset;">
+                Hasil Penilaian Bawahan untuk Periode {{obj.periode_awal.year}}
+            </h3>
+        </div>
+        <div class="card-body">
+            <table class="table table-hover" >
+                <thead>
+                    <tr>
+                        <th>NIP</th>
+                        <th>Nama</th>
+                        <th>Penilaian</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if penilaian_list %}
+                    {% for list in penilaian_list %}
+                    <tr>
+                        <td>{{list.skp.detailsasarankinerja.nip_pegawai}}</td>
+                        <td>{{list.skp.detailsasarankinerja.nama_pegawai}}</td>
+                        <td>{{list.predikat_kerja}}</td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="3" style="text-align: center" >Tidak ada data</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block custom_js %}
+{{ block.super }}
+<script>
+    var init_kurva = function () {
+        var element = document.getElementById("widget_curva");
+
+        if (!element) {
+            return;
+        }
+
+        var options = {
+            series: [{
+                name: 'Realita',
+                data: [{{jumlah.sangat_kurang}}, {{jumlah.kurang}}, {{jumlah.butuh_perbaikan}}, {{jumlah.baik}}, {{jumlah.sangat_baik}}]
+            },
+            //{
+            //    name: 'Ideal',
+            //    data: [42, 52, 52, 102, 102]
+            //}
+            ],
+            chart: {
+                zoom: {
+                    enabled: false,
+                },
+                selection: {
+                    enabled: false,
+                },
+                type: 'line',
+                height: 350,
+                toolbar: {
+                    show: false
+                }
+            },
+            plotOptions: {
+
+            },
+            legend: {
+                show: false
+            },
+            dataLabels: {
+                enabled: false
+            },
+            fill: {
+                type: 'solid',
+                opacity: 1
+            },
+            stroke: {
+                curve: 'smooth',
+                show: true,
+                width: 3,
+                colors: ["#FF1654", "#247BA0"],
+            },
+            xaxis: {
+                categories: ['Sangat Kurang', 'Kurang', 'Butuh Perbaikan', 'Baik', 'Sangat Baik'],
+                axisBorder: {
+                    show: false,
+                },
+                axisTicks: {
+                    show: false
+                },
+                labels: {
+                    style: {
+                        colors: KTApp.getSettings()['colors']['gray']['gray-500'],
+                        fontSize: '12px',
+                        fontFamily: KTApp.getSettings()['font-family']
+                    }
+                },
+                crosshairs: {
+                    position: 'front',
+                    stroke: {
+                        color: KTApp.getSettings()['colors']['theme']['base']['info'],
+                        width: 1,
+                        dashArray: 3
+                    }
+                },
+                tooltip: {
+                    enabled: true,
+                    formatter: undefined,
+                    offsetY: 0,
+                    style: {
+                        fontSize: '12px',
+                        fontFamily: KTApp.getSettings()['font-family']
+                    }
+                }
+            },
+            yaxis: {
+                labels: {
+                    style: {
+                        colors: KTApp.getSettings()['colors']['gray']['gray-500'],
+                        fontSize: '12px',
+                        fontFamily: KTApp.getSettings()['font-family']
+                    }
+                }
+            },
+            states: {
+                normal: {
+                    filter: {
+                        type: 'none',
+                        value: 0
+                    }
+                },
+                hover: {
+                    filter: {
+                        type: 'none',
+                        value: 0
+                    }
+                },
+                active: {
+                    allowMultipleDataPointsSelection: false,
+                    filter: {
+                        type: 'none',
+                        value: 0
+                    }
+                }
+            },
+            tooltip: {
+                style: {
+                    fontSize: '12px',
+                    fontFamily: KTApp.getSettings()['font-family']
+                },
+                y: {
+                    formatter: function (val) {
+                        return val
+                    }
+                }
+            },
+            colors: ["#FF1654", "#247BA0"],
+            grid: {
+                borderColor: KTApp.getSettings()['colors']['gray']['gray-200'],
+                strokeDashArray: 4,
+                yaxis: {
+                    lines: {
+                        show: true
+                    }
+                }
+            },
+            markers: {
+                size: 5,
+                //colors: [KTApp.getSettings()['colors']['theme']['light']['danger']],
+                strokeColor: ["#FF1654", "#247BA0"],
+                strokeWidth: 3
+            }
+        };
+
+        var chart = new ApexCharts(element, options);
+        chart.render();
+    }
+    $(function(){
+        init_kurva()
+    })
+</script>
+{% endblock  %}
