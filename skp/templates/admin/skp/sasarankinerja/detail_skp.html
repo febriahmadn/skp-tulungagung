@@ -539,6 +539,7 @@
 {{ block.super }}
 <script type="text/javascript">
   let skp_id = "{{obj.id}}"
+  let skp_induk_id = "{{obj.induk.id}}"
   let jenis_jabatan = "{{obj.jenis_jabatan}}"
   let status = "{{obj.status}}"
   let penilai_view= "{{penilai_view}}".toLowerCase()
@@ -1310,7 +1311,11 @@
       success: function(response){
         if(response.success){
           toastr.success("Berhasil Merubah Status Sasaran Kinerja");
-          window.location.reload()
+          if(status == "1"){
+            window.location.href = `${BASE_URL}/admin/skp/sasarankinerja/${skp_induk_id}/skp-bawahan`
+          }else{
+            window.location.reload()
+          }
         } else {
           if(response.pesan){
             toastr.warning(response.pesan);
@@ -1451,20 +1456,29 @@
     if (klasifikasi == 1 || klasifikasi == "1"){
       formData = {...formData, unitkerja: unitkerja}
     }
-    console.log(klasifikasi, jenis, unitkerja)
+    text_error = ""
     var error = false
     if(jenis && jenis != "0" || klasifikasi != "" && klasifikasi != "0"){
       if (klasifikasi == 1 || klasifikasi == "1"){
         if(unitkerja == 0 || unitkerja == "0"){
           error = true
+          text_error = "Kolom Unit Kerja Tidak Boleh Kosong"
         }
       }
+    }else if(jenis == "0" && jenis == 0){
+      error = true
+      text_error = "Kolom Jenis RHK Tidak Boleh Kosong"
+    }else if(klasifikasi == "" && klasifikasi == "0"){
+      error = true
+      text_error = "Kolom Klasifikasi Tidak Boleh Kosong"
     }
     if(rencana == ""){
       error = true
+      text_error = "Kolom Rencana Hasil Kerja Tidak Boleh Kosong"
     }
     if(penugasan_dari == ""){
       error = true
+      text_error = "Kolom Penugasan Tidak Boleh Kosong"
     }
     console.log(error)
     if(!error){
@@ -1490,7 +1504,7 @@
         }
       })
     }else{
-      toastr.warning('Kolom Jenis Unit Kerja ,Rencana Hasil Kerja atau Penugasan Tidak Boleh Kosong');
+      toastr.warning(text_error);
     }
   }
 

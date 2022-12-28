@@ -786,7 +786,17 @@
     let bukti_dukung = $("#bukti_dukung").val()
     let link = $("#url_bukti_dukung").val()
     let csrf = modal.find('input[name=csrfmiddlewaretoken]').val();
-    if(validURL(link)){
+    let error = false
+    let text = ""
+    if(!validURL(link)){
+      error = true
+      text = "Link Tidak Valid"
+    }
+    if(bukti_dukung == ""){
+      error = true
+      text = "Bukti Dukung Tidak Boleh Kosong"
+    }
+    if(!error){
       $.ajax({
         url: `${BASE_URL}/admin/skp/buktidukung/create`,
         type: 'POST',
@@ -807,6 +817,8 @@
           }
         }
       })  
+    }else{
+      toastr.warning(text);
     }
   }
   const save_realisasi = () => {
@@ -816,7 +828,17 @@
     let realisasi= $("#realisasi").val()
     let sumber= $("#sumber_data").val()
     let csrf = modal.find('input[name=csrfmiddlewaretoken]').val();
-    if(realisasi != "" && sumber != ""){
+    let error = false
+    let text = ""
+    if(realisasi == ""){
+      error = true
+      text = "Kolom Realisasi Tidak Boleh Kosong"
+    }
+    if(sumber == ""){
+      error = true
+      text = "Kolom Sumber Tidak Boleh Kosong"
+    }
+    if(!error){
       $.ajax({
         url: `${BASE_URL}/admin/skp/realisasi/create`,
         type: 'POST',
@@ -838,6 +860,8 @@
           }
         }
       })  
+    }else{
+      toastr.warning(text);
     }
   }
   const save_umpan = () => {

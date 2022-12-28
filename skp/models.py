@@ -68,6 +68,18 @@ class SasaranKinerja(models.Model):
         verbose_name = "Sasaran Kinerja Pegawai"
         verbose_name_plural = "Sasaran Kinerja Pegawai"
 
+class RiwayatKeteranganSKP(models.Model):
+    skp = models.ForeignKey(
+        SasaranKinerja,
+        on_delete=models.CASCADE,
+        verbose_name="Sasaran Kinerja Pegawai",
+    )
+    keterangan = models.CharField("Keterangan", max_length=255, null=True, blank=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Riwayat Keterangan Sasaran Kinerja Pegawai"
+        verbose_name_plural = "Riwayat Keterangan Sasaran Kinerja Pegawai"
 
 class DetailSasaranKinerja(models.Model):
     skp = models.OneToOneField(SasaranKinerja, on_delete=models.CASCADE)

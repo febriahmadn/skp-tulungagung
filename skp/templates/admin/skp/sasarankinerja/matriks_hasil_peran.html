@@ -184,12 +184,12 @@
                 } else {
                   html_tr_ += `<tr>`
                 }
-                for (let j = 0; j < 5; j++) {
+                for (let j = 0; j < 4; j++) {
                   let text_item = respon.results[j]?.childs[i]?.text;
                   if (typeof text_item === "undefined" || typeof text_item === undefined) {
                     text_item = '';
                   }
-                  html_tr_ += `<td>${text_item}</td>`;
+                  html_tr_ += `<td class="x">${text_item}</td>`;
                 }
                 html_tr_ += `</tr>` 
               }

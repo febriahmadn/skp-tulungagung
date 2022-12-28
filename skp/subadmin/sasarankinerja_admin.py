@@ -1,6 +1,8 @@
 import calendar
-
+import pytz
 import requests
+from django.utils import timezone
+
 from django.contrib import admin, messages
 from django.db.models import Q
 from django.http import Http404, JsonResponse
@@ -17,6 +19,7 @@ from skp.models import (
     Perspektif,
     RencanaHasilKerja,
     SasaranKinerja,
+    RiwayatKeteranganSKP,
 )
 from skp.utils import FULL_BULAN
 from usom.models import Account
@@ -335,6 +338,21 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                     }
         return JsonResponse(respon)
 
+    def find_exists_skp(self, obj, status):
+        find_skp = SasaranKinerja.objects.filter(
+            pegawai=obj.pegawai,
+            periode_awal__gte=obj.periode_awal,
+            periode_akhir__lte=obj.periode_akhir,
+            status=status,
+        )
+        if find_skp.exists():
+            return True
+        return False
+
+    def create_riwayat(self, obj, keterangan):
+        if keterangan:
+            RiwayatKeteranganSKP.objects.create(skp=obj, keterangan=keterangan)
+
     def action_change_status_skp(self, request):
         respon = {"success": False}
         skp_id = request.GET.get("skp_id", None)
@@ -346,6 +364,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
             keterangan = request.POST.get("keterangan", None)
             if not keterangan and keterangan == "":
                 keterangan = None
+
         try:
             obj = SasaranKinerja.objects.get(id=skp_id)
         except SasaranKinerja.DoesNotExist:
@@ -353,17 +372,12 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         else:
             skp_exist = False
             if status != 1 and status != "1":
-                find_skp = SasaranKinerja.objects.filter(
-                    pegawai=obj.pegawai,
-                    periode_awal__gte=obj.periode_awal,
-                    periode_akhir__lte=obj.periode_akhir,
-                    status=status,
-                )
-                if find_skp.exists():
+                if self.find_exists_skp(obj, status):
                     skp_exist = True
 
             if status and not skp_exist:
                 try:
+                    self.create_riwayat(obj, keterangan)
                     obj.status = status
                     obj.keterangan = keterangan
                     obj.save()
@@ -694,7 +708,9 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         obj = get_object_or_404(SasaranKinerja, pk=obj_id)
         respon = {"success": False}
         if obj.induk:
-            rhk_parent_list = obj.induk.rencanahasilkerja_set.all()
+            rhk_parent_list = obj.induk.rencanahasilkerja_set.filter(
+                klasifikasi=RencanaHasilKerja.Klasifikasi.ORGANISASI
+            )
             if rhk_parent_list.exists():
                 results = []
                 terbesar = 0
@@ -711,6 +727,19 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                     results.append({"id": item.id, "childs": childs})
                 respon = {"success": True, "results": results, "terbesar": terbesar}
         return JsonResponse(respon)
+
+    def list_riwayat_keterangan(self, request, id):
+        obj = get_object_or_404(SasaranKinerja, pk=id)
+        data = []
+        for i in RiwayatKeteranganSKP.objects.filter(skp=obj):
+            tanggal = timezone.localtime(i.created, pytz.timezone("Asia/Jakarta"))
+            data.append(
+                {
+                    "waktu": tanggal.strftime("%d-%m-%Y, %H:%M:%S"),
+                    "keterangan": i.keterangan,
+                }
+            )
+        return JsonResponse(data, safe=False)
 
     def sinkron_data_pegawai_local(self, request, id):
         respon = {}
@@ -825,6 +854,11 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
             ),
             path(
                 "sync-data-local/<int:id>",
+                self.admin_site.admin_view(self.sinkron_data_pegawai_local),
+                name="skp_sasarankinerja_sync_data_pegawai",
+            ),
+            path(
+                "<int:id>/riwayat-keterangan",
                 self.admin_site.admin_view(self.sinkron_data_pegawai_local),
                 name="skp_sasarankinerja_sync_data_pegawai",
             ),

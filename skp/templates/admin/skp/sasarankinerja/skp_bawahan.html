@@ -83,7 +83,7 @@
                     <th>NIP</th>
                     <th>Nama</th>
                     <th>Jabatan</th>
-                    <th>Keterangan</th>
+                    {% comment %} <th>Keterangan</th> {% endcomment %}
                     <th>Status</th>
                     <th>Aksi</th>
                 </tr>
@@ -95,7 +95,7 @@
                     <td>{{item.detailsasarankinerja.nip_pegawai}}</td>
                     <td>{{item.detailsasarankinerja.nama_pegawai}}</td>
                     <td>{{item.detailsasarankinerja.jabatan_pegawai}}</td>
-                    <td>{{item.keterangan|default_if_none:"---"}}</td>
+                    {% comment %} <td>{{item.keterangan|default_if_none:"---"}}</td> {% endcomment %}
                     <td>{{item.get_status_display}}</td>
                     <td>
                         {% if item.status in show_detail %}
