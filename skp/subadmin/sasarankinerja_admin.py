@@ -10,8 +10,14 @@ from django.utils.safestring import mark_safe
 
 from services.models import Configurations
 from skp.forms.sasarankinerja_form import SasaranKinerjaForm
-from skp.models import (DetailSasaranKinerja, Lampiran, PerilakuKerja,
-                        Perspektif, RencanaHasilKerja, SasaranKinerja)
+from skp.models import (
+    DetailSasaranKinerja,
+    Lampiran,
+    PerilakuKerja,
+    Perspektif,
+    RencanaHasilKerja,
+    SasaranKinerja,
+)
 from skp.utils import FULL_BULAN
 from usom.models import Account
 
@@ -22,7 +28,9 @@ def delete_skp(modeladmin, request, queryset):
         messages.add_message(
             request,
             messages.ERROR,
-            mark_safe("Hanya dokumen SKP yang berstatus <b>Draft</b> yang dapat dihapus!"),
+            mark_safe(
+                "Hanya dokumen SKP yang berstatus <b>Draft</b> yang dapat dihapus!"
+            ),
         )
     else:
         count = queryset.count()

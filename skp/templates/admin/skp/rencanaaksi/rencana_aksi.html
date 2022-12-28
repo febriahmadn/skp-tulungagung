@@ -219,7 +219,7 @@
     let csrf = modal.find('input[name=csrfmiddlewaretoken]').val();
     if(rencana_aksi != ""){
       $.ajax({
-        url: `${BASE_URL}/admin/skp/rencanaaksi/create/`,
+        url: `${BASE_URL}/admin/skp/rencanaaksi/create`,
         type: 'POST',
         data: {
           csrfmiddlewaretoken: csrf,
