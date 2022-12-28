@@ -1,17 +1,26 @@
 {% extends 'admin/change_form.html' %}
+{% load static %}
 
 {% block content %}
 {{ block.super }}
 {% endblock content %}
 
+{% block extra_js %}
+{{ block.super }}
+<script src="{% static 'loading-overlay/loadingoverlay.min.js' %}"></script>
+{% endblock extra_js %}
+
 {% block custom_js %}
 {{ block.super }}
-{% if not has_delete_permission and not has_change_permission and original %}
 <script>
+    let atasan = "{{request.user.atasan.id}}"
+    let jenis_jabatan = "{{request.user.get_jenis_jabatan_display}}"
+    {% if not has_delete_permission and not has_change_permission and original %}
+    let obj_id = "{{obj.id}}"
     const HandleLoadData = () =>{
         let card_sasaran_kinerja = new KTCard('card-sasaran_kinerja');
         $.ajax({
-            url:"{% url 'admin:skp_sasarankinerja_view' id=obj.id %}",
+            url:`${BASE_URL}/admin/skp/sasarankinerja/${obj_id}/view/`,
             method: "GET",
             beforeSend: function(){
                 KTApp.block(card_sasaran_kinerja.getSelf(), {
@@ -35,10 +44,39 @@
             }
         })
     }
+    {% endif %}
+    const handleLoadOptionInduk = () =>{
+        $.ajax({
+            url:`${BASE_URL}/admin/skp/sasarankinerja/option`,
+            method:"GET",
+            data:{
+                atasan:atasan
+            },
+            beforeSend:function(){
+                $(".field-induk").LoadingOverlay("show", {
+                    background  : "rgba(212, 212, 212, 0.31)"
+                });
+                $('#id_induk').prop('disabled','disabled')
+            },
+            success:function(res){
+                if(res.success && jenis_jabatan != "JPT"){
+                    html = `<option value="0" >Pilih SKP Atasan</option>`
+                    res.data.map(item=>{
+                        html += `<option value="${item.id}">${item.text}</option>`
+                    })
+                    $('#id_induk').html(html).select2()
+                }
+            },
+            complete:function(){
+                $(".field-induk").LoadingOverlay('hide')
+                $('#id_induk').prop('disabled','')
+            }
+        })
+    }
     $(function(){
         $("#sasarankinerja_form").find('.card-custom').attr("id","card-sasaran_kinerja")
+        handleLoadOptionInduk()
         HandleLoadData()
     })
 </script>
-{% endif %}
 {% endblock custom_js %}

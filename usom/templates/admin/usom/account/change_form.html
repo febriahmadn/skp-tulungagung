@@ -5,9 +5,13 @@
 {{ block.super }}
 {% endblock content %}
 
-{% block custom_js %}
+{% block extra_js %}
 {{ block.super }}
 <script src="{% static 'loading-overlay/loadingoverlay.min.js' %}"></script>
+{% endblock extra_js %}
+
+{% block custom_js %}
+{{ block.super }}
 <script>
     $('#id_unitkerja').on('change', function(e){
         let value = e.target.value;
@@ -23,7 +27,6 @@
                   background  : "rgba(212, 212, 212, 0.31)"
               });
               $('#id_atasan').prop('disabled','disabled')
-              
           },
           success: function(response){
               if (response.success){

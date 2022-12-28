@@ -362,13 +362,13 @@ def handler_sasarankinerja_save(instance, created, **kwargs):
                 unor_pejabat=instance.pejabat_penilai.unitkerja.unitkerja,
             )
         detail.save()
-        if "bupati" in instance.pegawai.jabatan.lower():
-            pass
-        else:
-            skp_atasan = instance.pejabat_penilai.sasarankinerja_set.last()
-            if skp_atasan:
-                instance.induk = skp_atasan
-                instance.save()
+        # if "bupati" in instance.pegawai.jabatan.lower():
+        #     pass
+        # else:
+        #     skp_atasan = instance.pejabat_penilai.sasarankinerja_set.last() # ?
+        #     if skp_atasan:
+        #         instance.induk = skp_atasan
+        #         instance.save()
 
 
 class RencanaAksi(models.Model):

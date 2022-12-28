@@ -750,6 +750,26 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
             respon = {"success": True, "data": data}
         return JsonResponse(respon)
 
+    def load_induk_options(self, request):
+        atasan = request.GET.get("atasan", None)
+        respon = {"success": False, "pesan": "Terjadi Kesalahan Sistem"}
+        if atasan and atasan != "" and atasan.isnumeric():
+            find_skp = SasaranKinerja.objects.filter(
+                pegawai__id=atasan, status=SasaranKinerja.Status.PERSETUJUAN
+            )
+            data = []
+            for i in find_skp:
+                data.append(
+                    {
+                        "id": i.id,
+                        "text": "[{}] - {}".format(
+                            i.get_periode(), i.get_status_display()
+                        ),
+                    }
+                )
+            respon = {"success": True, "data": data}
+        return JsonResponse(respon, safe=False)
+
     def get_urls(self):
         admin_url = super(SasaranKinerjaAdmin, self).get_urls()
         custom_url = [
@@ -812,6 +832,11 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                 "<int:id>/view",
                 self.admin_site.admin_view(self.view_changeform_skp),
                 name="skp_sasarankinerja_view",
+            ),
+            path(
+                "option",
+                self.admin_site.admin_view(self.load_induk_options),
+                name="skp_sasarankinerja_induk_option",
             ),
             # path("skpdata/", self.view_custom, name="list_skp_admin"),
             # path("skpdata/add/", self.add_skp, name="add_skp_admin"),

@@ -10,6 +10,9 @@ from usom.models import Account, UnitKerja
 
 class SasaranKinerjaForm(forms.ModelForm):
     pegawai = forms.ModelChoiceField(queryset=Account.objects.none(), required=False)
+    induk = forms.ModelChoiceField(
+        label="SKP Atasan", queryset=SasaranKinerja.objects.none(), required=False
+    )
     pejabat_penilai = forms.ModelChoiceField(
         queryset=Account.objects.none(), required=False
     )
@@ -64,6 +67,10 @@ class SasaranKinerjaForm(forms.ModelForm):
         self.fields["pegawai"].widget = forms.HiddenInput()
 
         self.fields["jenis_jabatan"].widget = forms.HiddenInput()
+
+        if "bupati" in user.jabatan and user.get_jenis_jabatan_display() != "JPT":
+            self.fields["induk"].widget = forms.HiddenInput()
+
         if user.jenis_jabatan:
             self.fields["jenis_jabatan"].initial = string_to_int(
                 SasaranKinerja.JenisJabatan, user.get_jenis_jabatan_display()
@@ -111,6 +118,12 @@ class SasaranKinerjaForm(forms.ModelForm):
             #     id=user.atasan.id
             # )
             # self.fields["pejabat_penilai"].widget = forms.HiddenInput()
+        if "induk" in self.data:
+            induk = self.data.get("induk", None)
+            if induk.isnumeric() and int(induk) != 0:
+                self.fields["induk"].queryset = SasaranKinerja.objects.filter(
+                    pk=self.data.get("induk", None)
+                )
 
     def clean(self):
         periode_awal = self.cleaned_data.get("periode_awal", None)
@@ -163,6 +176,7 @@ class SasaranKinerjaForm(forms.ModelForm):
             "nama_atasan",
             "jabatan_atasan",
             "unit_kerja_atasan",
+            "induk",
             "periode_awal",
             "periode_akhir",
             "pendekatan",
