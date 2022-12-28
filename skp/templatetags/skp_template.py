@@ -85,7 +85,7 @@ def daftar_ekspetasi(perilaku_id, skp, cetak, user=None):
     else:
         tambah = False
         isi = find_ekspetasi.isi
-        if find_ekspetasi.ekspetasi_tambahan.count() > 1:
+        if find_ekspetasi.ekspetasi_tambahan.count() > 0:
             ekspetasi_list = list(
                 find_ekspetasi.ekspetasi_tambahan.all().values_list("id", flat=True)
             )

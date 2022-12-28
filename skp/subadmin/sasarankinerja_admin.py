@@ -22,7 +22,7 @@ def delete_skp(modeladmin, request, queryset):
         messages.add_message(
             request,
             messages.ERROR,
-            "Terdapat Data Sasaran Kinerja Pegawai yang memiliki status Selain Draft",
+            mark_safe("Hanya dokumen SKP yang berstatus <b>Draft</b> yang dapat dihapus!"),
         )
     else:
         count = queryset.count()
