@@ -67,8 +67,7 @@ class SasaranKinerjaForm(forms.ModelForm):
         self.fields["pegawai"].widget = forms.HiddenInput()
 
         self.fields["jenis_jabatan"].widget = forms.HiddenInput()
-
-        if "bupati" in user.jabatan and user.get_jenis_jabatan_display() != "JPT":
+        if "bupati" in user.jabatan or user.jenis_jabatan == "JPT":
             self.fields["induk"].widget = forms.HiddenInput()
         else:
             self.fields["induk"].required = True

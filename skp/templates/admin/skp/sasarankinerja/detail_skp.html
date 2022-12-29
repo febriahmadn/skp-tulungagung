@@ -466,7 +466,7 @@
   <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="lampiran_modal_ekspetasi">Tambah Perilaku</h5>
+        <h5 class="modal-title" id="lampiran_modal_ekspetasi">Tambah Ekspektasi</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -764,9 +764,9 @@
     $("#ekspetasi_id").val(ekspetasi_id)
     $("#ekspetasi").val("")
     if(tambah == "True"){
-      $("#lampiran_modal_ekspetasi").html("Tambah Perilaku")
+      $("#lampiran_modal_ekspetasi").html("Tambah Ekspetasi")
     }else{
-      $("#lampiran_modal_ekspetasi").html("Ubah Perilaku")
+      $("#lampiran_modal_ekspetasi").html("Ubah Ekspetasi")
       let isi = $("#ekspetasi-"+perilaku_id)
       $("#ekspetasi").val(isi.html())
     }
@@ -858,20 +858,25 @@
     }
     console.log({formData})
     let error = false
+    let text = ""
     if(jenis_jabatan == "1"){
       if(perspektif && perspektif == 0 && perspektif == "0"){
         error = true
+        text = "Isian Perspektif Tidak Boleh Kosong"
       }
     }else{
       if(aspek == ""){
         error = true
+        text = "Isian Aspek Tidak Boleh Kosong"
       }
     }
     if(target == ""){
       error = true
+      text = "Isian Target Tidak Boleh Kosong"
     }
     if(indikator == ""){
       error = true
+      text = "Isian Indikator Tidak Boleh Kosong"
     }
 
     if(!error){
@@ -896,7 +901,7 @@
       }
     })
   }else{
-    toastr.warning("isian Perspektif tidak boleh kosong");
+    toastr.warning(text);
   }
 }
 

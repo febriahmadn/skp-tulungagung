@@ -1,3 +1,5 @@
+import datetime
+
 from django.contrib import admin, messages
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
@@ -14,19 +16,22 @@ class BuktiDukungAdmin(admin.ModelAdmin):
 
     def get_bukti_dukung(self, obj):
         if self.obj.link and self.obj.link != "":
-            return mark_safe('''<a href="{}" target="_blank" >{}</a>'''.format(
-                self.obj.link,
-                self.obj.nama_bukti_dukung))
+            return mark_safe(
+                """<a href="{}" target="_blank" >{}</a>""".format(
+                    self.obj.link, self.obj.nama_bukti_dukung
+                )
+            )
         return "---"
+
     get_bukti_dukung.short_description = "Bukti Dukung"
 
     def create(self, request):
-        respon = {'success': False}
-        bukti_id = request.POST.get('bukti_id')
-        periode = request.POST.get('periode')
-        indikator = request.POST.get('indikator_id')
-        bukti_dukung = request.POST.get('nama', None)
-        link = request.POST.get('link', None)
+        respon = {"success": False}
+        bukti_id = request.POST.get("bukti_id")
+        periode = request.POST.get("periode")
+        indikator = request.POST.get("indikator_id")
+        bukti_dukung = request.POST.get("nama", None)
+        link = request.POST.get("link", None)
 
         indikator_obj = None
 
@@ -35,7 +40,7 @@ class BuktiDukungAdmin(admin.ModelAdmin):
         try:
             indikator_obj = IndikatorKinerjaIndividu.objects.get(pk=indikator)
         except IndikatorKinerjaIndividu.DoesNotExist:
-            respon = {'success': False, 'pesan': "Indikator Kinerja Tidak ditemukan"}
+            respon = {"success": False, "pesan": "Indikator Kinerja Tidak ditemukan"}
             return JsonResponse(respon, safe=False)
 
         if indikator_obj:
@@ -45,19 +50,16 @@ class BuktiDukungAdmin(admin.ModelAdmin):
                 tambah = False
             except Exception as e:
                 print(e)
-                obj = BuktiDukung(
-                    indikator=indikator_obj,
-                    periode=int(periode)
-                )
+                obj = BuktiDukung(indikator=indikator_obj, periode=int(periode))
 
             obj.nama_bukti_dukung = bukti_dukung
             obj.link = link
             obj.save()
 
             if tambah:
-                respon = {'success': True, 'pesan': "Berhasil Menambah Bukti Dukung"}
+                respon = {"success": True, "pesan": "Berhasil Menambah Bukti Dukung"}
             else:
-                respon = {'success': True, 'pesan': "Berhasil Merubah Bukti Dukung"}
+                respon = {"success": True, "pesan": "Berhasil Merubah Bukti Dukung"}
         return JsonResponse(respon, safe=False)
 
     def view_bukti_dukung_skp(self, request, skp_id, periode):
@@ -66,44 +68,47 @@ class BuktiDukungAdmin(admin.ModelAdmin):
             skp=obj,
         )
         penilai = False
-        view = request.GET.get('view', None)
+        view = request.GET.get("view", None)
         if view == "penilai":
             penilai = True
+
+        is_allowed = True
+        hari_ini = datetime.date.today()
+        batas_waktu = Configurations.get_solo().batas_input
+        if batas_waktu <= hari_ini:
+            is_allowed = False
+
+        messages.info(
+            request,
+            """Batas waktu pengisian eviden dan
+                realisasi SKP untuk periode ini adalah {}""".format(
+                batas_waktu.strftime("%d-%m-%Y")
+            ),
+        )
         extra_context = {
             "title": "Bukti Dukung",
             "obj": obj,
             "rhk_list": rhk_list,
             "penilai_view": penilai,
             "periode": periode,
+            "is_allowed": is_allowed,
+            "perilaku_kerja_list": PerilakuKerja.objects.filter(is_active=True),
         }
-        batas_waktu = Configurations.get_solo().batas_input
-        messages.info(
-            request,
-            """Batas waktu pengisian eviden dan
-                realisasi SKP untuk periode ini adalah {}""".format(
-                batas_waktu.strftime("%d-%m-%Y")
-            )
-        )
-        return render(
-            request, "admin/skp/buktidukung/bukti_dukung.html", extra_context
-        )
+        return render(request, "admin/skp/buktidukung/bukti_dukung.html", extra_context)
 
     def bukti_dukung_delete(self, reqeust, id):
-        respon = {'success': False, 'pesan': "Terjadi kesalahan sistem"}
+        respon = {"success": False, "pesan": "Terjadi kesalahan sistem"}
         try:
             obj = BuktiDukung.objects.get(pk=id)
         except BuktiDukung.DoesNotExist:
-            respon = {'success': False, 'pesan': "Bukti Dukung Tidak Ditemukan"}
+            respon = {"success": False, "pesan": "Bukti Dukung Tidak Ditemukan"}
             return JsonResponse(respon, safe=False)
         except Exception as e:
-            respon = {'success': False, 'pesan': str(e)}
+            respon = {"success": False, "pesan": str(e)}
             return JsonResponse(respon, safe=False)
         else:
             obj.delete()
-            respon = {
-                'success': True,
-                'pesan': "Berhasil Menghapus Bukti Dukung"
-            }
+            respon = {"success": True, "pesan": "Berhasil Menghapus Bukti Dukung"}
         return JsonResponse(respon, safe=False)
 
     def view_cetak_bukti_dukung_pegawai(self, request, obj_id, periode):
@@ -127,7 +132,7 @@ class BuktiDukungAdmin(admin.ModelAdmin):
             "rhk_list": rhk_list,
             "perilakukerja_list": PerilakuKerja.objects.filter(is_active=True),
             "show_ttd": show_ttd,
-            "periode": periode
+            "periode": periode,
         }
         return render(request, "admin/skp/buktidukung/cetak.html", extra_context)
 

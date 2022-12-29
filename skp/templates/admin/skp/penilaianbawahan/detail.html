@@ -40,10 +40,10 @@
     <a href="/admin/skp" class="text-muted">Skp</a>
   </li>
   <li class="breadcrumb-item text-muted">
-    <a href="#" class="text-muted">Bukti Dukung</a>
+    <a href="#" class="text-muted">Penilaian Bawahan</a>
   </li>
   <li class="breadcrumb-item text-muted">
-    <a href="#" class="text-muted">Detail Bukti Dukung</a>
+    <a href="#" class="text-muted">Detail Penilaian Bawahan</a>
   </li>
 </ul>
 {% endblock breadcrumbs %}
@@ -73,7 +73,7 @@
 <div class="row">
   <div class="col-md-6">
     <div class="card">
-      <div class="card-header bg-success text-white p-5">
+      <div class="card-header bg-primary text-white p-5">
           <h6 class="m-0">PEGAWAI YANG DINILAI</h6>
       </div>
       <div class="card-body p-0">
@@ -454,11 +454,9 @@
                 if(item_indikator.realisasi){
                   realisasi = `
                   <td>
-                    <div style="display: flex" >
-                      <div id="realisasi-${item_indikator.realisasi.id}">${item_indikator.realisasi.realisasi}</div>
-                      <div style="padding-right:3px; padding-left:3px;" >berdasarkan</div>
-                      <div id="sumber-${item_indikator.realisasi.id}">${item_indikator.realisasi.sumber}</div>
-                    </div>
+                    <p>${item_indikator.realisasi.realisasi} berdasarkan ${item_indikator.realisasi.sumber}</p>
+                    <div style="display: none" id="realisasi-${item_indikator.realisasi.id}">${item_indikator.realisasi.realisasi}</div>
+                    <div style="display: none" id="sumber-${item_indikator.realisasi.id}">${item_indikator.realisasi.sumber}</div>
                 </td>
                   `
                 }else{
@@ -615,16 +613,14 @@
                 if(item_indikator.realisasi){
                   realisasi = `
                   <td>
-                    <div style="display: flex" >
-                      <div id="realisasi-${item_indikator.realisasi.id}">${item_indikator.realisasi.realisasi}</div>
-                      <div style="padding-right:3px; padding-left:3px;" >berdasarkan</div>
-                      <div id="sumber-${item_indikator.realisasi.id}">${item_indikator.realisasi.sumber}</div>
-                    </div>
+                    <p>${item_indikator.realisasi.realisasi} berdasarkan ${item_indikator.realisasi.sumber}</p>
+                    <div style="display: none" id="realisasi-${item_indikator.realisasi.id}">${item_indikator.realisasi.realisasi}</div>
+                    <div style="display: none" id="sumber-${item_indikator.realisasi.id}">${item_indikator.realisasi.sumber}</div>
                 </td>
                   `
                 }else{
                   realisasi = `
-                    <td>
+                    <td style="text-align: center">
                     </td>
                   `
                 }

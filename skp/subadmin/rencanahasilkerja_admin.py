@@ -215,7 +215,7 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
                 rhk_list = RencanaHasilKerja.objects.filter(
                     skp=find_skp.induk,
                     klasifikasi=RencanaHasilKerja.Klasifikasi.ORGANISASI,
-                )
+                ).order_by('id')
                 if rhk_list.exists():
                     for item in rhk_list:
                         respon.append(

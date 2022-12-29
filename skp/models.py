@@ -68,6 +68,7 @@ class SasaranKinerja(models.Model):
         verbose_name = "Sasaran Kinerja Pegawai"
         verbose_name_plural = "Sasaran Kinerja Pegawai"
 
+
 class RiwayatKeteranganSKP(models.Model):
     skp = models.ForeignKey(
         SasaranKinerja,
@@ -80,6 +81,7 @@ class RiwayatKeteranganSKP(models.Model):
     class Meta:
         verbose_name = "Riwayat Keterangan Sasaran Kinerja Pegawai"
         verbose_name_plural = "Riwayat Keterangan Sasaran Kinerja Pegawai"
+
 
 class DetailSasaranKinerja(models.Model):
     skp = models.OneToOneField(SasaranKinerja, on_delete=models.CASCADE)
@@ -374,6 +376,12 @@ def handler_sasarankinerja_save(instance, created, **kwargs):
                 unor_pejabat=instance.pejabat_penilai.unitkerja.unitkerja,
             )
         detail.save()
+        if instance.jenis_jabatan != SasaranKinerja.JenisJabatan.JPT:
+            for i in range(
+                instance.periode_awal.month, instance.periode_akhir.month + 1
+            ):
+                PenilaianBawahan.objects.create(skp=instance, periode=i)
+
         # if "bupati" in instance.pegawai.jabatan.lower():
         #     pass
         # else:

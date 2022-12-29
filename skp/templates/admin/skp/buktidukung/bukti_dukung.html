@@ -31,6 +31,10 @@
   ol{
     padding-inline-start: 15px !important;
   }
+  a.disabled {
+    pointer-events: none;
+    cursor: default;
+  }
 </style>
 {% endblock custom_style %}
 
@@ -76,7 +80,7 @@
 <div class="row">
   <div class="col-md-6">
     <div class="card">
-      <div class="card-header bg-success text-white p-5">
+      <div class="card-header bg-primary text-white p-5">
           <h6 class="m-0">PEGAWAI YANG DINILAI</h6>
       </div>
       <div class="card-body p-0">
@@ -160,7 +164,7 @@
       <div class="d-flex justify-content-start card-header py-4 px-5">
         <h6 class="d-flex align-items-center m-0">HASIL KERJA</h6>
       </div>
-      <div class="card-body p-2">
+      <div class="card-body p-2" id="hasil-kerja-card">
         <div class="table-responsive" style="border-radius: 5px;">
           <table class="table table-bordered mb-0" id="result_list">
             <thead style="background: #2196f3;">
@@ -195,6 +199,52 @@
       </div>
     </div>
   </div>
+  {% if perilaku_kerja_list %}
+  <div class="col-md-12 pt-3">
+    <div class="card">
+      <div class="d-flex justify-content-between card-header py-4 px-5">
+        <h6 class="d-flex align-items-center m-0">PERILAKU KERJA</h6>
+      </div>
+      <div class="card-body p-2">
+        <div class="table-responsive">
+          <table class="table table-bordered mb-0 table-custom">
+            {% for item in perilaku_kerja_list %}
+            <tr>
+              <td rowspan="2" style="vertical-align : middle;text-align:center; width: 5%;">{{ forloop.counter }}</td>
+              <th>{{ item.perilaku_kerja }}</th>
+              <th style="width: 20%;">Ekspektasi Khusus Pimpinan</th>
+            </tr>
+            <tr>
+              <td>
+                <ol>
+                  {% for subitem in item.daftarperilakukerja_set.all %}
+                  <li>{{ subitem.keterangan }}</li>
+                  {% endfor %}
+                </ol>
+              </td>
+              <td>
+                {% if penilai_view %}
+                {% if obj.status == 3 %}
+                {% daftar_ekspetasi item.id obj.id "ya" %}
+                {% else %}
+                {% daftar_ekspetasi item.id obj.id "tidak" %}
+                {% endif %}
+                {% else %}
+                {% if obj.status == 2  %}
+                {% daftar_ekspetasi item.id obj.id "tidak" %}
+                {% else %}
+                {% daftar_ekspetasi item.id obj.id "ya" %}
+                {% endif %}
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
  
 <div class="modal fade" id="tambahbuktidukung" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
@@ -296,8 +346,8 @@
   let periode = "{{periode}}"
   let status = "{{obj.status}}"
   let jenis_jabatan = "{{obj.jenis_jabatan}}"
+  let is_allowed = "{{is_allowed}}"
   let penilai_view= "{{penilai_view}}".toLowerCase()
-
   const validURL = (myURL) => {
     //regular expression for URL
     let pattern = /(?:^|[ \t])((https?:\/\/)?(?:localhost|[\w-]+(?:\.[\w-]+)+)(:\d+)?(\/\S*)?)/;
@@ -641,21 +691,30 @@
                   }else{
                     html = ""
                   }
+                  let aksi_umpan_balik = `
+                  <div class="d-flex justify-content-center pt-3">
+                    <button class="btn btn-sm btn-warning mr-1" data-id="${item_indikator.umpan_balik.id}" data-indikator_id="${item_indikator.id}" data-edit="true" data-umpan_multiple_id="[${id_umpan}]" data-toggle="modal" data-target="#tambahumpanbalikpegawai">
+                      <i class="flaticon2-pen"></i>
+                    </button>
+                    <a onclick="delete_action('${item_indikator.umpan_balik.delete_url}')" class="btn btn-icon btn-danger">
+                      <i class="flaticon-delete-1"></i>
+                    </a>
+                  </div>
+                  `
+                  if(jenis_jabatan != "1"){
+                    aksi_umpan_balik = ""
+                  }
                   umpanbalik = `
                   <td>
                     ${ol_umpan}
                     Umpan Balik Tambahan: <br><span id="umpan-balik-${item_indikator.umpan_balik.id}">${item_indikator.umpan_balik.umpan_balik_tambahan ? item_indikator.umpan_balik.umpan_balik_tambahan : ''}</span>
-                    <div class="d-flex justify-content-center pt-3">
-                      <button class="btn btn-sm btn-warning mr-1" data-id="${item_indikator.umpan_balik.id}" data-indikator_id="${item_indikator.id}" data-edit="true" data-umpan_multiple_id="[${id_umpan}]" data-toggle="modal" data-target="#tambahumpanbalikpegawai">
-                        <i class="flaticon2-pen"></i>
-                      </button>
-                      <a onclick="delete_action('${item_indikator.umpan_balik.delete_url}')" class="btn btn-icon btn-danger">
-                        <i class="flaticon-delete-1"></i>
-                      </a>
-                    </div>
+                    ${aksi_umpan_balik}
                 </td>
                   `
                 }else{
+                  if(jenis_jabatan != "1"){
+                    button_umpan = ""
+                  }
                   umpanbalik = `
                     <td style="text-align: center">
                       ${button_umpan}
@@ -772,7 +831,16 @@
   const startLoad = () => {
     loadDataRHKUtama().then(() => {
       // loadIndikatorRHKNone()
-      loadDataRHKTambahan()
+      loadDataRHKTambahan().then(()=>{
+        if(is_allowed == "False"){
+          $("#hasil-kerja-card").find('button').map((index, item)=>{
+            $(item).attr('disabled','disabled')
+          })
+          $("#hasil-kerja-card").find('a.btn').map((index, item)=>{
+            $(item).addClass('disabled')
+          })
+        }
+      })
     })
   }
 
