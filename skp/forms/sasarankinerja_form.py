@@ -70,6 +70,8 @@ class SasaranKinerjaForm(forms.ModelForm):
 
         if "bupati" in user.jabatan and user.get_jenis_jabatan_display() != "JPT":
             self.fields["induk"].widget = forms.HiddenInput()
+        else:
+            self.fields["induk"].required = True
 
         if user.jenis_jabatan:
             self.fields["jenis_jabatan"].initial = string_to_int(
@@ -129,6 +131,9 @@ class SasaranKinerjaForm(forms.ModelForm):
         periode_awal = self.cleaned_data.get("periode_awal", None)
         periode_akhir = self.cleaned_data.get("periode_akhir", None)
         pegawai = self.cleaned_data.get("pegawai", None)
+        jenis_jabatan = self.cleaned_data.get("jenis_jabatan", None)
+        induk = self.cleaned_data.get("induk", None)
+
         find_skp = SasaranKinerja.objects.filter(
             pegawai=pegawai,
             periode_awal__gte=periode_awal,
@@ -160,6 +165,8 @@ class SasaranKinerjaForm(forms.ModelForm):
             raise forms.ValidationError(
                 "periode akhir lebih dahulu dari pada tanggal awal".title()
             )
+        if jenis_jabatan != "JPT" and induk == 0 or induk == "0":
+            raise forms.ValidationError("skp atasan tidak boleh kosong".title())
 
         return self.cleaned_data
 

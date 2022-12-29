@@ -44,6 +44,12 @@
         .contents {
             padding: 10px 30px 10px 30px;
         }
+        .w-50{
+            width: 50%;
+        }
+        .table-borderless tbody+tbody, .table-borderless td, .table-borderless th, .table-borderless thead th {
+            border: 0;
+        }
     </style>
 </head>
 <!-- <body onload="window.print();"> -->
@@ -53,6 +59,18 @@
             <h4 class="m-0">SASARAN KINERJA PEGAWAI</h4>
             <h4 class="m-0">PENDEKATAN HASIL KERJA KUANTITATIF</h4>
             <h4 class="m-0">BAGI PEJABAT PIMPINAN TINGGI DAN PIMIPINAN UNIT KERJA MANDIRI</h4>
+        </div>
+        <div style="display: flex;">
+            <div class="w-50">
+                <h5 class="m-0">
+                    {{obj.unor.unitkerja}} 
+                </h5>
+            </div>
+            <div class="w-50">
+                <h5 class="m-0" style="text-align: end;">
+                    PERIODE PENILAIAN: {% get_complete_periode obj.periode_awal obj.periode_akhir %} </h5>
+                </h5>
+            </div>
         </div>
         <table>
             <thead class="bg-blue">

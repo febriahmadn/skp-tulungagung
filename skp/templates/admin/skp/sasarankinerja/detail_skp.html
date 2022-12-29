@@ -1,12 +1,12 @@
 {% extends 'admin/base_site.html' %}
-{% load widgets skp_template %}
+{% load widgets skp_template static %}
 
 {% block custom_style %}
 {{ block.super }}
 <style>
-  table th{
+  table.table-custom th{
     font-size: 10pt;
-    color:#fdfdfd;
+    color:#fdfdfd !important;
   }
   .field-hidden{
     display: none;
@@ -173,7 +173,7 @@
       </div>
       <div class="card-body p-2">
         <div class="table-responsive" style="border-radius: 5px;">
-          <table class="table table-bordered mb-0" id="result_list">
+          <table class="table table-bordered mb-0 table-custom" id="result_list">
             <thead style="background: #2196f3;">
               <tr>
                 <th valign="center">No</th>
@@ -524,6 +524,22 @@
               SKP akan dikembalikan menjadi status Draft untuk diperbaiki oleh pegawai. Anda tidak bisa membuka SKP ini sampai diajukan kembali
             </small>
           </div>
+          <div class="form-group field-riwayat">
+            <label for="">Riwayat Keterangan</label>
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Waktu</th>
+                  <th>Keterangan</th>
+                </tr>
+              </thead>
+              <tbody id="riwayat-keterangan">
+                <tr>
+                  <td colspan="2" style="text-align: center;">Tidak Ada Riwayat</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" onclick="save_status()">Submit</button>
@@ -537,6 +553,7 @@
 
 {% block custom_js %}
 {{ block.super }}
+<script src="{% static 'loading-overlay/loadingoverlay.min.js' %}"></script>
 <script type="text/javascript">
   let skp_id = "{{obj.id}}"
   let skp_induk_id = "{{obj.induk.id}}"
@@ -638,7 +655,38 @@
     });
   })
 
-  $('#tambahrhk').on('show.bs.modal', function (event) {
+  const handleLoadRiwayatKeterangan = () => {
+    $.ajax({
+      url:`${BASE_URL}/admin/skp/sasarankinerja/${skp_id}/riwayat-keterangan`,
+      method: "GET",
+      beforeSend:function(){
+        $(".field-riwayat").LoadingOverlay("show", {
+          background  : "rgba(212, 212, 212, 0.31)"
+      });
+      },
+      success:function(res){
+        if(res.length > 0){
+          html = ""
+          res.map(item=>{
+            html += `
+            <tr>
+              <td>${item.waktu}</td>
+              <td>${item.keterangan}</td>
+            </tr>`
+          })
+          $("#riwayat-keterangan").html(html)
+        }
+      },
+      complete:function(){
+        $(".field-riwayat").LoadingOverlay('hide')
+      }
+    })
+  }
+
+  $('#modal_edit_status').on('show.bs.modal', function (event) {
+    handleLoadRiwayatKeterangan();
+  })
+    $('#tambahrhk').on('show.bs.modal', function (event) {
     let button = $(event.relatedTarget)
     let edit = button.data('edit')
     let id = button.data('rhk_id')
@@ -1010,17 +1058,20 @@
               ${delete_html}
             </div>
             `
+            let td_rowspan = ""
             if(status != "1"){
               skp_aksi = ""
+              td_rowspan = `<td rowspan="${item.indikator.length+1}">`
               html_rowspan = `<td rowspan="${item.indikator.length+1}">${no}</td>`
             }else{
+              td_rowspan = `<td rowspan="${indikator_length}">`
               html_rowspan = `<td rowspan="${indikator_length}">${no}</td>`
             }
             html_ += `
               <tr>
                 ${html_rowspan}
                 ${induk_elem}
-                <td rowspan="${indikator_length}">
+                ${td_rowspan}
                   <b>${item.rencana_kerja}</b><br><span class="text-muted">${item.penugasan_dari ? `Penugasan dari ${item.penugasan_dari}` : ''}</span>
                   ${klasifikasi}
                   ${skp_aksi}
@@ -1160,17 +1211,20 @@
                 ${delete_html}
               </div>
               `
+            let td_rowspan = ""
             if(status != "1"){
               skp_aksi = ""
+              td_rowspan = `<td rowspan="${item.indikator.length+1}">`
               html_rowspan = `<td rowspan="${item.indikator.length+1}">${no}</td>`
             }else{
+              td_rowspan = `<td rowspan="${indikator_length}">`
               html_rowspan = `<td rowspan="${indikator_length}">${no}</td>`
             }
             html_ += `
               <tr>
                 ${html_rowspan}
                 ${induk_elem}
-                <td rowspan="${indikator_length}">
+                ${td_rowspan}
                   <b>${item.rencana_kerja}</b><br><span class="text-muted">${item.penugasan_dari ? `Penugasan dari ${item.penugasan_dari}` : ''}</span>
                   ${klasifikasi}
                   ${skp_aksi}

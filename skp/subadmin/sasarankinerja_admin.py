@@ -1,26 +1,20 @@
 import calendar
+
 import pytz
 import requests
-from django.utils import timezone
-
 from django.contrib import admin, messages
 from django.db.models import Q
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import path, resolve, reverse_lazy
+from django.utils import timezone
 from django.utils.safestring import mark_safe
 
 from services.models import Configurations
 from skp.forms.sasarankinerja_form import SasaranKinerjaForm
-from skp.models import (
-    DetailSasaranKinerja,
-    Lampiran,
-    PerilakuKerja,
-    Perspektif,
-    RencanaHasilKerja,
-    SasaranKinerja,
-    RiwayatKeteranganSKP,
-)
+from skp.models import (DetailSasaranKinerja, Lampiran, PerilakuKerja,
+                        Perspektif, RencanaHasilKerja, RiwayatKeteranganSKP,
+                        SasaranKinerja)
 from skp.utils import FULL_BULAN
 from usom.models import Account
 
@@ -731,7 +725,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
     def list_riwayat_keterangan(self, request, id):
         obj = get_object_or_404(SasaranKinerja, pk=id)
         data = []
-        for i in RiwayatKeteranganSKP.objects.filter(skp=obj):
+        for i in RiwayatKeteranganSKP.objects.filter(skp=obj).order_by('-created'):
             tanggal = timezone.localtime(i.created, pytz.timezone("Asia/Jakarta"))
             data.append(
                 {
@@ -859,8 +853,8 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
             ),
             path(
                 "<int:id>/riwayat-keterangan",
-                self.admin_site.admin_view(self.sinkron_data_pegawai_local),
-                name="skp_sasarankinerja_sync_data_pegawai",
+                self.admin_site.admin_view(self.list_riwayat_keterangan),
+                name="skp_sasarankinerja_riwayat_keterangan",
             ),
             path(
                 "<int:id>/view",
