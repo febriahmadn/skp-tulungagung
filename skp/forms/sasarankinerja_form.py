@@ -135,12 +135,14 @@ class SasaranKinerjaForm(forms.ModelForm):
 
         find_skp = SasaranKinerja.objects.filter(
             pegawai=pegawai,
-            periode_awal__gte=periode_awal,
-            periode_akhir__lte=periode_akhir,
         ).filter(
             Q(status=SasaranKinerja.Status.PERSETUJUAN)
             | Q(status=SasaranKinerja.Status.PENGAJUAN),
+        ).filter(
+            Q(periode_awal__gte=periode_awal)
+            | Q(periode_akhir__lte=periode_akhir)
         )
+
         if find_skp.exists():
             raise forms.ValidationError(
                 mark_safe(
