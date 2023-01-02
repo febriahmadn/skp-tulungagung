@@ -65,6 +65,7 @@
     <a style="align-self: center;" id="btn-cetak-skp" class="btn btn-success btn-sm mr-1" href="{% url 'admin:skp_sasarankinerja_cetak' obj.id %}">
       <i class="fas fa-print"></i> Cetak SKP
     </a>
+    {% comment %} {% if penilai_view or obj.jenis_jabatan == 1 %} {% endcomment %}
     {% if penilai_view %}
     <button style="align-self: center;" id="btn-edit" type="button" class="btn btn-sm btn-warning mr-1" data-toggle="modal" data-target="#modal_edit_status">
       <i class="fas fa-edit"></i> Edit Status
@@ -1370,7 +1371,7 @@
       success: function(response){
         if(response.success){
           toastr.success("Berhasil Merubah Status Sasaran Kinerja");
-          if(status == "1" && jenis_jabatan != "JPT"){
+          if(status == "1" && jenis_jabatan != "1"){
             window.location.href = `${BASE_URL}/admin/skp/sasarankinerja/${skp_induk_id}/skp-bawahan`
           }else{
             window.location.reload()

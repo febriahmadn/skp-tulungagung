@@ -227,7 +227,7 @@
           {% if penilaian_obj.predikat_perilaku %}Ubah{% else %}Tambah{% endif %}
         </button><br>
         <div class="pt-2">
-          PREDIKAT KINERJA : {% if penilaian_obj %}{{penilaian_obj.predikat_kerja|default_if_none:"---"}}{% endif %}
+          PREDIKAT KINERJA : {% if penilaian_obj %}{{penilaian_obj.get_predikat_kerja_display|upper|default_if_none:"---"}}{% endif %}
         </div>
       </div>
     </div>
@@ -709,7 +709,7 @@
     if(hasil_id != ""){
 
       $.ajax({
-        url: `${BASE_URL}/admin/skp/penilaianbawahan/create/`,
+        url: `${BASE_URL}/admin/skp/penilaianbawahan/create`,
       type: 'POST',
       data: {
         csrfmiddlewaretoken: csrf,
@@ -732,7 +732,34 @@
     toastr.warning("isian hasil tidak boleh kosong");
   }
   }
-
+  const save_umpan = () => {
+    let modal = $("#tambahumpanbalikpegawai")
+    let umpan_id = $("#umpan_id").val()
+    let indikator_id = $("#indikator_id_umpan").val()
+    let umpan_multiple = $("#umpan_multiple").val()
+    let umpan_balik_tambahan = $("#umpan_balik_tambahan").val()
+    let csrf = modal.find('input[name=csrfmiddlewaretoken]').val();
+    $.ajax({
+      url: `${BASE_URL}/admin/skp/umpanbalikpegawai/create`,
+      type: 'POST',
+      data: {
+        csrfmiddlewaretoken: csrf,
+        indikator_id: indikator_id,
+        periode: periode,
+        umpan_id: umpan_id,
+        umpan_list: JSON.stringify(umpan_multiple),
+        umpan_balik_tambahan: umpan_balik_tambahan,
+      },
+      success: function(response){
+        if(response.success){
+          toastr.success(response.pesan);
+          window.location.reload()
+        } else {
+          toastr.warning(response.pesan);
+        }
+      }
+    })  
+  }
   const delete_action = (url) => {
     Swal.fire({
       title: 'Apakah anda yakin ingin menghapus data ini?',

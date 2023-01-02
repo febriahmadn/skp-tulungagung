@@ -24,48 +24,48 @@ FULL_BULAN = {
 
 def get_predikat_kerja(rating_obj, predikat_obj):
     if (
-        rating_obj.nama == "Dibawah Ekspetasi"
-        and predikat_obj.nama == "Dibawah Ekspetasi"
+        rating_obj == "Dibawah Ekspetasi"
+        and predikat_obj == "Dibawah Ekspetasi"
     ):
         return 1
     elif (
-        rating_obj.nama == "Dibawah Ekspetasi"
-        and predikat_obj.nama == "Sesuai Ekspetasi"
+        rating_obj == "Dibawah Ekspetasi"
+        and predikat_obj == "Sesuai Ekspetasi"
     ):
         return 2
     elif (
-        rating_obj.nama == "Dibawah Ekspetasi"
-        and predikat_obj.nama == "Diatas Ekspetasi"
+        rating_obj == "Dibawah Ekspetasi"
+        and predikat_obj == "Diatas Ekspetasi"
     ):
         return 2
     elif (
-        rating_obj.nama == "Sesuai Ekspetasi"
-        and predikat_obj.nama == "Dibawah Ekspetasi"
+        rating_obj == "Sesuai Ekspetasi"
+        and predikat_obj == "Dibawah Ekspetasi"
     ):
         return 3
     elif (
-        rating_obj.nama == "Sesuai Ekspetasi"
-        and predikat_obj.nama == "Sesuai Ekspetasi"
+        rating_obj == "Sesuai Ekspetasi"
+        and predikat_obj == "Sesuai Ekspetasi"
     ):
         return 4
     elif (
-        rating_obj.nama == "Sesuai Ekspetasi"
-        and predikat_obj.nama == "Diatas Ekspetasi"
+        rating_obj == "Sesuai Ekspetasi"
+        and predikat_obj == "Diatas Ekspetasi"
     ):
         return 4
     elif (
-        rating_obj.nama == "Diatas Ekspetasi"
-        and predikat_obj.nama == "Dibawah Ekspetasi"
+        rating_obj == "Diatas Ekspetasi"
+        and predikat_obj == "Dibawah Ekspetasi"
     ):
         return 3
     elif (
-        rating_obj.nama == "Diatas Ekspetasi"
-        and predikat_obj.nama == "Sesuai Ekspetasi"
+        rating_obj == "Diatas Ekspetasi"
+        and predikat_obj == "Sesuai Ekspetasi"
     ):
         return 4
     elif (
-        rating_obj.nama == "Diatas Ekspetasi"
-        and predikat_obj.nama == "Diatas Ekspetasi"
+        rating_obj == "Diatas Ekspetasi"
+        and predikat_obj == "Diatas Ekspetasi"
     ):
         return 5
     else:

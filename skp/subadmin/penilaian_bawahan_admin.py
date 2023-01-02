@@ -44,8 +44,8 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
             obj.rating_hasil = hasil_obj
 
         obj.predikat_kerja = get_predikat_kerja(
-            obj.rating_hasil.nama if obj.rating_hasil else "",
-            obj.predikat_perilaku.nama if obj.predikat_perilaku else "",
+            obj.rating_hasil.nama if obj.rating_hasil else None,
+            obj.predikat_perilaku.nama if obj.predikat_perilaku else None,
         )
         if obj.predikat_kerja:
             obj.is_dinilai = True
