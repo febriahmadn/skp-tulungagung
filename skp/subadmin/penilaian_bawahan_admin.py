@@ -230,9 +230,9 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
                     i.skp.detailsasarankinerja.nip_pegawai,
                     i.skp.detailsasarankinerja.nama_pegawai,
                     i.skp.detailsasarankinerja.jabatan_pegawai,
-                    i.rating_hasil.nama if i.rating_hasil.upper() else "",
-                    i.predikat_perilaku.nama if i.predikat_perilaku.upper() else "",
-                    i.predikat_kerja if i.predikat_kerja else "",
+                    i.rating_hasil.nama if i.rating_hasil else "",
+                    i.predikat_perilaku.nama if i.predikat_perilaku else "",
+                    i.get_predikat_kerja_display().title() if i.predikat_kerja else "",
                 )
                 rows.append(isi)
 

@@ -27,7 +27,7 @@
                     <td>{{item.skp.detailsasarankinerja.jabatan_pegawai}}</td>
                     <td>{{item.rating_hasil.nama|upper|default_if_none:""}}</td>
                     <td>{{item.predikat_perilaku.nama|upper|default_if_none:""}}</td>
-                    <td>{{item.predikat_kerja|default_if_none:""}}</td>
+                    <td>{{item.get_predikat_kerja_display|upper|default_if_none:""}}</td>
                 </tr>
                 {% endfor %}
                 {% else %}
