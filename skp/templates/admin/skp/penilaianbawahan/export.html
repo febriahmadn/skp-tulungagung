@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="d-flex justify-content-end">
-    <a href="{% url 'admin:penilaian-bawahan-skp-export' obj.id periode %}?download=true" class="btn btn-sm btn-success"><i class="fas fa-download"></i>  Download Excel</a>
+    <a href="{% url 'admin:skp_penilaianbawahan_export' obj.id periode %}?download=true" class="btn btn-sm btn-success"><i class="fas fa-download"></i>  Download Excel</a>
 </div>
 <div class="card p-0 mt-3">
     <div class="card-body p-0 m-0">

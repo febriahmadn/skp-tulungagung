@@ -328,37 +328,37 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
             path(
                 "<int:skp_id>/penilaian-bawahan/<int:periode>",
                 self.admin_site.admin_view(self.page_penilaian_bawahan),
-                name="penilaian-bawahan-skp",
+                name="skp_penilaianbawahan",
             ),
             path(
                 "<int:skp_id>/penilaian-bawahan/<int:periode>/detail",
                 self.admin_site.admin_view(self.detail_penilaian_bawahan),
-                name="penilaian-bawahan-skp-detail",
+                name="skp_penilaianbawahan_detail",
             ),
             path(
                 "<int:skp_id>/penilaian-bawahan/<int:periode>/cetak",
                 self.admin_site.admin_view(self.cetak_penilaian_bawahan),
-                name="penilaian-bawahan-skp-cetak",
+                name="skp_penilaianbawahan_cetak",
             ),
             path(
                 "<int:skp_id>/form-penilaian/<int:periode>/cetak",
                 self.admin_site.admin_view(self.form_cetak_penilaian),
-                name="form-penilaian-skp-cetak",
+                name="skp_penilaianbawahan_formpenilaiancetak",
             ),
             path(
                 "<int:skp_id>/penilaian-bawahan/<int:periode>/export",
                 self.admin_site.admin_view(self.export_view),
-                name="penilaian-bawahan-skp-export",
+                name="skp_penilaianbawahan_export",
             ),
             path(
                 "<int:skp_id>/penilaian-bawahan/<int:periode>/kurva",
                 self.admin_site.admin_view(self.kurva_view),
-                name="penilaian-bawahan-skp-kurva",
+                name="skp_penilaianbawahan_kurva",
             ),
             path(
                 "create",
                 self.admin_site.admin_view(self.create),
-                name="penilaian-bawahan-create",
+                name="skp_penilaianbawahan_create",
             ),
         ]
         return custom_url + admin_url

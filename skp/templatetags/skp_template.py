@@ -326,7 +326,7 @@ def get_detail_skp(pegawai, skp_obj, periode):
             </a>
         """.format(
             reverse_lazy(
-                "admin:penilaian-bawahan-skp-detail",
+                "admin:skp_penilaianbawahan_detail",
                 kwargs={"skp_id": obj.id, "periode": periode},
             )
         )
