@@ -22,7 +22,9 @@ def delete_skp(modeladmin, request, queryset):
         messages.add_message(
             request,
             messages.ERROR,
-            "Terdapat Data Sasaran Kinerja Pegawai yang memiliki status Selain Draft",
+            mark_safe(
+                "Hanya dokumen SKP yang berstatus <b>Draft</b> yang dapat dihapus!"
+            ),
         )
     else:
         count = queryset.count()
@@ -471,6 +473,12 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                     )
                     if sasaran_obj.status == 3
                     else "#",
+                    "kurva_penilaian_bawahan_url": reverse_lazy(
+                        "admin:penilaian-bawahan-skp-kurva",
+                        kwargs={"skp_id": sasaran_obj.id, "periode": awal.month},
+                    )
+                    if sasaran_obj.status == 3
+                    else "#",
                     "cetak_form_penilaian_url": reverse_lazy(
                         "admin:form-penilaian-skp-cetak",
                         kwargs={
@@ -513,6 +521,15 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                             else "#",
                             "export_penilaian_bawahan_url": reverse_lazy(
                                 "admin:penilaian-bawahan-skp-export",
+                                kwargs={
+                                    "skp_id": sasaran_obj.id,
+                                    "periode": awal.month,
+                                },
+                            )
+                            if sasaran_obj.status == 3
+                            else "#",
+                            "kurva_penilaian_bawahan_url": reverse_lazy(
+                                "admin:penilaian-bawahan-skp-kurva",
                                 kwargs={
                                     "skp_id": sasaran_obj.id,
                                     "periode": awal.month,
@@ -566,6 +583,15 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                             )
                             if sasaran_obj.status == 3
                             else "#",
+                            "kurva_penilaian_bawahan_url": reverse_lazy(
+                                "admin:penilaian-bawahan-skp-kurva",
+                                kwargs={
+                                    "skp_id": sasaran_obj.id,
+                                    "periode": awal.month,
+                                },
+                            )
+                            if sasaran_obj.status == 3
+                            else "#",
                             "cetak_form_penilaian_url": reverse_lazy(
                                 "admin:form-penilaian-skp-cetak",
                                 kwargs={
@@ -606,6 +632,15 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                             else "#",
                             "export_penilaian_bawahan_url": reverse_lazy(
                                 "admin:penilaian-bawahan-skp-export",
+                                kwargs={
+                                    "skp_id": sasaran_obj.id,
+                                    "periode": awal.month,
+                                },
+                            )
+                            if sasaran_obj.status == 3
+                            else "#",
+                            "kurva_penilaian_bawahan_url": reverse_lazy(
+                                "admin:penilaian-bawahan-skp-kurva",
                                 kwargs={
                                     "skp_id": sasaran_obj.id,
                                     "periode": awal.month,

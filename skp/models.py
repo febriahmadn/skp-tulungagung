@@ -481,6 +481,13 @@ class Hasil(models.Model):
 
 
 class PenilaianBawahan(models.Model):
+    class PredikatKerja(models.IntegerChoices):
+        SANGAT_KURANG = 1, "Sangat Kurang"
+        BUTUH_PERBAIKAN = 2, "Butuh Perbaikan"
+        KURANG = 3, "Kurang"
+        BAIK = 4, "Baik"
+        SANGAT_BAIK = 5, "Sangat Baik"
+
     skp = models.ForeignKey(
         SasaranKinerja,
         on_delete=models.CASCADE,
@@ -504,8 +511,8 @@ class PenilaianBawahan(models.Model):
         verbose_name="Predikat Perilaku Kinerja",
         related_name="hasil_predikat_perilaku_kerja",
     )
-    predikat_kerja = models.CharField(
-        verbose_name="Predikat Kerja", null=True, max_length=255
+    predikat_kerja = models.IntegerField(
+        choices=PredikatKerja.choices, verbose_name="Predikat Kerja", null=True
     )
     created = models.DateTimeField(auto_now_add=True)
 

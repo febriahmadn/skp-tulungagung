@@ -257,6 +257,71 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
         )
         return render(request, "admin/skp/penilaianbawahan/export.html", extra_context)
 
+    def kurva_view(self, request, skp_id, periode, extra_context={}):
+        try:
+            obj = SasaranKinerja.objects.get(pk=skp_id)
+        except Exception as e:
+            messages.error(request, str(e))
+            return redirect(
+                reverse("admin:skp_sasarankinerja_penilaian", kwargs={"id": skp_id})
+            )
+        penilaian_list = PenilaianBawahan.objects.filter(
+            skp__induk=obj, periode=periode
+        )
+        data = {
+            "sangat_kurang": penilaian_list.filter(
+                predikat_kerja=PenilaianBawahan.PredikatKerja.SANGAT_KURANG
+            )
+            if penilaian_list.filter(
+                predikat_kerja=PenilaianBawahan.PredikatKerja.SANGAT_KURANG
+            ).count()
+            >= 1
+            else 0,
+            "butuh_perbaikan": penilaian_list.filter(
+                predikat_kerja=PenilaianBawahan.PredikatKerja.BUTUH_PERBAIKAN
+            )
+            if penilaian_list.filter(
+                predikat_kerja=PenilaianBawahan.PredikatKerja.BUTUH_PERBAIKAN
+            ).count()
+            >= 1
+            else 0,
+            "kurang": penilaian_list.filter(
+                predikat_kerja=PenilaianBawahan.PredikatKerja.KURANG
+            )
+            if penilaian_list.filter(
+                predikat_kerja=PenilaianBawahan.PredikatKerja.KURANG
+            ).count()
+            >= 1
+            else 0,
+            "baik": penilaian_list.filter(
+                predikat_kerja=PenilaianBawahan.PredikatKerja.BAIK
+            )
+            if penilaian_list.filter(
+                predikat_kerja=PenilaianBawahan.PredikatKerja.BAIK
+            ).count()
+            >= 1
+            else 0,
+            "sangat_baik": penilaian_list.filter(
+                predikat_kerja=PenilaianBawahan.PredikatKerja.SANGAT_BAIK
+            )
+            if penilaian_list.filter(
+                predikat_kerja=PenilaianBawahan.PredikatKerja.SANGAT_BAIK
+            ).count()
+            >= 1
+            else 0,
+        }
+        extra_context.update(
+            {
+                "title": "Sasaran Kinerja Pegawai",
+                "obj": obj,
+                "periode": periode,
+                "penilaian_list": penilaian_list,
+                "jumlah": data,
+            }
+        )
+        # "penilaian_list": penilaian_list,
+        return render(request, "admin/skp/penilaianbawahan/kurva.html", extra_context)
+
     def get_urls(self):
         admin_url = super(PenilaianBawahanAdmin, self).get_urls()
         custom_url = [
@@ -284,6 +349,11 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
                 "<int:skp_id>/penilaian-bawahan/<int:periode>/export",
                 self.admin_site.admin_view(self.export_view),
                 name="penilaian-bawahan-skp-export",
+            ),
+            path(
+                "<int:skp_id>/penilaian-bawahan/<int:periode>/kurva",
+                self.admin_site.admin_view(self.kurva_view),
+                name="penilaian-bawahan-skp-kurva",
             ),
             path(
                 "create",

@@ -1159,12 +1159,12 @@
                 ${delete_html}
               </div>
               `
-              if(status != "1"){
-                skp_aksi = ""
-                html_rowspan = `<td rowspan="${item.indikator.length+1}">${no}</td>`
-              }else{
-                html_rowspan = `<td rowspan="${indikator_length-1}">${no}</td>`
-              }
+            if(status != "1"){
+              skp_aksi = ""
+              html_rowspan = `<td rowspan="${item.indikator.length+1}">${no}</td>`
+            }else{
+              html_rowspan = `<td rowspan="${indikator_length}">${no}</td>`
+            }
             html_ += `
               <tr>
                 ${html_rowspan}
