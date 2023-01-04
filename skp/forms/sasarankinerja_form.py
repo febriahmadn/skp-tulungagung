@@ -142,7 +142,7 @@ class SasaranKinerjaForm(forms.ModelForm):
             periode_awal__lte=periode_awal,
             periode_akhir__gte=periode_akhir
         )
-        print(find_skp)
+
         if find_skp.exists():
             raise forms.ValidationError(
                 mark_safe(
