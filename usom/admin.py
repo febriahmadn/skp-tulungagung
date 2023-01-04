@@ -160,8 +160,7 @@ class AccountAdmin(UserAdmin):
     def view_pegawai_edit_profile(self, request, id):
         try:
             obj = Account.objects.get(pk=id)
-        except Account.DoesNotExist or Exception as e:
-            print(e)
+        except Account.DoesNotExist or Exception:
             raise Http404
 
         form = EditProfilPegawai(instance=obj)

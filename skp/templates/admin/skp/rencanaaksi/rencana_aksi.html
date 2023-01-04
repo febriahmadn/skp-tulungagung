@@ -60,7 +60,7 @@
 <div class="row">
   <div class="col-md-6">
     <div class="card">
-      <div class="card-header bg-success text-white p-5">
+      <div class="card-header bg-primary text-white p-5">
           <h6 class="m-0">PEGAWAI YANG DINILAI</h6>
       </div>
       <div class="card-body p-0">
@@ -219,7 +219,7 @@
     let csrf = modal.find('input[name=csrfmiddlewaretoken]').val();
     if(rencana_aksi != ""){
       $.ajax({
-        url: `${BASE_URL}/admin/skp/rencanaaksi/create/`,
+        url: `${BASE_URL}/admin/skp/rencanaaksi/create`,
         type: 'POST',
         data: {
           csrfmiddlewaretoken: csrf,
@@ -238,6 +238,8 @@
           }
         }
       })  
+    }else{
+      toastr.warning("Rencana Aksi Tidak Boleh Kosong");
     }
   }
   const delete_action = (url) => {

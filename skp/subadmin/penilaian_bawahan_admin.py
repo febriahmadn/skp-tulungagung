@@ -44,8 +44,8 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
             obj.rating_hasil = hasil_obj
 
         obj.predikat_kerja = get_predikat_kerja(
-            obj.rating_hasil.nama if obj.rating_hasil else "",
-            obj.predikat_perilaku.nama if obj.predikat_perilaku else "",
+            obj.rating_hasil.nama if obj.rating_hasil else None,
+            obj.predikat_perilaku.nama if obj.predikat_perilaku else None,
         )
         if obj.predikat_kerja:
             obj.is_dinilai = True
@@ -230,9 +230,9 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
                     i.skp.detailsasarankinerja.nip_pegawai,
                     i.skp.detailsasarankinerja.nama_pegawai,
                     i.skp.detailsasarankinerja.jabatan_pegawai,
-                    i.rating_hasil.nama if i.rating_hasil.upper() else "",
-                    i.predikat_perilaku.nama if i.predikat_perilaku.upper() else "",
-                    i.predikat_kerja if i.predikat_kerja else "",
+                    i.rating_hasil.nama if i.rating_hasil else "",
+                    i.predikat_perilaku.nama if i.predikat_perilaku else "",
+                    i.get_predikat_kerja_display().title() if i.predikat_kerja else "",
                 )
                 rows.append(isi)
 
@@ -271,7 +271,7 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
         data = {
             "sangat_kurang": penilaian_list.filter(
                 predikat_kerja=PenilaianBawahan.PredikatKerja.SANGAT_KURANG
-            )
+            ).count()
             if penilaian_list.filter(
                 predikat_kerja=PenilaianBawahan.PredikatKerja.SANGAT_KURANG
             ).count()
@@ -279,7 +279,7 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
             else 0,
             "butuh_perbaikan": penilaian_list.filter(
                 predikat_kerja=PenilaianBawahan.PredikatKerja.BUTUH_PERBAIKAN
-            )
+            ).count()
             if penilaian_list.filter(
                 predikat_kerja=PenilaianBawahan.PredikatKerja.BUTUH_PERBAIKAN
             ).count()
@@ -287,7 +287,7 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
             else 0,
             "kurang": penilaian_list.filter(
                 predikat_kerja=PenilaianBawahan.PredikatKerja.KURANG
-            )
+            ).count()
             if penilaian_list.filter(
                 predikat_kerja=PenilaianBawahan.PredikatKerja.KURANG
             ).count()
@@ -295,7 +295,7 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
             else 0,
             "baik": penilaian_list.filter(
                 predikat_kerja=PenilaianBawahan.PredikatKerja.BAIK
-            )
+            ).count()
             if penilaian_list.filter(
                 predikat_kerja=PenilaianBawahan.PredikatKerja.BAIK
             ).count()
@@ -303,7 +303,7 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
             else 0,
             "sangat_baik": penilaian_list.filter(
                 predikat_kerja=PenilaianBawahan.PredikatKerja.SANGAT_BAIK
-            )
+            ).count()
             if penilaian_list.filter(
                 predikat_kerja=PenilaianBawahan.PredikatKerja.SANGAT_BAIK
             ).count()
@@ -328,37 +328,37 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
             path(
                 "<int:skp_id>/penilaian-bawahan/<int:periode>",
                 self.admin_site.admin_view(self.page_penilaian_bawahan),
-                name="penilaian-bawahan-skp",
+                name="skp_penilaianbawahan",
             ),
             path(
                 "<int:skp_id>/penilaian-bawahan/<int:periode>/detail",
                 self.admin_site.admin_view(self.detail_penilaian_bawahan),
-                name="penilaian-bawahan-skp-detail",
+                name="skp_penilaianbawahan_detail",
             ),
             path(
                 "<int:skp_id>/penilaian-bawahan/<int:periode>/cetak",
                 self.admin_site.admin_view(self.cetak_penilaian_bawahan),
-                name="penilaian-bawahan-skp-cetak",
+                name="skp_penilaianbawahan_cetak",
             ),
             path(
                 "<int:skp_id>/form-penilaian/<int:periode>/cetak",
                 self.admin_site.admin_view(self.form_cetak_penilaian),
-                name="form-penilaian-skp-cetak",
+                name="skp_penilaianbawahan_formpenilaiancetak",
             ),
             path(
                 "<int:skp_id>/penilaian-bawahan/<int:periode>/export",
                 self.admin_site.admin_view(self.export_view),
-                name="penilaian-bawahan-skp-export",
+                name="skp_penilaianbawahan_export",
             ),
             path(
                 "<int:skp_id>/penilaian-bawahan/<int:periode>/kurva",
                 self.admin_site.admin_view(self.kurva_view),
-                name="penilaian-bawahan-skp-kurva",
+                name="skp_penilaianbawahan_kurva",
             ),
             path(
                 "create",
                 self.admin_site.admin_view(self.create),
-                name="penilaian-bawahan-create",
+                name="skp_penilaianbawahan_create",
             ),
         ]
         return custom_url + admin_url

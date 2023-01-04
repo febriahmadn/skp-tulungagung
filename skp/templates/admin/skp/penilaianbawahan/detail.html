@@ -40,10 +40,10 @@
     <a href="/admin/skp" class="text-muted">Skp</a>
   </li>
   <li class="breadcrumb-item text-muted">
-    <a href="#" class="text-muted">Bukti Dukung</a>
+    <a href="#" class="text-muted">Penilaian Bawahan</a>
   </li>
   <li class="breadcrumb-item text-muted">
-    <a href="#" class="text-muted">Detail Bukti Dukung</a>
+    <a href="#" class="text-muted">Detail Penilaian Bawahan</a>
   </li>
 </ul>
 {% endblock breadcrumbs %}
@@ -65,7 +65,7 @@
 
   <div class="col-md-8 d-flex flex-row-reverse">
     <!-- <a href="{% url 'admin:skp_sasarankinerja_cetak' obj.id %}"> -->
-    <a id="btn-cetak" class="btn btn-success mr-1" style="align-self: center" href="{% url 'admin:penilaian-bawahan-skp-cetak' obj.id periode %}">
+    <a id="btn-cetak" class="btn btn-success mr-1" style="align-self: center" href="{% url 'admin:skp_penilaianbawahan_cetak' obj.id periode %}">
       <i class="fas fa-print"></i> Cetak
     </a>
   </div>
@@ -73,7 +73,7 @@
 <div class="row">
   <div class="col-md-6">
     <div class="card">
-      <div class="card-header bg-success text-white p-5">
+      <div class="card-header bg-primary text-white p-5">
           <h6 class="m-0">PEGAWAI YANG DINILAI</h6>
       </div>
       <div class="card-body p-0">
@@ -227,7 +227,7 @@
           {% if penilaian_obj.predikat_perilaku %}Ubah{% else %}Tambah{% endif %}
         </button><br>
         <div class="pt-2">
-          PREDIKAT KINERJA : {% if penilaian_obj %}{{penilaian_obj.predikat_kerja|default_if_none:"---"}}{% endif %}
+          PREDIKAT KINERJA : {% if penilaian_obj %}{{penilaian_obj.get_predikat_kerja_display|upper|default_if_none:"---"}}{% endif %}
         </div>
       </div>
     </div>
@@ -410,7 +410,7 @@
                   let id_umpan = []
                   let ol_umpan = ""
                   if(item_indikator.umpan_balik.umpan_balik.length > 0){
-                    ol_umpan = "<ol>"
+                    ol_umpan = `<ol style="margin: unset; padding-left: 10px;">`
                       item_indikator.umpan_balik.umpan_balik.map(item => {
                         id_umpan.push(item.id)
                         ol_umpan += `<li>${item.nama}</li>`
@@ -421,6 +421,7 @@
                   umpanbalik = `
                   <td>
                     ${ol_umpan}
+                    <br>
                     Umpan Balik Tambahan: <br><span id="umpan-balik-${item_indikator.umpan_balik.id}">${item_indikator.umpan_balik.umpan_balik_tambahan ? item_indikator.umpan_balik.umpan_balik_tambahan : ''}</span>
                     <div class="d-flex justify-content-center pt-3">
                       <button class="btn btn-sm btn-warning mr-1" data-id="${item_indikator.umpan_balik.id}" data-indikator_id="${item_indikator.id}" data-edit="true" data-umpan_multiple_id="[${id_umpan}]" data-toggle="modal" data-target="#tambahumpanbalikpegawai">
@@ -454,11 +455,9 @@
                 if(item_indikator.realisasi){
                   realisasi = `
                   <td>
-                    <div style="display: flex" >
-                      <div id="realisasi-${item_indikator.realisasi.id}">${item_indikator.realisasi.realisasi}</div>
-                      <div style="padding-right:3px; padding-left:3px;" >berdasarkan</div>
-                      <div id="sumber-${item_indikator.realisasi.id}">${item_indikator.realisasi.sumber}</div>
-                    </div>
+                    <p>${item_indikator.realisasi.realisasi} berdasarkan ${item_indikator.realisasi.sumber}</p>
+                    <div style="display: none" id="realisasi-${item_indikator.realisasi.id}">${item_indikator.realisasi.realisasi}</div>
+                    <div style="display: none" id="sumber-${item_indikator.realisasi.id}">${item_indikator.realisasi.sumber}</div>
                 </td>
                   `
                 }else{
@@ -563,7 +562,7 @@
                   let id_umpan = []
                   let ol_umpan = ""
                   if(item_indikator.umpan_balik.umpan_balik.length > 0){
-                    ol_umpan = "<ol>"
+                    ol_umpan = `<ol style="margin: unset; padding-left: 10px;">`
                       item_indikator.umpan_balik.umpan_balik.map(item => {
                         id_umpan.push(item.id)
                         ol_umpan += `<li>${item.nama}</li>`
@@ -574,6 +573,7 @@
                   umpanbalik = `
                   <td>
                     ${ol_umpan}
+                    <br>
                     Umpan Balik Tambahan: <br><span id="umpan-balik-${item_indikator.umpan_balik.id}">${item_indikator.umpan_balik.umpan_balik_tambahan ? item_indikator.umpan_balik.umpan_balik_tambahan : ''}</span>
                     <div class="d-flex justify-content-center pt-3">
                       <button class="btn btn-sm btn-warning mr-1" data-id="${item_indikator.umpan_balik.id}" data-indikator_id="${item_indikator.id}" data-edit="true" data-umpan_multiple_id="[${id_umpan}]" data-toggle="modal" data-target="#tambahumpanbalikpegawai">
@@ -615,16 +615,14 @@
                 if(item_indikator.realisasi){
                   realisasi = `
                   <td>
-                    <div style="display: flex" >
-                      <div id="realisasi-${item_indikator.realisasi.id}">${item_indikator.realisasi.realisasi}</div>
-                      <div style="padding-right:3px; padding-left:3px;" >berdasarkan</div>
-                      <div id="sumber-${item_indikator.realisasi.id}">${item_indikator.realisasi.sumber}</div>
-                    </div>
+                    <p>${item_indikator.realisasi.realisasi} berdasarkan ${item_indikator.realisasi.sumber}</p>
+                    <div style="display: none" id="realisasi-${item_indikator.realisasi.id}">${item_indikator.realisasi.realisasi}</div>
+                    <div style="display: none" id="sumber-${item_indikator.realisasi.id}">${item_indikator.realisasi.sumber}</div>
                 </td>
                   `
                 }else{
                   realisasi = `
-                    <td>
+                    <td style="text-align: center">
                     </td>
                   `
                 }
@@ -713,7 +711,7 @@
     if(hasil_id != ""){
 
       $.ajax({
-        url: `${BASE_URL}/admin/skp/penilaianbawahan/create/`,
+        url: `${BASE_URL}/admin/skp/penilaianbawahan/create`,
       type: 'POST',
       data: {
         csrfmiddlewaretoken: csrf,
@@ -736,7 +734,34 @@
     toastr.warning("isian hasil tidak boleh kosong");
   }
   }
-
+  const save_umpan = () => {
+    let modal = $("#tambahumpanbalikpegawai")
+    let umpan_id = $("#umpan_id").val()
+    let indikator_id = $("#indikator_id_umpan").val()
+    let umpan_multiple = $("#umpan_multiple").val()
+    let umpan_balik_tambahan = $("#umpan_balik_tambahan").val()
+    let csrf = modal.find('input[name=csrfmiddlewaretoken]').val();
+    $.ajax({
+      url: `${BASE_URL}/admin/skp/umpanbalikpegawai/create`,
+      type: 'POST',
+      data: {
+        csrfmiddlewaretoken: csrf,
+        indikator_id: indikator_id,
+        periode: periode,
+        umpan_id: umpan_id,
+        umpan_list: JSON.stringify(umpan_multiple),
+        umpan_balik_tambahan: umpan_balik_tambahan,
+      },
+      success: function(response){
+        if(response.success){
+          toastr.success(response.pesan);
+          window.location.reload()
+        } else {
+          toastr.warning(response.pesan);
+        }
+      }
+    })  
+  }
   const delete_action = (url) => {
     Swal.fire({
       title: 'Apakah anda yakin ingin menghapus data ini?',

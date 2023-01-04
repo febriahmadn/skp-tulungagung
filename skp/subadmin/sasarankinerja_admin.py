@@ -1,17 +1,20 @@
 import calendar
 
+import pytz
 import requests
 from django.contrib import admin, messages
 from django.db.models import Q
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import path, resolve, reverse_lazy
+from django.utils import timezone
 from django.utils.safestring import mark_safe
 
 from services.models import Configurations
 from skp.forms.sasarankinerja_form import SasaranKinerjaForm
 from skp.models import (DetailSasaranKinerja, Lampiran, PerilakuKerja,
-                        Perspektif, RencanaHasilKerja, SasaranKinerja)
+                        Perspektif, RencanaHasilKerja, RiwayatKeteranganSKP,
+                        SasaranKinerja)
 from skp.utils import FULL_BULAN
 from usom.models import Account
 
@@ -329,6 +332,22 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                     }
         return JsonResponse(respon)
 
+    def find_exists_skp(self, obj, status):
+        find_skp = SasaranKinerja.objects.filter(
+            pegawai=obj.pegawai,
+            status=status,
+        ).filter(
+            Q(periode_awal__range=(obj.periode_awal, obj.periode_akhir))
+            | Q(periode_akhir__range=(obj.periode_awal, obj.periode_akhir))
+        )
+        if find_skp.exists():
+            return True
+        return False
+
+    def create_riwayat(self, obj, keterangan):
+        if keterangan:
+            RiwayatKeteranganSKP.objects.create(skp=obj, keterangan=keterangan)
+
     def action_change_status_skp(self, request):
         respon = {"success": False}
         skp_id = request.GET.get("skp_id", None)
@@ -340,6 +359,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
             keterangan = request.POST.get("keterangan", None)
             if not keterangan and keterangan == "":
                 keterangan = None
+
         try:
             obj = SasaranKinerja.objects.get(id=skp_id)
         except SasaranKinerja.DoesNotExist:
@@ -347,17 +367,12 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         else:
             skp_exist = False
             if status != 1 and status != "1":
-                find_skp = SasaranKinerja.objects.filter(
-                    pegawai=obj.pegawai,
-                    periode_awal__gte=obj.periode_awal,
-                    periode_akhir__lte=obj.periode_akhir,
-                    status=status,
-                )
-                if find_skp.exists():
+                if self.find_exists_skp(obj, status):
                     skp_exist = True
 
             if status and not skp_exist:
                 try:
+                    self.create_riwayat(obj, keterangan)
                     obj.status = status
                     obj.keterangan = keterangan
                     obj.save()
@@ -468,19 +483,19 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                     if sasaran_obj.status == 3
                     else "#",
                     "export_penilaian_bawahan_url": reverse_lazy(
-                        "admin:penilaian-bawahan-skp-export",
+                        "admin:skp_penilaianbawahan_export",
                         kwargs={"skp_id": sasaran_obj.id, "periode": awal.month},
                     )
                     if sasaran_obj.status == 3
                     else "#",
                     "kurva_penilaian_bawahan_url": reverse_lazy(
-                        "admin:penilaian-bawahan-skp-kurva",
+                        "admin:skp_penilaianbawahan_kurva",
                         kwargs={"skp_id": sasaran_obj.id, "periode": awal.month},
                     )
                     if sasaran_obj.status == 3
                     else "#",
                     "cetak_form_penilaian_url": reverse_lazy(
-                        "admin:form-penilaian-skp-cetak",
+                        "admin:skp_penilaianbawahan_formpenilaiancetak",
                         kwargs={
                             "skp_id": sasaran_obj.id,
                             "periode": awal.month,
@@ -520,7 +535,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                             if sasaran_obj.status == 3
                             else "#",
                             "export_penilaian_bawahan_url": reverse_lazy(
-                                "admin:penilaian-bawahan-skp-export",
+                                "admin:skp_penilaianbawahan_export",
                                 kwargs={
                                     "skp_id": sasaran_obj.id,
                                     "periode": awal.month,
@@ -529,7 +544,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                             if sasaran_obj.status == 3
                             else "#",
                             "kurva_penilaian_bawahan_url": reverse_lazy(
-                                "admin:penilaian-bawahan-skp-kurva",
+                                "admin:skp_penilaianbawahan_kurva",
                                 kwargs={
                                     "skp_id": sasaran_obj.id,
                                     "periode": awal.month,
@@ -538,7 +553,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                             if sasaran_obj.status == 3
                             else "#",
                             "cetak_form_penilaian_url": reverse_lazy(
-                                "admin:form-penilaian-skp-cetak",
+                                "admin:skp_penilaianbawahan_formpenilaiancetak",
                                 kwargs={
                                     "skp_id": sasaran_obj.id,
                                     "periode": awal.month,
@@ -575,7 +590,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                             if sasaran_obj.status == 3
                             else "#",
                             "export_penilaian_bawahan_url": reverse_lazy(
-                                "admin:penilaian-bawahan-skp-export",
+                                "admin:skp_penilaianbawahan_export",
                                 kwargs={
                                     "skp_id": sasaran_obj.id,
                                     "periode": awal.month,
@@ -584,7 +599,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                             if sasaran_obj.status == 3
                             else "#",
                             "kurva_penilaian_bawahan_url": reverse_lazy(
-                                "admin:penilaian-bawahan-skp-kurva",
+                                "admin:skp_penilaianbawahan_kurva",
                                 kwargs={
                                     "skp_id": sasaran_obj.id,
                                     "periode": awal.month,
@@ -593,7 +608,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                             if sasaran_obj.status == 3
                             else "#",
                             "cetak_form_penilaian_url": reverse_lazy(
-                                "admin:form-penilaian-skp-cetak",
+                                "admin:skp_penilaianbawahan_formpenilaiancetak",
                                 kwargs={
                                     "skp_id": sasaran_obj.id,
                                     "periode": awal.month,
@@ -631,7 +646,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                             if sasaran_obj.status == 3
                             else "#",
                             "export_penilaian_bawahan_url": reverse_lazy(
-                                "admin:penilaian-bawahan-skp-export",
+                                "admin:skp_penilaianbawahan_export",
                                 kwargs={
                                     "skp_id": sasaran_obj.id,
                                     "periode": awal.month,
@@ -640,7 +655,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                             if sasaran_obj.status == 3
                             else "#",
                             "kurva_penilaian_bawahan_url": reverse_lazy(
-                                "admin:penilaian-bawahan-skp-kurva",
+                                "admin:skp_penilaianbawahan_kurva",
                                 kwargs={
                                     "skp_id": sasaran_obj.id,
                                     "periode": awal.month,
@@ -649,7 +664,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                             if sasaran_obj.status == 3
                             else "#",
                             "cetak_form_penilaian_url": reverse_lazy(
-                                "admin:form-penilaian-skp-cetak",
+                                "admin:skp_penilaianbawahan_formpenilaiancetak",
                                 kwargs={
                                     "skp_id": sasaran_obj.id,
                                     "periode": awal.month,
@@ -688,7 +703,9 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         obj = get_object_or_404(SasaranKinerja, pk=obj_id)
         respon = {"success": False}
         if obj.induk:
-            rhk_parent_list = obj.induk.rencanahasilkerja_set.all()
+            rhk_parent_list = obj.induk.rencanahasilkerja_set.filter(
+                klasifikasi=RencanaHasilKerja.Klasifikasi.ORGANISASI
+            )
             if rhk_parent_list.exists():
                 results = []
                 terbesar = 0
@@ -705,6 +722,19 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                     results.append({"id": item.id, "childs": childs})
                 respon = {"success": True, "results": results, "terbesar": terbesar}
         return JsonResponse(respon)
+
+    def list_riwayat_keterangan(self, request, id):
+        obj = get_object_or_404(SasaranKinerja, pk=id)
+        data = []
+        for i in RiwayatKeteranganSKP.objects.filter(skp=obj).order_by('-created'):
+            tanggal = timezone.localtime(i.created, pytz.timezone("Asia/Jakarta"))
+            data.append(
+                {
+                    "waktu": tanggal.strftime("%d-%m-%Y, %H:%M:%S"),
+                    "keterangan": i.keterangan,
+                }
+            )
+        return JsonResponse(data, safe=False)
 
     def sinkron_data_pegawai_local(self, request, id):
         respon = {}
@@ -743,6 +773,26 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
             }
             respon = {"success": True, "data": data}
         return JsonResponse(respon)
+
+    def load_induk_options(self, request):
+        atasan = request.GET.get("atasan", None)
+        respon = {"success": False, "pesan": "Terjadi Kesalahan Sistem"}
+        if atasan and atasan != "" and atasan.isnumeric():
+            find_skp = SasaranKinerja.objects.filter(
+                pegawai__id=atasan, status=SasaranKinerja.Status.PERSETUJUAN
+            )
+            data = []
+            for i in find_skp:
+                data.append(
+                    {
+                        "id": i.id,
+                        "text": "[{}] - {}".format(
+                            i.get_periode(), i.get_status_display()
+                        ),
+                    }
+                )
+            respon = {"success": True, "data": data}
+        return JsonResponse(respon, safe=False)
 
     def get_urls(self):
         admin_url = super(SasaranKinerjaAdmin, self).get_urls()
@@ -803,9 +853,19 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                 name="skp_sasarankinerja_sync_data_pegawai",
             ),
             path(
+                "<int:id>/riwayat-keterangan",
+                self.admin_site.admin_view(self.list_riwayat_keterangan),
+                name="skp_sasarankinerja_riwayat_keterangan",
+            ),
+            path(
                 "<int:id>/view",
                 self.admin_site.admin_view(self.view_changeform_skp),
                 name="skp_sasarankinerja_view",
+            ),
+            path(
+                "option",
+                self.admin_site.admin_view(self.load_induk_options),
+                name="skp_sasarankinerja_induk_option",
             ),
             # path("skpdata/", self.view_custom, name="list_skp_admin"),
             # path("skpdata/add/", self.add_skp, name="add_skp_admin"),

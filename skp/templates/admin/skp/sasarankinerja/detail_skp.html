@@ -1,12 +1,12 @@
 {% extends 'admin/base_site.html' %}
-{% load widgets skp_template %}
+{% load widgets skp_template static %}
 
 {% block custom_style %}
 {{ block.super }}
 <style>
-  table th{
+  table.table-custom th{
     font-size: 10pt;
-    color:#fdfdfd;
+    color:#fdfdfd !important;
   }
   .field-hidden{
     display: none;
@@ -65,6 +65,7 @@
     <a style="align-self: center;" id="btn-cetak-skp" class="btn btn-success btn-sm mr-1" href="{% url 'admin:skp_sasarankinerja_cetak' obj.id %}">
       <i class="fas fa-print"></i> Cetak SKP
     </a>
+    {% comment %} {% if penilai_view or obj.jenis_jabatan == 1 %} {% endcomment %}
     {% if penilai_view %}
     <button style="align-self: center;" id="btn-edit" type="button" class="btn btn-sm btn-warning mr-1" data-toggle="modal" data-target="#modal_edit_status">
       <i class="fas fa-edit"></i> Edit Status
@@ -173,7 +174,7 @@
       </div>
       <div class="card-body p-2">
         <div class="table-responsive" style="border-radius: 5px;">
-          <table class="table table-bordered mb-0" id="result_list">
+          <table class="table table-bordered mb-0 table-custom" id="result_list">
             <thead style="background: #2196f3;">
               <tr>
                 <th valign="center">No</th>
@@ -466,7 +467,7 @@
   <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="lampiran_modal_ekspetasi">Tambah Perilaku</h5>
+        <h5 class="modal-title" id="lampiran_modal_ekspetasi">Tambah Ekspektasi</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -524,6 +525,22 @@
               SKP akan dikembalikan menjadi status Draft untuk diperbaiki oleh pegawai. Anda tidak bisa membuka SKP ini sampai diajukan kembali
             </small>
           </div>
+          <div class="form-group field-riwayat">
+            <label for="">Riwayat Keterangan</label>
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Waktu</th>
+                  <th>Keterangan</th>
+                </tr>
+              </thead>
+              <tbody id="riwayat-keterangan">
+                <tr>
+                  <td colspan="2" style="text-align: center;">Tidak Ada Riwayat</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" onclick="save_status()">Submit</button>
@@ -537,8 +554,10 @@
 
 {% block custom_js %}
 {{ block.super }}
+<script src="{% static 'loading-overlay/loadingoverlay.min.js' %}"></script>
 <script type="text/javascript">
   let skp_id = "{{obj.id}}"
+  let skp_induk_id = "{{obj.induk.id}}"
   let jenis_jabatan = "{{obj.jenis_jabatan}}"
   let status = "{{obj.status}}"
   let penilai_view= "{{penilai_view}}".toLowerCase()
@@ -637,7 +656,38 @@
     });
   })
 
-  $('#tambahrhk').on('show.bs.modal', function (event) {
+  const handleLoadRiwayatKeterangan = () => {
+    $.ajax({
+      url:`${BASE_URL}/admin/skp/sasarankinerja/${skp_id}/riwayat-keterangan`,
+      method: "GET",
+      beforeSend:function(){
+        $(".field-riwayat").LoadingOverlay("show", {
+          background  : "rgba(212, 212, 212, 0.31)"
+      });
+      },
+      success:function(res){
+        if(res.length > 0){
+          html = ""
+          res.map(item=>{
+            html += `
+            <tr>
+              <td>${item.waktu}</td>
+              <td>${item.keterangan}</td>
+            </tr>`
+          })
+          $("#riwayat-keterangan").html(html)
+        }
+      },
+      complete:function(){
+        $(".field-riwayat").LoadingOverlay('hide')
+      }
+    })
+  }
+
+  $('#modal_edit_status').on('show.bs.modal', function (event) {
+    handleLoadRiwayatKeterangan();
+  })
+    $('#tambahrhk').on('show.bs.modal', function (event) {
     let button = $(event.relatedTarget)
     let edit = button.data('edit')
     let id = button.data('rhk_id')
@@ -715,9 +765,9 @@
     $("#ekspetasi_id").val(ekspetasi_id)
     $("#ekspetasi").val("")
     if(tambah == "True"){
-      $("#lampiran_modal_ekspetasi").html("Tambah Perilaku")
+      $("#lampiran_modal_ekspetasi").html("Tambah Ekspetasi")
     }else{
-      $("#lampiran_modal_ekspetasi").html("Ubah Perilaku")
+      $("#lampiran_modal_ekspetasi").html("Ubah Ekspetasi")
       let isi = $("#ekspetasi-"+perilaku_id)
       $("#ekspetasi").val(isi.html())
     }
@@ -809,20 +859,25 @@
     }
     console.log({formData})
     let error = false
+    let text = ""
     if(jenis_jabatan == "1"){
       if(perspektif && perspektif == 0 && perspektif == "0"){
         error = true
+        text = "Isian Perspektif Tidak Boleh Kosong"
       }
     }else{
       if(aspek == ""){
         error = true
+        text = "Isian Aspek Tidak Boleh Kosong"
       }
     }
     if(target == ""){
       error = true
+      text = "Isian Target Tidak Boleh Kosong"
     }
     if(indikator == ""){
       error = true
+      text = "Isian Indikator Tidak Boleh Kosong"
     }
 
     if(!error){
@@ -847,7 +902,7 @@
       }
     })
   }else{
-    toastr.warning("isian Perspektif tidak boleh kosong");
+    toastr.warning(text);
   }
 }
 
@@ -1009,17 +1064,20 @@
               ${delete_html}
             </div>
             `
+            let td_rowspan = ""
             if(status != "1"){
               skp_aksi = ""
+              td_rowspan = `<td rowspan="${item.indikator.length+1}">`
               html_rowspan = `<td rowspan="${item.indikator.length+1}">${no}</td>`
             }else{
+              td_rowspan = `<td rowspan="${indikator_length}">`
               html_rowspan = `<td rowspan="${indikator_length}">${no}</td>`
             }
             html_ += `
               <tr>
                 ${html_rowspan}
                 ${induk_elem}
-                <td rowspan="${indikator_length}">
+                ${td_rowspan}
                   <b>${item.rencana_kerja}</b><br><span class="text-muted">${item.penugasan_dari ? `Penugasan dari ${item.penugasan_dari}` : ''}</span>
                   ${klasifikasi}
                   ${skp_aksi}
@@ -1159,17 +1217,20 @@
                 ${delete_html}
               </div>
               `
+            let td_rowspan = ""
             if(status != "1"){
               skp_aksi = ""
+              td_rowspan = `<td rowspan="${item.indikator.length+1}">`
               html_rowspan = `<td rowspan="${item.indikator.length+1}">${no}</td>`
             }else{
+              td_rowspan = `<td rowspan="${indikator_length}">`
               html_rowspan = `<td rowspan="${indikator_length}">${no}</td>`
             }
             html_ += `
               <tr>
                 ${html_rowspan}
                 ${induk_elem}
-                <td rowspan="${indikator_length}">
+                ${td_rowspan}
                   <b>${item.rencana_kerja}</b><br><span class="text-muted">${item.penugasan_dari ? `Penugasan dari ${item.penugasan_dari}` : ''}</span>
                   ${klasifikasi}
                   ${skp_aksi}
@@ -1310,7 +1371,11 @@
       success: function(response){
         if(response.success){
           toastr.success("Berhasil Merubah Status Sasaran Kinerja");
-          window.location.reload()
+          if(status == "1" && jenis_jabatan != "1"){
+            window.location.href = `${BASE_URL}/admin/skp/sasarankinerja/${skp_induk_id}/skp-bawahan`
+          }else{
+            window.location.reload()
+          }
         } else {
           if(response.pesan){
             toastr.warning(response.pesan);
@@ -1451,20 +1516,29 @@
     if (klasifikasi == 1 || klasifikasi == "1"){
       formData = {...formData, unitkerja: unitkerja}
     }
-    console.log(klasifikasi, jenis, unitkerja)
+    text_error = ""
     var error = false
     if(jenis && jenis != "0" || klasifikasi != "" && klasifikasi != "0"){
       if (klasifikasi == 1 || klasifikasi == "1"){
         if(unitkerja == 0 || unitkerja == "0"){
           error = true
+          text_error = "Kolom Unit Kerja Tidak Boleh Kosong"
         }
       }
+    }else if(jenis == "0" && jenis == 0){
+      error = true
+      text_error = "Kolom Jenis RHK Tidak Boleh Kosong"
+    }else if(klasifikasi == "" && klasifikasi == "0"){
+      error = true
+      text_error = "Kolom Klasifikasi Tidak Boleh Kosong"
     }
     if(rencana == ""){
       error = true
+      text_error = "Kolom Rencana Hasil Kerja Tidak Boleh Kosong"
     }
     if(penugasan_dari == ""){
       error = true
+      text_error = "Kolom Penugasan Tidak Boleh Kosong"
     }
     console.log(error)
     if(!error){
@@ -1490,7 +1564,7 @@
         }
       })
     }else{
-      toastr.warning('Kolom Jenis Unit Kerja ,Rencana Hasil Kerja atau Penugasan Tidak Boleh Kosong');
+      toastr.warning(text_error);
     }
   }
 

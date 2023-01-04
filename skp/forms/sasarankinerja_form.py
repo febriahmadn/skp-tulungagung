@@ -10,6 +10,9 @@ from usom.models import Account, UnitKerja
 
 class SasaranKinerjaForm(forms.ModelForm):
     pegawai = forms.ModelChoiceField(queryset=Account.objects.none(), required=False)
+    induk = forms.ModelChoiceField(
+        label="SKP Atasan", queryset=SasaranKinerja.objects.none(), required=False
+    )
     pejabat_penilai = forms.ModelChoiceField(
         queryset=Account.objects.none(), required=False
     )
@@ -64,6 +67,11 @@ class SasaranKinerjaForm(forms.ModelForm):
         self.fields["pegawai"].widget = forms.HiddenInput()
 
         self.fields["jenis_jabatan"].widget = forms.HiddenInput()
+        if "bupati" in user.jabatan or user.jenis_jabatan == "JPT":
+            self.fields["induk"].widget = forms.HiddenInput()
+        else:
+            self.fields["induk"].required = True
+
         if user.jenis_jabatan:
             self.fields["jenis_jabatan"].initial = string_to_int(
                 SasaranKinerja.JenisJabatan, user.get_jenis_jabatan_display()
@@ -111,19 +119,30 @@ class SasaranKinerjaForm(forms.ModelForm):
             #     id=user.atasan.id
             # )
             # self.fields["pejabat_penilai"].widget = forms.HiddenInput()
+        if "induk" in self.data:
+            induk = self.data.get("induk", None)
+            if induk.isnumeric() and int(induk) != 0:
+                self.fields["induk"].queryset = SasaranKinerja.objects.filter(
+                    pk=self.data.get("induk", None)
+                )
 
     def clean(self):
         periode_awal = self.cleaned_data.get("periode_awal", None)
         periode_akhir = self.cleaned_data.get("periode_akhir", None)
         pegawai = self.cleaned_data.get("pegawai", None)
+        jenis_jabatan = self.cleaned_data.get("jenis_jabatan", None)
+        induk = self.cleaned_data.get("induk", None)
+
         find_skp = SasaranKinerja.objects.filter(
             pegawai=pegawai,
-            periode_awal__gte=periode_awal,
-            periode_akhir__lte=periode_akhir,
         ).filter(
             Q(status=SasaranKinerja.Status.PERSETUJUAN)
             | Q(status=SasaranKinerja.Status.PENGAJUAN),
+        ).filter(
+            periode_awal__lte=periode_awal,
+            periode_akhir__gte=periode_akhir
         )
+
         if find_skp.exists():
             raise forms.ValidationError(
                 mark_safe(
@@ -147,6 +166,8 @@ class SasaranKinerjaForm(forms.ModelForm):
             raise forms.ValidationError(
                 "periode akhir lebih dahulu dari pada tanggal awal".title()
             )
+        if jenis_jabatan != "JPT" and induk == 0 or induk == "0":
+            raise forms.ValidationError("skp atasan tidak boleh kosong".title())
 
         return self.cleaned_data
 
@@ -163,6 +184,7 @@ class SasaranKinerjaForm(forms.ModelForm):
             "nama_atasan",
             "jabatan_atasan",
             "unit_kerja_atasan",
+            "induk",
             "periode_awal",
             "periode_akhir",
             "pendekatan",

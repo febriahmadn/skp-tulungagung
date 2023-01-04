@@ -313,9 +313,10 @@ def get_umpan_balik(indikator_obj, periode):
 def get_detail_skp(pegawai, skp_obj, periode):
     list_skp_bawahan = SasaranKinerja.objects.filter(
         pegawai=pegawai,
-        periode_awal__gte=skp_obj.periode_awal,
-        periode_akhir__lte=skp_obj.periode_akhir,
         status=SasaranKinerja.Status.PERSETUJUAN,
+    ).filter(
+        periode_awal__lte=skp_obj.periode_awal,
+        periode_akhir__gte=skp_obj.periode_akhir
     )
     if list_skp_bawahan.exists():
         obj = list_skp_bawahan.last()
@@ -325,7 +326,7 @@ def get_detail_skp(pegawai, skp_obj, periode):
             </a>
         """.format(
             reverse_lazy(
-                "admin:penilaian-bawahan-skp-detail",
+                "admin:skp_penilaianbawahan_detail",
                 kwargs={"skp_id": obj.id, "periode": periode},
             )
         )
@@ -338,9 +339,10 @@ def get_penilaian_bawahan_status(pegawai, skp_obj, periode):
     text = "Belum Dinilai"
     list_skp_bawahan = SasaranKinerja.objects.filter(
         pegawai=pegawai,
-        periode_awal__gte=skp_obj.periode_awal,
-        periode_akhir__lte=skp_obj.periode_akhir,
         status=SasaranKinerja.Status.PERSETUJUAN,
+    ).filter(
+        periode_awal__lte=skp_obj.periode_awal,
+        periode_akhir__gte=skp_obj.periode_akhir
     )
     if list_skp_bawahan.exists():
         obj = list_skp_bawahan.last()

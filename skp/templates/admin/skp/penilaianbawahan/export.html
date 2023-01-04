@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="d-flex justify-content-end">
-    <a href="{% url 'admin:penilaian-bawahan-skp-export' obj.id periode %}?download=true" class="btn btn-sm btn-success"><i class="fas fa-download"></i>  Download Excel</a>
+    <a href="{% url 'admin:skp_penilaianbawahan_export' obj.id periode %}?download=true" class="btn btn-sm btn-success"><i class="fas fa-download"></i>  Download Excel</a>
 </div>
 <div class="card p-0 mt-3">
     <div class="card-body p-0 m-0">
@@ -27,7 +27,7 @@
                     <td>{{item.skp.detailsasarankinerja.jabatan_pegawai}}</td>
                     <td>{{item.rating_hasil.nama|upper|default_if_none:""}}</td>
                     <td>{{item.predikat_perilaku.nama|upper|default_if_none:""}}</td>
-                    <td>{{item.predikat_kerja|default_if_none:""}}</td>
+                    <td>{{item.get_predikat_kerja_display|upper|default_if_none:""}}</td>
                 </tr>
                 {% endfor %}
                 {% else %}
