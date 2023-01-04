@@ -410,7 +410,7 @@
                   let id_umpan = []
                   let ol_umpan = ""
                   if(item_indikator.umpan_balik.umpan_balik.length > 0){
-                    ol_umpan = "<ol>"
+                    ol_umpan = `<ol style="margin: unset; padding-left: 10px;">`
                       item_indikator.umpan_balik.umpan_balik.map(item => {
                         id_umpan.push(item.id)
                         ol_umpan += `<li>${item.nama}</li>`
@@ -421,6 +421,7 @@
                   umpanbalik = `
                   <td>
                     ${ol_umpan}
+                    <br>
                     Umpan Balik Tambahan: <br><span id="umpan-balik-${item_indikator.umpan_balik.id}">${item_indikator.umpan_balik.umpan_balik_tambahan ? item_indikator.umpan_balik.umpan_balik_tambahan : ''}</span>
                     <div class="d-flex justify-content-center pt-3">
                       <button class="btn btn-sm btn-warning mr-1" data-id="${item_indikator.umpan_balik.id}" data-indikator_id="${item_indikator.id}" data-edit="true" data-umpan_multiple_id="[${id_umpan}]" data-toggle="modal" data-target="#tambahumpanbalikpegawai">
@@ -561,7 +562,7 @@
                   let id_umpan = []
                   let ol_umpan = ""
                   if(item_indikator.umpan_balik.umpan_balik.length > 0){
-                    ol_umpan = "<ol>"
+                    ol_umpan = `<ol style="margin: unset; padding-left: 10px;">`
                       item_indikator.umpan_balik.umpan_balik.map(item => {
                         id_umpan.push(item.id)
                         ol_umpan += `<li>${item.nama}</li>`
@@ -572,6 +573,7 @@
                   umpanbalik = `
                   <td>
                     ${ol_umpan}
+                    <br>
                     Umpan Balik Tambahan: <br><span id="umpan-balik-${item_indikator.umpan_balik.id}">${item_indikator.umpan_balik.umpan_balik_tambahan ? item_indikator.umpan_balik.umpan_balik_tambahan : ''}</span>
                     <div class="d-flex justify-content-center pt-3">
                       <button class="btn btn-sm btn-warning mr-1" data-id="${item_indikator.umpan_balik.id}" data-indikator_id="${item_indikator.id}" data-edit="true" data-umpan_multiple_id="[${id_umpan}]" data-toggle="modal" data-target="#tambahumpanbalikpegawai">

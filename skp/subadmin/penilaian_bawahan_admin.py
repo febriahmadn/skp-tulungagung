@@ -271,7 +271,7 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
         data = {
             "sangat_kurang": penilaian_list.filter(
                 predikat_kerja=PenilaianBawahan.PredikatKerja.SANGAT_KURANG
-            )
+            ).count()
             if penilaian_list.filter(
                 predikat_kerja=PenilaianBawahan.PredikatKerja.SANGAT_KURANG
             ).count()
@@ -279,7 +279,7 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
             else 0,
             "butuh_perbaikan": penilaian_list.filter(
                 predikat_kerja=PenilaianBawahan.PredikatKerja.BUTUH_PERBAIKAN
-            )
+            ).count()
             if penilaian_list.filter(
                 predikat_kerja=PenilaianBawahan.PredikatKerja.BUTUH_PERBAIKAN
             ).count()
@@ -287,7 +287,7 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
             else 0,
             "kurang": penilaian_list.filter(
                 predikat_kerja=PenilaianBawahan.PredikatKerja.KURANG
-            )
+            ).count()
             if penilaian_list.filter(
                 predikat_kerja=PenilaianBawahan.PredikatKerja.KURANG
             ).count()
@@ -295,7 +295,7 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
             else 0,
             "baik": penilaian_list.filter(
                 predikat_kerja=PenilaianBawahan.PredikatKerja.BAIK
-            )
+            ).count()
             if penilaian_list.filter(
                 predikat_kerja=PenilaianBawahan.PredikatKerja.BAIK
             ).count()
@@ -303,7 +303,7 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
             else 0,
             "sangat_baik": penilaian_list.filter(
                 predikat_kerja=PenilaianBawahan.PredikatKerja.SANGAT_BAIK
-            )
+            ).count()
             if penilaian_list.filter(
                 predikat_kerja=PenilaianBawahan.PredikatKerja.SANGAT_BAIK
             ).count()
