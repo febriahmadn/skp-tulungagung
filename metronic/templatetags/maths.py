@@ -57,5 +57,4 @@ def get_range(a_):
 
 @register.filter(name="range")
 def filter_range(start, end):
-    print(start)
     return range(start, end)
