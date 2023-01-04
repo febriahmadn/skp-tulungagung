@@ -335,9 +335,10 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
     def find_exists_skp(self, obj, status):
         find_skp = SasaranKinerja.objects.filter(
             pegawai=obj.pegawai,
-            periode_awal__gte=obj.periode_awal,
-            periode_akhir__lte=obj.periode_akhir,
             status=status,
+        ).filter(
+            Q(periode_awal__range=(obj.periode_awal, obj.periode_akhir))
+            | Q(periode_akhir__range=(obj.periode_awal, obj.periode_akhir))
         )
         if find_skp.exists():
             return True

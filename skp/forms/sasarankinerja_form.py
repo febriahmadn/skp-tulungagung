@@ -139,10 +139,10 @@ class SasaranKinerjaForm(forms.ModelForm):
             Q(status=SasaranKinerja.Status.PERSETUJUAN)
             | Q(status=SasaranKinerja.Status.PENGAJUAN),
         ).filter(
-            Q(periode_awal__gte=periode_awal)
-            | Q(periode_akhir__lte=periode_akhir)
+            periode_awal__lte=periode_awal,
+            periode_akhir__gte=periode_akhir
         )
-
+        print(find_skp)
         if find_skp.exists():
             raise forms.ValidationError(
                 mark_safe(
