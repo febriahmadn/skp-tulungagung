@@ -90,15 +90,26 @@ def daftar_ekspetasi(perilaku_id, skp, cetak, user=None):
                 find_ekspetasi.ekspetasi_tambahan.all().values_list("id", flat=True)
             )
             ol = """<table class="table table-borderless">"""
-            for idx, i in enumerate(find_ekspetasi.ekspetasi_tambahan.all()):
+            index = 0
+            for i in find_ekspetasi.ekspetasi_tambahan.all():
+                index += 1
                 ol += """
                     <tr>
-                        <td>{}.</td>
+                        <td style="vertical-align: top">{}.</td>
                         <td>{}</td>
                     </tr>
                 """.format(
-                    idx + 1, i.ekspetasi
+                    index,
+                    i.ekspetasi
                 )
+            ol += """
+                <tr>
+                    <td style="vertical-align: top">{}.</td>
+                    <td>{}</td>
+                </tr>
+            """.format(
+                index + 1, isi
+            )
             ol += "</table>"
     if cetak == "tidak":
         aksi = ""
@@ -123,8 +134,7 @@ def daftar_ekspetasi(perilaku_id, skp, cetak, user=None):
             )
         if isi and isi != "":
             html_isi = """
-            Ekspetasi Lainnya:&nbsp;
-                <span id="ekspetasi-{}">{}</span>
+                <span style="display: none" id="ekspetasi-{}">{}</span>
             """.format(
                 perilaku_id,
                 isi,
@@ -141,8 +151,7 @@ def daftar_ekspetasi(perilaku_id, skp, cetak, user=None):
     else:
         if isi and isi != "":
             html_isi = """
-                Ekspetasi Lainnya:&nbsp;
-                <span>{}</span>
+                <span style="display: none">{}</span>
             """.format(
                 isi
             )

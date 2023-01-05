@@ -477,7 +477,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                     if sasaran_obj.status == 3
                     else "#",
                     "penilaian_bawahan_url": reverse_lazy(
-                        "admin:penilaian-bawahan-skp",
+                        "admin:skp_penilaianbawahan",
                         kwargs={"skp_id": sasaran_obj.id, "periode": awal.month},
                     )
                     if sasaran_obj.status == 3
@@ -529,7 +529,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                             if sasaran_obj.status == 3
                             else "#",
                             "penilaian_bawahan_url": reverse_lazy(
-                                "admin:penilaian-bawahan-skp",
+                                "admin:skp_penilaianbawahan",
                                 kwargs={"skp_id": sasaran_obj.id, "periode": i},
                             )
                             if sasaran_obj.status == 3
@@ -584,7 +584,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                             if sasaran_obj.status == 3
                             else "#",
                             "penilaian_bawahan_url": reverse_lazy(
-                                "admin:penilaian-bawahan-skp",
+                                "admin:skp_penilaianbawahan",
                                 kwargs={"skp_id": sasaran_obj.id, "periode": i},
                             )
                             if sasaran_obj.status == 3
@@ -640,7 +640,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                             if sasaran_obj.status == 3
                             else "#",
                             "penilaian_bawahan_url": reverse_lazy(
-                                "admin:penilaian-bawahan-skp",
+                                "admin:skp_penilaianbawahan",
                                 kwargs={"skp_id": sasaran_obj.id, "periode": i},
                             )
                             if sasaran_obj.status == 3
