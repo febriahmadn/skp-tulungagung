@@ -143,7 +143,7 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
             messages.error(request, "Sasaran Kinerja Tidak Ditemukan")
             return redirect(
                 reverse(
-                    "admin:penilaian-bawahan-skp",
+                    "admin:skp_penilaianbawahan",
                     kwargs={"skp_id": skp_id, "periode": periode},
                 )
             )
@@ -169,7 +169,7 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
             messages.error(request, "Sasaran Kinerja Tidak Ditemukan")
             return redirect(
                 reverse(
-                    "admin:penilaian-bawahan-skp",
+                    "admin:skp_penilaianbawahan",
                     kwargs={"skp_id": skp_id, "periode": periode},
                 )
             )
