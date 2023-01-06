@@ -106,7 +106,6 @@ class ServiceSipo:
 
     def handler_save(self, payload={}):
         if payload:
-            # print(payload)
             try:
                 data = {
                     "id_sipo": payload.get("id", None),

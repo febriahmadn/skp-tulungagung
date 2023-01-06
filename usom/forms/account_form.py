@@ -5,6 +5,7 @@ from django.contrib.auth.models import Group
 from django.utils.translation import gettext_lazy as _
 
 from usom.models import Account, UnitKerja
+from usom.utils import image_validation
 
 
 class AccountForm(forms.ModelForm):
@@ -67,6 +68,7 @@ class AccountForm(forms.ModelForm):
                     pk=self.data.get("atasan", None)
                 )
 
+
 class EditProfilPegawai(forms.ModelForm):
     class Meta:
         model = Account
@@ -82,3 +84,18 @@ class EditProfilPegawai(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["unitkerja"].label = "Unit Kerja"
+
+
+class UploadFotoPegawai(forms.ModelForm):
+    foto = forms.ImageField(
+        widget=forms.FileInput(attrs={"class": "custom-file-input"})
+    )
+
+    def clean_foto(self):
+        foto = self.cleaned_data.get("foto")
+        image_validation(foto)
+        return self.cleaned_data["foto"]
+
+    class Meta:
+        model = Account
+        fields = ("foto",)

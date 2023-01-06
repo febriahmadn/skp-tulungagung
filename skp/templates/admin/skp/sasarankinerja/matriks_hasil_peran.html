@@ -1,5 +1,7 @@
 {% extends 'admin/base_site.html' %}
 
+{% load skp_template %}
+
 {% block custom_style %}
 {{ block.super }}
 <style>
@@ -26,17 +28,17 @@
             <tr>
               <th style="width: 25%;">SKP</th>
               <td style="width: 1%;">:</td>
-              <td>Tahun 2022</td>
+              <td>Tahun {{obj.periode_awal.year}}</td>
             </tr>
             <tr>
               <th>Periode</th>
               <td>:</td>
-              <td>1 Juli 2022 - 31 Desember 2022</td>
+              <td>{{obj.periode_awal|date:"d F Y"}} - {{obj.periode_akhir|date:"d F Y"}}</td>
             </tr>
             <tr>
               <th>Unit Kerja</th>
               <td>:</td>
-              <td>Badan Kepegawaian Dan Pengembangan Sumber Daya Manusia</td>
+              <td>{{obj.unor.unitkerja}}</td>
             </tr>
           </table>
         </div>
@@ -67,7 +69,7 @@
             <thead class="bg-primary text-white">
               <tr>
                 <th>PEGAWAI</th>
-                <th colspan="{{ obj.rencanahasilkerja_set.all.count }}" class="text-center">OUTCOME ANTARA / OUTPUT / LAYANAN</th>
+                <th colspan="{{ obj.rencanahasilkerja_set.all|organisasi:True }}" class="text-center">OUTCOME ANTARA / OUTPUT / LAYANAN</th>
               </tr>
             </thead>
             <tbody>
@@ -77,7 +79,7 @@
                   <span class="text-muted">{{ obj.detailsasarankinerja.nip_pegawai }}</span><br>
                   <span class="text-muted">{{ obj.detailsasarankinerja.jabatan_pegawai }}</span>
                 </td>
-                {% for item in obj.rencanahasilkerja_set.all %}
+                {% for item in obj.rencanahasilkerja_set.all|organisasi %}
                 <td>{{ item.rencana_kerja }}</td>
                 {% endfor %}
               </tr>
@@ -89,7 +91,7 @@
                   <span class="text-muted">{{ item.detailsasarankinerja.nip_pegawai }}</span><br>
                   <span class="text-muted">{{ item.detailsasarankinerja.jabatan_pegawai }}</span>
                 </td>
-                {% for rhk_parent in obj.rencanahasilkerja_set.all %}
+                {% for rhk_parent in obj.rencanahasilkerja_set.all|organisasi %}
                 <td data-parent_id="{{ rhk_parent.id }}"></td>
                 {% endfor %}
               </tr>
@@ -184,7 +186,7 @@
                 } else {
                   html_tr_ += `<tr>`
                 }
-                for (let j = 0; j < 4; j++) {
+                for (let j = 0; j < 2; j++) {
                   let text_item = respon.results[j]?.childs[i]?.text;
                   if (typeof text_item === "undefined" || typeof text_item === undefined) {
                     text_item = '';

@@ -712,7 +712,9 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                 for item in rhk_parent_list:
                     childs = []
                     list_childs = RencanaHasilKerja.objects.filter(
-                        induk_id=item.id, skp=obj
+                        induk_id=item.id,
+                        skp=obj,
+                        klasifikasi=RencanaHasilKerja.Klasifikasi.ORGANISASI,
                     )
                     if list_childs.count() > terbesar:
                         terbesar = list_childs.count()
@@ -721,12 +723,13 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
 
                     results.append({"id": item.id, "childs": childs})
                 respon = {"success": True, "results": results, "terbesar": terbesar}
+
         return JsonResponse(respon)
 
     def list_riwayat_keterangan(self, request, id):
         obj = get_object_or_404(SasaranKinerja, pk=id)
         data = []
-        for i in RiwayatKeteranganSKP.objects.filter(skp=obj).order_by('-created'):
+        for i in RiwayatKeteranganSKP.objects.filter(skp=obj).order_by("-created"):
             tanggal = timezone.localtime(i.created, pytz.timezone("Asia/Jakarta"))
             data.append(
                 {

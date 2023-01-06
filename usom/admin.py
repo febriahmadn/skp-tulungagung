@@ -7,7 +7,7 @@ from django.urls import path, reverse
 from django.utils.safestring import mark_safe
 
 from services.functions.sinkron_sipo import ServiceSipo
-from usom.forms import AccountForm, EditProfilPegawai
+from usom.forms import AccountForm, EditProfilPegawai, UploadFotoPegawai
 from usom.models import Account, UnitKerja
 
 
@@ -145,10 +145,19 @@ class AccountAdmin(UserAdmin):
         return mark_safe(str_aksi)
 
     def view_pegawai_profile(self, request):
+        form = UploadFotoPegawai(instance=request.user)
+        if request.POST:
+            form = UploadFotoPegawai(request.POST, request.FILES, instance=request.user)
+            if form.is_valid():
+                form.save()
+            else:
+                messages.add_message(request, messages.ERROR, form.errors.as_text())
+
         extra_context = {
             "title": "Profile ({})".format(request.user.username),
             "title_sort": "Profile",
             "unor_list": UnitKerja.objects.filter(aktif=True),
+            "form": form,
             "atasan": request.user.atasan if request.user.atasan else None,
         }
         # if request.user.atasan is None:
