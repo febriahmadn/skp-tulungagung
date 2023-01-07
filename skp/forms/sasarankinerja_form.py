@@ -65,10 +65,14 @@ class SasaranKinerjaForm(forms.ModelForm):
         self.fields["pegawai"].initial = user.id
         self.fields["pegawai"].queryset = Account.objects.filter(id=user.id)
         self.fields["pegawai"].widget = forms.HiddenInput()
+        self.fields["status"].widget = forms.HiddenInput()
+        self.fields["status"].initial = SasaranKinerja.Status.DRAFT
 
         self.fields["jenis_jabatan"].widget = forms.HiddenInput()
-        if "bupati" in user.jabatan or user.jenis_jabatan == "JPT":
+
+        if user.groups.filter(name="Bupati").exists():
             self.fields["induk"].widget = forms.HiddenInput()
+            self.fields["status"].initial = SasaranKinerja.Status.PERSETUJUAN
         else:
             self.fields["induk"].required = True
 
@@ -188,6 +192,7 @@ class SasaranKinerjaForm(forms.ModelForm):
             "periode_awal",
             "periode_akhir",
             "pendekatan",
+            'status',
         )
         # widgets = {
         #     'periode_awal': forms.TextInput(attrs={'class': 'datetimepicker-input'}),

@@ -46,19 +46,22 @@
 <div class="card m-0">
     <div class="card-body p-2 m-0">
         <ul class="nav nav-pills" id="pills-tab" role="tablist">
+            {% if not is_bupati %}
             <li class="nav-item">
                 <a class="nav-link active" id="diri-tab" data-toggle="pill" href="#pills-diri" role="tab" aria-controls="pills-diri" aria-selected="true">Pelaksana Kinerja</a>
             </li>
+            {% endif %}
             <li class="nav-item">
-                <a class="nav-link" id="bawahan-tab" data-toggle="pill" href="#pills-bawahan" role="tab" aria-controls="pills-bawahan" aria-selected="false">Pemantauan dan Evaluasi</a>
+                <a class="nav-link {% if is_bupati %}active{% endif %}" id="bawahan-tab" data-toggle="pill" href="#pills-bawahan" role="tab" aria-controls="pills-bawahan" aria-selected="false">Pemantauan dan Evaluasi</a>
             </li>
         </ul>
     </div>
 </div>
   <div class="card mt-2" id="card-penilaian">
     <div class="card-body">
+        {% if not is_bupati %}
         <div class="tab-content" id="pills-tabContent">
-          <div class="tab-pane fade show active" id="pills-diri" role="tabpanel" aria-labelledby="pills-diri-tab">
+            <div class="tab-pane fade show active" id="pills-diri" role="tabpanel" aria-labelledby="pills-diri-tab">
             <table class="table table-bordered table-hover table-custom">
                 <thead>
                     <tr>
@@ -76,7 +79,8 @@
                 </tbody>
             </table>
         </div>
-        <div class="tab-pane fade" id="pills-bawahan" role="tabpanel" aria-labelledby="pills-bawahan-tab">
+        {% endif %}
+        <div class="tab-pane fade {% if is_bupati %}show active{% endif %}" id="pills-bawahan" role="tabpanel" aria-labelledby="pills-bawahan-tab">
             <table class="table table-bordered table-hover table-custom">
                 <thead>
                     <tr>
@@ -201,7 +205,11 @@
         }
     })
     $(function(){
+        {% if not is_bupati %}
         handleLoadPenilaianDiri();
+        {% else %}
+        handleLoadPenilaianBawahan();
+        {% endif %}
     })
 </script>
 {% endblock custom_js %}

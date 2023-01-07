@@ -111,17 +111,25 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                 data-toggle="dropdown" aria-haspopup="true"
                 aria-expanded="false">Aksi</button>"""
         btn += '<div class="dropdown-menu" aria-labelledby="btnGroupDrop1">'
-        btn += '<a class="dropdown-item" href="{}">Detail SKP</a>'.format(
-            reverse_lazy("admin:detail-skp", kwargs={"id": obj.id})
-        )
-        btn += '<a class="dropdown-item" href="{}">Matriks Peran Hasil</a>'.format(
-            reverse_lazy(
-                "admin:skp_sasarankerja_matrikshasilperan", kwargs={"obj_id": obj.id}
+
+        if obj.pegawai.groups.filter(name="Bupati").exists():
+            btn += '<a class="dropdown-item" href="{}">SKP Bawahan</a>'.format(
+                reverse_lazy("admin:skp_sasarankinerja_bawahan", kwargs={"id": obj.id})
             )
-        )
-        btn += '<a class="dropdown-item" href="{}">SKP Bawahan</a>'.format(
-            reverse_lazy("admin:skp_sasarankinerja_bawahan", kwargs={"id": obj.id})
-        )
+        else:
+            btn += '<a class="dropdown-item" href="{}">Detail SKP</a>'.format(
+                reverse_lazy("admin:detail-skp", kwargs={"id": obj.id})
+            )
+            btn += '<a class="dropdown-item" href="{}">Matriks Peran Hasil</a>'.format(
+                reverse_lazy(
+                    "admin:skp_sasarankerja_matrikshasilperan",
+                    kwargs={"obj_id": obj.id},
+                )
+            )
+            btn += '<a class="dropdown-item" href="{}">SKP Bawahan</a>'.format(
+                reverse_lazy("admin:skp_sasarankinerja_bawahan", kwargs={"id": obj.id})
+            )
+
         if obj.status == 3:
             btn += '<a class="dropdown-item" href="{}">Penilaian</a>'.format(
                 reverse_lazy(
@@ -130,6 +138,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
             )
         btn += "</div>"
         btn += "</div>"
+
         return mark_safe(btn)
 
     Aksi.short_description = "Aksi"
@@ -421,12 +430,30 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
     def view_skp_bawahan(self, request, id):
         obj = get_object_or_404(SasaranKinerja, pk=id)
         list_skp_bawahan = SasaranKinerja.objects.filter(induk=obj)
+        q = request.GET.get("q", None)
+        uk = request.GET.get("unitkerja", None)
+        status = request.GET.get("status", None)
+        is_bupati = False
+        if request.user.groups.filter(name="Bupati").exists():
+            is_bupati = True
+        if q:
+            list_skp_bawahan = list_skp_bawahan.filter(
+                Q(detailsasarankinerja__nama_pegawai__icontains=q)
+                | Q(detailsasarankinerja__nip_pegawai__icontains=q)
+            )
+        if uk:
+            list_skp_bawahan = list_skp_bawahan.filter(unor_id=uk)
+
+        if status:
+            list_skp_bawahan = list_skp_bawahan.filter(status=status)
+
         show_detail = [
             SasaranKinerja.Status.PENGAJUAN,
             SasaranKinerja.Status.PERSETUJUAN,
         ]
         extra_context = {
             "obj": obj,
+            "is_bupati": is_bupati,
             "list_skp_bawahan": list_skp_bawahan,
             "status_choices": SasaranKinerja.Status.choices,
             "title": "SKP Bawahan",
@@ -439,10 +466,14 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
     def view_penilaian(self, request, id):
         obj = get_object_or_404(SasaranKinerja, pk=id)
         config = Configurations.get_solo()
+        is_bupati = False
+        if obj.pegawai.groups.filter(name="Bupati").exists():
+            is_bupati = True
         extra_context = {
             "title": "Penilaian SKP",
             "obj": obj,
             "batas_input": config.batas_input,
+            "is_bupati": is_bupati,
         }
         return render(request, "admin/skp/sasarankinerja/penilaian.html", extra_context)
 

@@ -172,24 +172,34 @@
                 {% for utama in obj.get_rencanakerja_utama %}
                 {% with count_indikator=utama.indikatorkinerjaindividu_set.all.count|add:"1" %}
                 <tr>
+                    {% if utama.indikatorkinerjaindividu_set.all.count == 0 %}
+                    <td rowspan="{{count_indikator|add:"1"}}" style="vertical-align: top; text-align: center;">{{ forloop.counter }}</td>
+                    <td rowspan="{{count_indikator|add:"1"}}" style="vertical-align: top;">{{ utama.rencana_kerja }} {% if utama.penugasan_dari %}(Penugasan dari {{ utama.penugasan_dari|default:'-' }}){% endif %}</td>
+                    {% else %}
                     <td rowspan="{{count_indikator}}" style="vertical-align: top; text-align: center;">{{ forloop.counter }}</td>
-                    {% if obj.jenis_jabatan != 1 %}
-                    <td rowspan="{{count_indikator}}" style="vertical-align: top;">{{ utama.induk.rencana_kerja }}</td>
-                    {% endif %}
                     <td rowspan="{{count_indikator}}" style="vertical-align: top;">{{ utama.rencana_kerja }} {% if utama.penugasan_dari %}(Penugasan dari {{ utama.penugasan_dari|default:'-' }}){% endif %}</td>
+                    {% endif %}
                 </tr>
                 {% endwith %}
-                {% for indikator in utama.indikatorkinerjaindividu_set.all %}
+                {% if utama.indikatorkinerjaindividu_set.all.count > 0 %}
+                    {% for indikator in utama.indikatorkinerjaindividu_set.all %}
+                        <tr>
+                            <td>{{ indikator.indikator }}</td>
+                            <td>{{ indikator.target }}</td>
+                            {% if obj.jenis_jabatan != 1 %}
+                            <td>{{ indikator.aspek|default:'-' }}</td>
+                            {% else %}
+                            <td>{{ indikator.perspektif|default:'-' }}</td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                {% else %}
                 <tr>
-                    <td>{{ indikator.indikator }}</td>
-                    <td>{{ indikator.target }}</td>
-                    {% if obj.jenis_jabatan != 1 %}
-                    <td>{{ indikator.aspek|default:'-' }}</td>
-                    {% else %}
-                    <td>{{ indikator.perspektif|default:'-' }}</td>
-                    {% endif %}
+                    <td></td>
+                    <td></td>
+                    <td></td>
                 </tr>
-                {% endfor %}
+                {% endif %}
                 {% endfor %}
             {% else %}
                 {% for utama in obj.get_rencanakerja_utama %}
@@ -211,6 +221,7 @@
                     <td rowspan="{{count_indikator}}" style="vertical-align: top;">{{ utama.rencana_kerja }}</td>
                 </tr>
                 {% endwith %}
+                {% if utama.indikatorkinerjaindividu_set.all.count > 0 %}
                 {% for indikator in utama.indikatorkinerjaindividu_set.all %}
                 <tr>
                     <td>{{ indikator.indikator }}</td>
@@ -222,6 +233,13 @@
                     {% endif %}
                 </tr>
                 {% endfor %}
+                {% else %}
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                {% endif %}
                 {% endfor %}
             {% endif %}
 
@@ -236,6 +254,7 @@
             {% for tambahan in obj.get_rencanakerja_tambahan %}
             {% with count_indikator=tambahan.indikatorkinerjaindividu_set.all.count|add:"1" %}
             <tr>
+                {% if tambahan.indikatorkinerjaindividu_set.all.count > 0 %}
                 <td rowspan="{{count_indikator}}" style="vertical-align: top; text-align: center;">{{ forloop.counter }}</td>
                 {% if obj.jenis_jabatan != 1 %}
                 <td rowspan="{{count_indikator}}" style="vertical-align: top;">
@@ -250,8 +269,25 @@
                 </td>
                 {% endif %}
                 <td rowspan="{{count_indikator}}" style="vertical-align: top;">{{ tambahan.rencana_kerja }} {% if tambahan.penugasan_dari %}(Penugasan dari {{ tambahan.penugasan_dari|default:'-' }}){% endif %}</td>
+                {% else %}
+                <td rowspan="{{count_indikator|add:"1"}}" style="vertical-align: top; text-align: center;">{{ forloop.counter }}</td>
+                {% if obj.jenis_jabatan != 1 %}
+                <td rowspan="{{count_indikator|add:"1"}}" style="vertical-align: top;">
+                    {% if tambahan.induk %}
+                    {% is_fisrt_parent obj.id tambahan.id tambahan.induk.id as fisrt_parent %}
+                    {% if fisrt_parent %}
+                    {{ tambahan.induk.rencana_kerja }}
+                    {% endif %}
+                    {% else %}
+                    -
+                    {% endif %}
+                </td>
+                {% endif %}
+                <td rowspan="{{count_indikator|add:"1"}}" style="vertical-align: top;">{{ tambahan.rencana_kerja }} {% if tambahan.penugasan_dari %}(Penugasan dari {{ tambahan.penugasan_dari|default:'-' }}){% endif %}</td>
+                {% endif %}
             </tr>
             {% endwith %}
+            {% if tambahan.indikatorkinerjaindividu_set.all.count > 0 %}
             {% for indikator in tambahan.indikatorkinerjaindividu_set.all %}
             <tr>
                 <td>{{ indikator.indikator }}</td>
@@ -263,6 +299,13 @@
                 {% endif %}
             </tr>
             {% endfor %}
+            {% else %}
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            {% endif %}
             {% endfor %}
         </table>
         <table>
