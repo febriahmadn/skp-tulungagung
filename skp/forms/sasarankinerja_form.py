@@ -56,7 +56,6 @@ class SasaranKinerjaForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        print(args, kwargs)
         request = self.request
         user = request.user
         if self.instance.pk:
