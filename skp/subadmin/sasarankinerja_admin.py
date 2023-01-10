@@ -75,6 +75,16 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         else:
             return True
 
+    def has_change_permission(self, request, obj=None):
+        if obj and obj.status == SasaranKinerja.Status.DRAFT:
+            return True
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        if obj and obj.status == SasaranKinerja.Status.DRAFT:
+            return True
+        return False
+
     def get_actions(self, request):
         actions = super().get_actions(request)
         if "delete_selected" in actions:
@@ -709,8 +719,8 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
     def view_matriks_hasil_peran(self, request, obj_id):
         obj = get_object_or_404(SasaranKinerja, pk=obj_id)
         show = request.GET.get("show", None)
+        atasan = request.GET.get("atasan", None)
         cetak = request.GET.get("cetak", None)
-
         skp_childs = SasaranKinerja.objects.filter(induk_id=obj.id)
         extra_context = {
             "title": "Matrik Peran Hasil",
@@ -718,6 +728,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
             "rhk_list": obj.rencanahasilkerja_set.all(),
             "skp_childs": skp_childs,
             "show": True if show == "true" else False,
+            "atasan": True if atasan == "true" else False,
         }
 
         if cetak:

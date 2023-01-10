@@ -69,16 +69,16 @@
     <form action="" method="get" id="form-search">
     <div class="p-0 card-footer">
         <div class="py-3 px-5 d-flex">
-              <div class="input-group input-group-sm mb-3">
+              <div class="input-group input-group-sm mb-3" style="gap: 20px">
                 {% if is_bupati %}
                 <select class="form-control select-filter form-control-sm"name="unitkerja" id="unitkerja_id">
                 </select>
                 {% endif %}
                 <select class="form-control select-filter form-control-sm" name="status" id="status_id">
                   {% if request.GET.status == 0 %}
-                  <option value="0" selected >Semua</option>
+                  <option value="0" selected >Semua Status</option>
                   {% else %}
-                  <option value="0" >Semua</option>
+                  <option value="0" >Semua Status</option>
                   {% endif %}
                   {% for item in status_choices %}
                   {% with item.0|stringformat:"i" as selected %}
@@ -90,10 +90,10 @@
                   {% endwith %}
                   {% endfor %}
                 </select>
-                <input type="text" value="{{request.GET.q}}" name="q" class="form-control" placeholder="Perncarian Nama Atau NIP" aria-label="Perncarian Berdasarkan Nama Atau NIP" aria-describedby="basic-addon2">
-                <div class="input-group-append">
-                  <button class="btn btn-success" type="submit"><i class="fas fa-search"></i></button>
-                </div>
+                  <input type="text" value="{{request.GET.q}}" name="q" class="form-control" placeholder="Pencarian Nama Atau NIP" aria-label="Pencarian Berdasarkan Nama Atau NIP" aria-describedby="basic-addon2">
+                  <div class="input-group-append">
+                    <button class="btn btn-success" type="submit"><i class="fas fa-search"></i> Cari</button>
+                  </div>
               </div>
         </div>
     </div>

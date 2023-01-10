@@ -1,4 +1,4 @@
-{% load static %}
+{% load static skp_template %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -71,12 +71,49 @@
   </div>
 
   <div class="p-5 conten-page">
+    {% if atasan %}    
     <table class="table table-striped table-bordered table-matriks-hasil">
       <thead class="bg-dark text-white">
         <tr>
           <th>PEGAWAI</th>
           <th>JABATAN</th>
-          <th colspan="{{ obj.rencanahasilkerja_set.all.count }}" class="text-center">OUTCOME ANTARA / OUTPUT / LAYANAN</th>
+          <th colspan="{{ obj.induk.rencanahasilkerja_set.all|organisasi:True }}" class="text-center">OUTCOME ANTARA / OUTPUT / LAYANAN</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="text">
+            <b class="text-nowrap">{{ obj.induk.detailsasarankinerja.nama_pegawai }}</b><br>
+            <!-- <span class="text-muted text">NIP: {{ obj.detailsasarankinerja.nip_pegawai }}</span> -->
+          </td>
+          <td>
+            {{ obj.induk.detailsasarankinerja.jabatan_pegawai }}
+          </td>
+          {% for item in obj.induk.rencanahasilkerja_set.all|organisasi %}
+          <td>{{ item.rencana_kerja }}</td>
+          {% endfor %}
+        </tr>
+        <tr data-status="unload" data-id="{{obj.id}}">
+          <td class="data-pegawai">
+            <b class="text-nowrap">{{ obj.detailsasarankinerja.nama_pegawai }}</b><br>
+            <!-- <span class="text-muted">NIP: {{ item.detailsasarankinerja.nip_pegawai }}</span> -->
+          </td>
+          <td class="data-jabatan">
+            {{ obj.detailsasarankinerja.jabatan_pegawai }}
+          </td>
+          {% for rhk_parent in obj.rencanahasilkerja_set.all|organisasi %}
+          <td data-parent_id="{{ rhk_parent.id }}"></td>
+          {% endfor %}
+        </tr>
+      </tbody>
+    </table>
+    {% else %}
+    <table class="table table-striped table-bordered table-matriks-hasil">
+      <thead class="bg-dark text-white">
+        <tr>
+          <th>PEGAWAI</th>
+          <th>JABATAN</th>
+          <th colspan="{{ obj.rencanahasilkerja_set.all|organisasi:True }}" class="text-center">OUTCOME ANTARA / OUTPUT / LAYANAN</th>
         </tr>
       </thead>
       <tbody>
@@ -88,7 +125,7 @@
           <td>
             {{ obj.detailsasarankinerja.jabatan_pegawai }}
           </td>
-          {% for item in obj.rencanahasilkerja_set.all %}
+          {% for item in obj.rencanahasilkerja_set.all|organisasi %}
           <td>{{ item.rencana_kerja }}</td>
           {% endfor %}
         </tr>
@@ -101,13 +138,14 @@
           <td class="data-jabatan">
             {{ item.detailsasarankinerja.jabatan_pegawai }}
           </td>
-          {% for rhk_parent in obj.rencanahasilkerja_set.all %}
+          {% for rhk_parent in obj.rencanahasilkerja_set.all|organisasi %}
           <td data-parent_id="{{ rhk_parent.id }}"></td>
           {% endfor %}
         </tr>
         {% endfor %}
       </tbody>
     </table>
+    {% endif %}
   </div>
   <script>
     var KTAppSettings = {
@@ -204,7 +242,7 @@
                   } else {
                     html_tr_ += `<tr>`
                   }
-                  for (let j = 0; j < 5; j++) {
+                  for (let j = 0; j < 2; j++) {
                     let text_item = respon.results[j]?.childs[i]?.text;
                     if (typeof text_item === "undefined" || typeof text_item === undefined) {
                       text_item = '';
