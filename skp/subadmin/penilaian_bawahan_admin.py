@@ -184,6 +184,7 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
                 "obj": obj,
                 "penilaianbawah": penilaian_bawah_obj,
                 "perilaku_kerja_list": PerilakuKerja.objects.filter(is_active=True),
+                "predikat_kerja": PenilaianBawahan.PredikatKerja.choices,
             }
         )
         return render(

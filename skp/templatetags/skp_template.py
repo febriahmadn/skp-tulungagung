@@ -3,7 +3,7 @@ from django.urls import reverse_lazy
 from django.utils.safestring import mark_safe
 
 from skp.models import (BuktiDukung, DaftarLampiran,
-                        DaftarPerilakuKerjaPegawai, PenilaianBawahan,
+                        DaftarPerilakuKerjaPegawai, Hasil, PenilaianBawahan,
                         Realisasi, RencanaAksi, RencanaHasilKerja,
                         SasaranKinerja, UmpanBalikPegawai)
 from skp.utils import FULL_BULAN
@@ -363,3 +363,37 @@ def get_penilaian_bawahan_status(pegawai, skp_obj, periode):
             if penilaian_obj.is_dinilai:
                 text = "Sudah Dinilai"
     return text
+
+@register.simple_tag
+def get_hasil(hasil_obj):
+    hasil_qs = Hasil.objects.all()
+    html = []
+    for i in hasil_qs:
+        if i.id == hasil_obj.id:
+            html.append(i.nama.upper())
+        else:
+            html.append(mark_safe("<del>{}</del>".format(i.nama.upper())))
+    html.reverse()
+    html = mark_safe(" / ".join(html))
+    return html
+
+@register.simple_tag
+def get_predikat_kerja(predikat_obj):
+    predikat_choices = PenilaianBawahan.PredikatKerja.choices
+    html = []
+    for i in predikat_choices:
+        print(i[0])
+        if i[0] == predikat_obj:
+            html.append(i[1].upper())
+        else:
+            html.append(mark_safe("<del>{}</del>".format(i[1].upper())))
+    html.reverse()
+    html = mark_safe(" / ".join(html))
+    return html
+
+@register.filter
+def organisasi(value, count=False):
+    value = value.filter(klasifikasi=RencanaHasilKerja.Klasifikasi.ORGANISASI)
+    if count:
+        return value.count()
+    return value

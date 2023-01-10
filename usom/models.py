@@ -1,6 +1,8 @@
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 
+from usom.utils import PathForFileModel
+
 
 class UnitKerja(models.Model):
     id_sipo = models.CharField(
@@ -149,6 +151,11 @@ class Account(AbstractUser):
     id_sipo = models.CharField(
         'ID SIPO', null=True, blank=True, max_length=50
     )
+    foto = models.ImageField(
+        upload_to=PathForFileModel("foto/"),
+        max_length=255,
+        null=True,
+        blank=True)
 
     objects = AccountManager()
     USERNAME_FIELD = "username"
