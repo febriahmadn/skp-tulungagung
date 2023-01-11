@@ -57,7 +57,6 @@ class SasaranKinerjaForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         request = self.request
-
         user = request.user
         if self.instance.pk:
             user = self.instance.pegawai
@@ -65,10 +64,15 @@ class SasaranKinerjaForm(forms.ModelForm):
         self.fields["pegawai"].initial = user.id
         self.fields["pegawai"].queryset = Account.objects.filter(id=user.id)
         self.fields["pegawai"].widget = forms.HiddenInput()
+        if "status" in self.fields:
+            self.fields["status"].widget = forms.HiddenInput()
+            self.fields["status"].initial = SasaranKinerja.Status.DRAFT
 
         self.fields["jenis_jabatan"].widget = forms.HiddenInput()
-        if "bupati" in user.jabatan or user.jenis_jabatan == "JPT":
+
+        if user.groups.filter(name="Bupati").exists():
             self.fields["induk"].widget = forms.HiddenInput()
+            self.fields["status"].initial = SasaranKinerja.Status.PERSETUJUAN
         else:
             self.fields["induk"].required = True
 
@@ -133,14 +137,15 @@ class SasaranKinerjaForm(forms.ModelForm):
         jenis_jabatan = self.cleaned_data.get("jenis_jabatan", None)
         induk = self.cleaned_data.get("induk", None)
 
-        find_skp = SasaranKinerja.objects.filter(
-            pegawai=pegawai,
-        ).filter(
-            Q(status=SasaranKinerja.Status.PERSETUJUAN)
-            | Q(status=SasaranKinerja.Status.PENGAJUAN),
-        ).filter(
-            periode_awal__lte=periode_awal,
-            periode_akhir__gte=periode_akhir
+        find_skp = (
+            SasaranKinerja.objects.filter(
+                pegawai=pegawai,
+            )
+            .filter(
+                Q(status=SasaranKinerja.Status.PERSETUJUAN)
+                | Q(status=SasaranKinerja.Status.PENGAJUAN),
+            )
+            .filter(periode_awal__lte=periode_awal, periode_akhir__gte=periode_akhir)
         )
 
         if find_skp.exists():
@@ -188,6 +193,7 @@ class SasaranKinerjaForm(forms.ModelForm):
             "periode_awal",
             "periode_akhir",
             "pendekatan",
+            "status",
         )
         # widgets = {
         #     'periode_awal': forms.TextInput(attrs={'class': 'datetimepicker-input'}),

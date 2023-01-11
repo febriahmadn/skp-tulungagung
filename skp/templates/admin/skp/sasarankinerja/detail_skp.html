@@ -1018,7 +1018,6 @@
               }
             }
 
-            
             if (item.indikator.length > 0){
               let button_tambah_indikator = `<button class="btn btn-sm btn-light-primary btn-block" data-rhk_id="${item.id}" data-edit="false" onclick="set_rhk_indikator($(this))">Tambah Indikator</button>`
               if (status == "1") {
@@ -1033,6 +1032,13 @@
                 </tr>
                 `
               }
+            }else{
+              indikator += `
+              <tr>
+                <td></td>
+                <td></td>
+              <td>
+              `
             }
             let klasifikasi = `
             <br><span class="label label-primary label-inline font-weight-bolder mr-2">${item.klasifikasi_rhk}</span>
@@ -1041,9 +1047,11 @@
             if (penilai_view == "true") {
               indikator_length = item.indikator.length+1
             }
+            
             if(status != "1"){
               indikator_length = item.indikator.length+1
             }
+
             let induk_elem = `
                 <td rowspan="${indikator_length}">
                   ${item?.induk ? item.induk.rencana_kerja : ''}
@@ -1069,6 +1077,10 @@
               skp_aksi = ""
               td_rowspan = `<td rowspan="${item.indikator.length+1}">`
               html_rowspan = `<td rowspan="${item.indikator.length+1}">${no}</td>`
+              if(item.indikator.length == 0){
+                td_rowspan = `<td rowspan="${item.indikator.length+2}">`
+                html_rowspan = `<td rowspan="${item.indikator.length+2}">${no}</td>`
+              }
             }else{
               td_rowspan = `<td rowspan="${indikator_length}">`
               html_rowspan = `<td rowspan="${indikator_length}">${no}</td>`
@@ -1186,6 +1198,13 @@
                 </tr>
                 `
               }
+            }else{
+              indikator += `
+              <tr>
+                <td></td>
+                <td></td>
+              <td>
+              `
             }
             let klasifikasi = `
               <br><span class="label label-primary label-inline font-weight-bolder mr-2">${item.klasifikasi_rhk}</span>
@@ -1197,6 +1216,9 @@
               
             }
 
+            if(status != "1"){
+              indikator_length = item.indikator.length+1
+            }
             let induk_elem = `
                 <td rowspan="${indikator_length}">
                   ${item?.induk ? item.induk.rencana_kerja : ''}
@@ -1222,6 +1244,11 @@
               skp_aksi = ""
               td_rowspan = `<td rowspan="${item.indikator.length+1}">`
               html_rowspan = `<td rowspan="${item.indikator.length+1}">${no}</td>`
+              console.log(item.indikator.length, "Tambah")
+              if(item.indikator.length == 0){
+                td_rowspan = `<td rowspan="${item.indikator.length+2}">`
+                html_rowspan = `<td rowspan="${item.indikator.length+2}">${no}</td>`
+              }
             }else{
               td_rowspan = `<td rowspan="${indikator_length}">`
               html_rowspan = `<td rowspan="${indikator_length}">${no}</td>`

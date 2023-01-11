@@ -44,7 +44,20 @@
         </div>
         <div class="card-footer p-5">
           {% if show %}
-          <a href="?show=true&cetak=true" class="btn btn-primary">
+          {% if skp_childs %}
+          <a href="?show=true&cetak=true&atasan=false" class="btn btn-primary">
+            <span class="svg-icon svg-icon-seconday svg-icon-2x"><!--begin::Svg Icon | path:/var/www/preview.keenthemes.com/metronic/releases/2021-05-14-112058/theme/html/demo1/dist/../src/media/svg/icons/Devices/Printer.svg--><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+              <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                <rect x="0" y="0" width="24" height="24"/>
+                <path d="M16,17 L16,21 C16,21.5522847 15.5522847,22 15,22 L9,22 C8.44771525,22 8,21.5522847 8,21 L8,17 L5,17 C3.8954305,17 3,16.1045695 3,15 L3,8 C3,6.8954305 3.8954305,6 5,6 L19,6 C20.1045695,6 21,6.8954305 21,8 L21,15 C21,16.1045695 20.1045695,17 19,17 L16,17 Z M17.5,11 C18.3284271,11 19,10.3284271 19,9.5 C19,8.67157288 18.3284271,8 17.5,8 C16.6715729,8 16,8.67157288 16,9.5 C16,10.3284271 16.6715729,11 17.5,11 Z M10,14 L10,20 L14,20 L14,14 L10,14 Z" fill="#000000"/>
+                <rect fill="#000000" opacity="0.3" x="8" y="2" width="8" height="2" rx="1"/>
+              </g>
+            </svg><!--end::Svg Icon--></span>
+            Cetak {% if obj.induk %}Bawahan{% endif %}
+          </a>
+          {% endif %}
+          {% if obj.induk %}
+          <a href="?show=true&cetak=true&atasan=true" class="btn btn-primary">
             <span class="svg-icon svg-icon-seconday svg-icon-2x"><!--begin::Svg Icon | path:/var/www/preview.keenthemes.com/metronic/releases/2021-05-14-112058/theme/html/demo1/dist/../src/media/svg/icons/Devices/Printer.svg--><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
               <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                   <rect x="0" y="0" width="24" height="24"/>
@@ -52,8 +65,9 @@
                   <rect fill="#000000" opacity="0.3" x="8" y="2" width="8" height="2" rx="1"/>
               </g>
             </svg><!--end::Svg Icon--></span>
-            Cetak
+            Cetak {% if skp_childs %}Atasan{% endif %}
           </a>
+          {% endif %}
           {% else %}
           <a href="?show=true" class="btn btn-success">Matrik Peran Hasil</a>
           {% endif %}
@@ -62,6 +76,99 @@
     </div>
 
     {% if show %}
+    {% if obj.induk %}
+    <div class="col-md-12 mt-5">
+      <div class="card">
+        <div class="card-body p-1 table-responsive">
+          <table class="table table-bordered m-0 table-matriks-hasil">
+            <thead class="bg-primary text-white">
+              <tr>
+                <th>PEGAWAI</th>
+                <th colspan="{{ obj.induk.rencanahasilkerja_set.all|organisasi:True }}" class="text-center">OUTCOME ANTARA / OUTPUT / LAYANAN</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <b class="text-nowrap">{{ obj.induk.detailsasarankinerja.nama_pegawai }}</b><br>
+                  <span class="text-muted">{{ obj.induk.detailsasarankinerja.nip_pegawai }}</span><br>
+                  <span class="text-muted">{{ obj.induk.detailsasarankinerja.jabatan_pegawai }}</span>
+                </td>
+                {% for item in obj.induk.rencanahasilkerja_set.all|organisasi %}
+                <td>{{ item.rencana_kerja }}</td>
+                {% endfor %}
+              </tr>
+              <tr data-status="unload" data-id="{{obj.id}}">
+                <td class="data-pegawai">
+                  <b class="text-nowrap">{{ obj.detailsasarankinerja.nama_pegawai }}</b><br>
+                  <span class="text-muted">{{ obj.detailsasarankinerja.nip_pegawai }}</span><br>
+                  <span class="text-muted">{{ obj.detailsasarankinerja.jabatan_pegawai }}</span>
+                </td>
+                {% for rhk_parent in obj.rencanahasilkerja_set.all|organisasi %}
+                <td data-parent_id="{{ rhk_parent.id }}"></td>
+                {% endfor %}
+              </tr>
+              <!-- <tr>
+                <td>
+                  <b class="text-nowrap">SOEROTO, S.Sos, MM</b><br>
+                  <span class="text-muted">197004021990031006</span><br>
+                  <span class="text-muted">KEPALA BADAN KEPEGAWAIAN DAN PENGEMBANGAN SUMBER DAYA MANUSIA</span>
+                </td>
+                <td>Meningkatkan Kualitas Pelayanan Kepegawaian</td>
+                <td>Terwujudnya Manajemen ASN Berbasis Sistem Merit</td>
+                <td>Meningkatnya Profesionalitas ASN</td>
+                <td>Meningkatnya kualitas 
+                  tata kelola administrasi 
+                  kepegawaian, 
+                  ketatausahaan, serta 
+                  sarana dan pra 
+                  sarana yang sesuai NSPK</td>
+                <td>Terlaksananya rencana 
+                  aksi/inisiatif strategis
+                  dalam rangka pencapaian 
+                  sasaran dan indikator 
+                  kinerja utama organisasi 
+                  dalam 
+                  perjanjian kerja</td>
+              </tr>
+              <tr>
+                <td rowspan="2">
+                  <b class="text-nowrap">PONGKY KURNIAWAN, S.STP., M.M.</b><br>
+                  <span class="text-muted">198108162000121001</span><br>
+                  <span class="text-muted">SEKRETARIS BADAN KEPEGAWAIAN DAN PENGEMBANGAN SUMBER DAYA MANUSIA</span>
+                </td>
+                <td>Terwujudnya dukungan 
+                  pelayanan administrasi 
+                  perkantoran</td>
+                <td></td>
+                <td></td>
+                <td>Tersedianya dokumen
+                  administrasi kepegawaian
+                  yang sesuai NSPK</td>
+                <td>Penyelesaian rencana 
+                  aksi/inisiatif strategis yang 
+                  berkontribusi langsung 
+                  terhadap pencapaian 
+                  indikator perjanjian kinerja</td>
+              </tr>
+              <tr>
+                <td>Terwujudnya dukungan
+                  sarana dan prasarana 
+                  aparatur</td>
+                <td></td>
+                <td></td>
+                <td>Tersedianya dokumen
+                  ketatausahaan yang 
+                  sesuai NSPK</td>
+                <td></td>
+              </tr> -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+    {% if skp_childs %}
     <div class="col-md-12 mt-5">
       <div class="card">
         <div class="card-body p-1 table-responsive">
@@ -155,6 +262,7 @@
         </div>
       </div>
     </div>
+    {% endif %}
     {% endif %}
   </div>
 </div>

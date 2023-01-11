@@ -52,7 +52,7 @@
     const HandleLoadData = () =>{
         let card_sasaran_kinerja = new KTCard('card-sasaran_kinerja');
         $.ajax({
-            url:`${BASE_URL}/admin/skp/sasarankinerja/${obj_id}/view/`,
+            url:`${BASE_URL}/admin/skp/sasarankinerja/${obj_id}/view`,
             method: "GET",
             beforeSend: function(){
                 KTApp.block(card_sasaran_kinerja.getSelf(), {

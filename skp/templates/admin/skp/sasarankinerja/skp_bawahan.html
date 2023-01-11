@@ -21,6 +21,15 @@
   .table-custom th{
     background-color: #2196f3;
   }
+  .select2-selection__rendered {
+    line-height: 27px !important;
+  }
+  .select2-container .select2-selection--single {
+      height: 32px !important;
+  }
+  .select2-selection__arrow {
+      height: 31px !important;
+  }
 </style>
 {% endblock custom_style %}
 
@@ -57,22 +66,38 @@
             </tr>
         </table>
     </div>
+    <form action="" method="get" id="form-search">
     <div class="p-0 card-footer">
-        <div class="py-3 pr-5 d-flex justify-content-end">
-            <div class="btn-group btn-sm">
-                <button type="button" class="btn btn-primary btn-sm">{% trans 'Filter' %}</button>
-                <button type="button" class="btn btn-primary btn-sm dropdown-toggle dropdown-icon" data-toggle="dropdown">
-                    <div class="dropdown-menu dropdown-menu-right dropdown-menu-lg-left">
-                        <a class="dropdown-item "href="?status=" onclick="window.location.href = window.location.pathname+'?status='">Semua</a>
-                        <a class="dropdown-item "href="?status=0" onclick="window.location.href = window.location.pathname+'?status=0'">Belum buat</a>
-                        {% for item in status_choices %}
-                        <a class="dropdown-item "href="?status={{item.0}}" onclick="window.location.href = window.location.pathname+'?status={{item.0}}'">{{item.1}}</a>
-                        {% endfor %}
-                    </div>
-                </button>
-            </div>    
+        <div class="py-3 px-5 d-flex">
+              <div class="input-group input-group-sm mb-3" style="gap: 20px">
+                {% if is_bupati %}
+                <select class="form-control select-filter form-control-sm"name="unitkerja" id="unitkerja_id">
+                </select>
+                {% endif %}
+                <select class="form-control select-filter form-control-sm" name="status" id="status_id">
+                  {% if request.GET.status == 0 %}
+                  <option value="0" selected >Semua Status</option>
+                  {% else %}
+                  <option value="0" >Semua Status</option>
+                  {% endif %}
+                  {% for item in status_choices %}
+                  {% with item.0|stringformat:"i" as selected %}
+                  {% if request.GET.status == selected %}
+                  <option value="{{item.0}}" selected >{{item.1}}</option>
+                  {% else %}
+                  <option value="{{item.0}}" >{{item.1}}</option>
+                  {% endif %}
+                  {% endwith %}
+                  {% endfor %}
+                </select>
+                  <input type="text" value="{{request.GET.q}}" name="q" class="form-control" placeholder="Pencarian Nama Atau NIP" aria-label="Pencarian Berdasarkan Nama Atau NIP" aria-describedby="basic-addon2">
+                  <div class="input-group-append">
+                    <button class="btn btn-success" type="submit"><i class="fas fa-search"></i> Cari</button>
+                  </div>
+              </div>
         </div>
     </div>
+    </form>
 </div>
 <div class="card mt-5 p-1">
     <div class="p-0 card-body">
@@ -89,23 +114,67 @@
                 </tr>
             </thead>
             <tbody>
+                {% if list_skp_bawahan %}
                 {% for item in list_skp_bawahan %}
                 <tr>
-                    <td>{{item.detailsasarankinerja.unor_pegawai}}</td>
-                    <td>{{item.detailsasarankinerja.nip_pegawai}}</td>
-                    <td>{{item.detailsasarankinerja.nama_pegawai}}</td>
-                    <td>{{item.detailsasarankinerja.jabatan_pegawai}}</td>
-                    {% comment %} <td>{{item.keterangan|default_if_none:"---"}}</td> {% endcomment %}
-                    <td>{{item.get_status_display}}</td>
-                    <td>
-                        {% if item.status in show_detail %}
-                            <a href="{% url 'admin:detail-skp' id=item.id %}?view=penilai" class="btn btn-warning btn-sm" target="_blank"><i class="fas fa-info-circle"></i> Detail</a>
-                        {% endif %}
-                    </td>
+                  <td>{{item.detailsasarankinerja.unor_pegawai}}</td>
+                  <td>{{item.detailsasarankinerja.nip_pegawai}}</td>
+                  <td>{{item.detailsasarankinerja.nama_pegawai}}</td>
+                  <td>{{item.detailsasarankinerja.jabatan_pegawai}}</td>
+                  {% comment %} <td>{{item.keterangan|default_if_none:"---"}}</td> {% endcomment %}
+                  <td>{{item.get_status_display}}</td>
+                  <td>
+                    {% if item.status in show_detail %}
+                    <a href="{% url 'admin:detail-skp' id=item.id %}?view=penilai" class="btn btn-warning btn-sm" target="_blank"><i class="fas fa-info-circle"></i> Detail</a>
+                    {% endif %}
+                  </td>
                 </tr>    
                 {% endfor %}
+                {% else %}
+                <tr>
+                  <td colspan="6" style="text-align: center;" >Tidak Ada Data</td>
+                </tr>
+                {% endif %}
             </tbody>
         </table>
     </div>
 </div>
 {% endblock content %}
+{% block custom_js %}
+{{ block.super }}
+<script type="text/javascript">
+const handleLoadUnitkerja = async (id=null) => {
+  await $.ajax({
+    url: `${BASE_URL}/admin/usom/unitkerja/load-data`,
+    type: 'GET',
+    success: function(response){
+      if(response.length > 0){
+        html = `<option value="" readonly >---- Pilih Unit Kerja ----</option>`
+        response.map((value, idx)=>{
+          selected = "selected"
+          if(value.id != id){
+            selected = ""
+          }
+          html += `<option ${selected} value="${value.id}" >${value.text}</option>`
+        })
+      }else{
+        html = "<option readonly >Unit Kerja Kosong</option>"
+      }
+      $('#unitkerja_id').html(html).select2({
+        width: "resolve"
+      })
+    }
+  })
+}
+$(".select-filter").on('change', function(){
+  $("#form-search").submit()
+})
+$(function(){
+  {% if request.GET.unitkerja %}
+  handleLoadUnitkerja("{{request.GET.unitkerja}}")
+  {% else %}
+  handleLoadUnitkerja()
+  {% endif %}
+})
+</script>
+{% endblock %}

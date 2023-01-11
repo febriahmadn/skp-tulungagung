@@ -358,7 +358,7 @@ def handler_sasarankinerja_save(instance, created, **kwargs):
                 nama_pegawai=instance.pegawai.get_complete_name(),
                 nip_pegawai=instance.pegawai.username,
                 jabatan_pegawai=instance.pegawai.jabatan,
-                golongan_pegawai=instance.pegawai.golongan,
+                golongan_pegawai=instance.pegawai.get_golongan_display(),
                 unor_pegawai=instance.pegawai.unitkerja.unitkerja,
             )
         else:
@@ -367,7 +367,7 @@ def handler_sasarankinerja_save(instance, created, **kwargs):
                 nama_pegawai=instance.pegawai.get_complete_name(),
                 nip_pegawai=instance.pegawai.username,
                 jabatan_pegawai=instance.pegawai.jabatan,
-                golongan_pegawai=instance.pegawai.golongan,
+                golongan_pegawai=instance.pegawai.get_golongan_display(),
                 unor_pegawai=instance.pegawai.unitkerja.unitkerja,
                 nama_pejabat=instance.pejabat_penilai.get_complete_name(),
                 nip_pejabat=instance.pejabat_penilai.username,
