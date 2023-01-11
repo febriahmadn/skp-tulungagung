@@ -7,7 +7,8 @@ from skp.models import DetailSasaranKinerja
 def forwards_func(apps, schema_editor):
     print('forwards')
     for i in DetailSasaranKinerja.objects.all():
-        i.golongan_pegawai = "{}/{}".format(i.golongan_pegawai.split('/')[0],i.golongan_pegawai.split('/')[1].lower())
+        if i.golongan_pegawai:
+            i.golongan_pegawai = "{}/{}".format(i.golongan_pegawai.split('/')[0],i.golongan_pegawai.split('/')[1].lower())
         if i.golongan_pejabat:
             i.golongan_pejabat = "{}/{}".format(i.golongan_pejabat.split('/')[0],i.golongan_pejabat.split('/')[1].lower())
         i.save()
