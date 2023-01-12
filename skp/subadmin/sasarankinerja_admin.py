@@ -64,7 +64,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
 
     def has_add_permission(self, request):
         user = request.user
-        if not user.is_superuser:
+        if not user.is_superuser and not user.groups.filter(name="Bupati"):
             if user.unitkerja and user.jabatan and user.jenis_jabatan:
                 return True
             else:

@@ -387,6 +387,11 @@ def handler_sasarankinerja_save(instance, created, **kwargs):
                 status_pegawai=instance.pegawai.get_status_pegawai_display(),
             )
         else:
+            golongan = instance.pejabat_penilai.golongan.__str__()
+            nip = instance.pejabat_penilai.username
+            if instance.pejabat_penilai.groups.filter(name="Bupati").exists():
+                golongan = ""
+                nip = ""
             detail = DetailSasaranKinerja(
                 skp=instance,
                 nama_pegawai=instance.pegawai.get_complete_name(),
@@ -395,11 +400,11 @@ def handler_sasarankinerja_save(instance, created, **kwargs):
                 golongan_pegawai=instance.pegawai.golongan.__str__(),
                 unor_pegawai=instance.pegawai.unitkerja.unitkerja,
                 nama_pejabat=instance.pejabat_penilai.get_complete_name(),
-                nip_pejabat=instance.pejabat_penilai.username,
+                nip_pejabat=nip,
                 jabatan_pejabat=instance.pejabat_penilai.jabatan,
-                golongan_pejabat=instance.pejabat_penilai.golongan.__str__(),
+                golongan_pejabat=golongan,
                 unor_pejabat=instance.pejabat_penilai.unitkerja.unitkerja,
-                status_pejabat=instance.pegawai.get_status_pegawai_display(),
+                status_pejabat=instance.pejabat_penilai.get_status_pegawai_display(),
             )
         detail.save()
         if instance.jenis_jabatan != SasaranKinerja.JenisJabatan.JPT:

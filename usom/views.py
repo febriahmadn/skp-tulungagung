@@ -31,7 +31,11 @@ def admin_menus(user=None):
                 url=reverse("admin:skp_sasarankinerja_changelist"),
             ),
         ]
-        if user.is_superuser or user.jenis_jabatan == "JPT":
+        if (
+            user.is_superuser
+            or user.jenis_jabatan == "JPT"
+            or user.groups.filter(name="Bupati").exists()
+        ):
             menus += [
                 dict(
                     title="Rekonsiliasi SKP",
