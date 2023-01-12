@@ -79,6 +79,7 @@ class EditProfilPegawai(forms.ModelForm):
             "jabatan",
             "golongan",
             "eselon",
+            "status_pegawai"
         ]
 
     def __init__(self, *args, **kwargs):

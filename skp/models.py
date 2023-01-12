@@ -3,7 +3,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from skp.utils import FULL_BULAN
-from usom.models import Account, UnitKerja
+from usom.models import Account, Golongan, UnitKerja
 
 
 class SasaranKinerja(models.Model):
@@ -99,6 +99,9 @@ class DetailSasaranKinerja(models.Model):
     unor_pegawai = models.CharField(
         "Unor Pegawai", max_length=200, null=True, blank=True
     )
+    status_pegawai = models.CharField(
+        "Status Pegawai", max_length=200, null=True, blank=True
+    )
     # data pejabat penilai
     nama_pejabat = models.CharField(
         "Nama Pejabat", max_length=200, null=True, blank=True
@@ -113,6 +116,27 @@ class DetailSasaranKinerja(models.Model):
     unor_pejabat = models.CharField(
         "Unor Pejabat", max_length=200, null=True, blank=True
     )
+    status_pejabat = models.CharField(
+        "Status Pejabat", max_length=200, null=True, blank=True
+    )
+
+    def get_golongan_pejabat(self):
+        find_penilai_golongan = Golongan.objects.filter(
+            kode=self.golongan_pejabat
+        )
+        if find_penilai_golongan.exists():
+            return find_penilai_golongan.last().kode_angka
+        else:
+            return ""
+
+    def get_golongan_pegawai(self):
+        find_golongan = Golongan.objects.filter(
+            kode=self.golongan_pegawai
+        )
+        if find_golongan.exists():
+            return find_golongan.last().kode_angka
+        else:
+            return ""
 
     def __str__(self):
         return "{}".format(str(self.id))
@@ -358,8 +382,9 @@ def handler_sasarankinerja_save(instance, created, **kwargs):
                 nama_pegawai=instance.pegawai.get_complete_name(),
                 nip_pegawai=instance.pegawai.username,
                 jabatan_pegawai=instance.pegawai.jabatan,
-                golongan_pegawai=instance.pegawai.get_golongan_display(),
+                golongan_pegawai=instance.pegawai.golongan.__str__(),
                 unor_pegawai=instance.pegawai.unitkerja.unitkerja,
+                status_pegawai=instance.pegawai.get_status_pegawai_display(),
             )
         else:
             detail = DetailSasaranKinerja(
@@ -367,13 +392,14 @@ def handler_sasarankinerja_save(instance, created, **kwargs):
                 nama_pegawai=instance.pegawai.get_complete_name(),
                 nip_pegawai=instance.pegawai.username,
                 jabatan_pegawai=instance.pegawai.jabatan,
-                golongan_pegawai=instance.pegawai.get_golongan_display(),
+                golongan_pegawai=instance.pegawai.golongan.__str__(),
                 unor_pegawai=instance.pegawai.unitkerja.unitkerja,
                 nama_pejabat=instance.pejabat_penilai.get_complete_name(),
                 nip_pejabat=instance.pejabat_penilai.username,
                 jabatan_pejabat=instance.pejabat_penilai.jabatan,
-                golongan_pejabat=instance.pejabat_penilai.golongan,
+                golongan_pejabat=instance.pejabat_penilai.golongan.__str__(),
                 unor_pejabat=instance.pejabat_penilai.unitkerja.unitkerja,
+                status_pejabat=instance.pegawai.get_status_pegawai_display(),
             )
         detail.save()
         if instance.jenis_jabatan != SasaranKinerja.JenisJabatan.JPT:

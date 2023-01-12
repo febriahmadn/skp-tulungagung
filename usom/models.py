@@ -5,9 +5,7 @@ from usom.utils import PathForFileModel
 
 
 class UnitKerja(models.Model):
-    id_sipo = models.CharField(
-        'ID SIPO', null=True, blank=True, max_length=50
-    )
+    id_sipo = models.CharField("ID SIPO", null=True, blank=True, max_length=50)
     unitkerja = models.CharField(
         max_length=200, null=True, verbose_name="Nama Unit Kerja"
     )
@@ -20,6 +18,48 @@ class UnitKerja(models.Model):
     class Meta:
         verbose_name = "Unit Kerja"
         verbose_name_plural = "Unit Kerja"
+
+
+class Golongan(models.Model):
+    kode = models.CharField("Kode", max_length=100, null=True)
+    kode_angka = models.CharField("Kode Angka", max_length=100, null=True)
+    angka = models.PositiveSmallIntegerField(
+        "Angka", choices=[(x, x) for x in range(1, 5)], db_index=True
+    )
+    huruf = models.CharField(
+        "Huruf",
+        choices=[("a", "a"), ("b", "b"), ("c", "c"), ("d", "d"), ("e", "e")],
+        max_length=2,
+        db_index=True,
+    )
+    keterangan = models.CharField("Keterangan", blank=True, null=True, max_length=255)
+
+    def save(self, *args, **kwargs):
+        if self.get_golongan():
+            self.kode = self.get_golongan()
+        return super().save(*args, **kwargs)
+
+    def get_golongan(self):
+        return self.get_romawi() + "/" + self.huruf
+
+    def get_romawi(self):
+        from usom.utils import int_to_roman
+
+        return int_to_roman(self.angka)
+
+    def as_option(self):
+        option = '<option value="{}">{}/{}</option>'.format(
+            str(self.id), str(self.get_romawi()), str(self.huruf)
+        )
+        return option
+
+    def __str__(self):
+        return self.get_golongan()
+
+    class Meta:
+        ordering = ["angka", "huruf"]
+        verbose_name = "Golongan"
+        verbose_name_plural = "Golongan"
 
 
 class AccountManager(BaseUserManager):
@@ -38,10 +78,10 @@ class AccountManager(BaseUserManager):
         return user
 
     def create_superuser(self, username, nama_lengkap, password):
-        '''
+        """
         Creates and saves a superuser with the given identity number,
         nama_lengkap and password.
-        '''
+        """
         user = self.create_user(username, password=password, nama_lengkap=nama_lengkap)
         user.is_admin = True
         user.is_superuser = True
@@ -56,24 +96,9 @@ class Account(AbstractUser):
         ("PA", "Atasan"),
         ("PE", "Pegawai"),
     ]
-    GOLONGAN = [
-        ("I/A", "I/a"),
-        ("I/B", "I/b"),
-        ("I/C", "I/c"),
-        ("I/D", "I/d"),
-        ("II/A", "II/a"),
-        ("II/B", "II/b"),
-        ("II/C", "II/c"),
-        ("II/D", "II/d"),
-        ("III/A", "III/a"),
-        ("III/B", "III/b"),
-        ("III/C", "III/c"),
-        ("III/D", "III/d"),
-        ("IV/A", "IV/a"),
-        ("IV/B", "IV/b"),
-        ("IV/C", "IV/c"),
-        ("IV/D", "IV/d"),
-        ("IV/E", "IV/e"),
+    STATUS_PEGAWAI = [
+        ('ASN', 'ASN'),
+        ('NON', 'NON ASN'),
     ]
     ESELON = [
         # (1, 'I-A'),
@@ -123,12 +148,8 @@ class Account(AbstractUser):
     unitkerja = models.ForeignKey(
         UnitKerja, null=True, blank=True, on_delete=models.SET_NULL
     )
-    golongan = models.CharField(
-        choices=GOLONGAN,
-        max_length=6,
-        verbose_name="Golongan",
-        null=True,
-        blank=True,
+    golongan = models.ForeignKey(
+        Golongan, null=True, blank=True, on_delete=models.SET_NULL
     )
     eselon = models.CharField(
         choices=ESELON,
@@ -145,17 +166,20 @@ class Account(AbstractUser):
         null=True,
         blank=True,
     )
+    status_pegawai = models.CharField(
+        max_length=50,
+        verbose_name='Status Pegawai',
+        choices=STATUS_PEGAWAI,
+        null=True,
+        blank=True
+    )
     tangggal_nonaktif = models.DateField(
         null=True, blank=True, verbose_name="Tanggal Nonaktif"
     )
-    id_sipo = models.CharField(
-        'ID SIPO', null=True, blank=True, max_length=50
-    )
+    id_sipo = models.CharField("ID SIPO", null=True, blank=True, max_length=50)
     foto = models.ImageField(
-        upload_to=PathForFileModel("foto/"),
-        max_length=255,
-        null=True,
-        blank=True)
+        upload_to=PathForFileModel("foto/"), max_length=255, null=True, blank=True
+    )
 
     objects = AccountManager()
     USERNAME_FIELD = "username"
@@ -180,7 +204,7 @@ class Account(AbstractUser):
         return nama
 
     def __str__(self):
-        return '{} - {}'.format(self.username, self.get_complete_name())
+        return "{} - {}".format(self.username, self.get_complete_name())
 
     class Meta:
         ordering = ["id"]

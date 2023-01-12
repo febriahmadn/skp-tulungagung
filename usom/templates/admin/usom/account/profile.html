@@ -218,11 +218,15 @@
             </div>
             <div class="mb-2">
               <span class="font-weight-bold mr-2">Golongan:</span><br>
-              <span class="text-muted data-golongan">{{ request.user.get_golongan_display|default_if_none:'-' }}</span>
+              <span class="text-muted data-golongan">{{ request.user.golongan|default_if_none:'-' }}</span>
             </div>
             <div class="mb-2">
               <span class="font-weight-bold mr-2">Eselon:</span><br>
               <span class="text-muted data-eselon">{{ request.user.eselon|default_if_none:'-' }}</span>
+            </div>
+            <div class="mb-2">
+              <span class="font-weight-bold mr-2">Status Pegawai:</span><br>
+              <span class="text-muted data-status_pegawai">{{ request.user.get_status_pegawai_display|default_if_none:'-' }}</span>
             </div>
           </div>
           <!--end::Contact-->
@@ -274,11 +278,15 @@
               </div>
               <div class="mb-2">
                 <span class="font-weight-bold mr-2">Golongan:</span><br>
-                <span class="text-muted data-golongan">{{ atasan.get_golongan_display|default_if_none:'-' }}</span>
+                <span class="text-muted data-golongan">{{ atasan.golongan|default_if_none:'-' }}</span>
               </div>
               <div class="mb-2">
                 <span class="font-weight-bold mr-2">Eselon:</span><br>
                 <span class="text-muted data-eselon">{{ atasan.eselon|default_if_none:'-' }}</span>
+              </div>
+              <div class="mb-2">
+                <span class="font-weight-bold mr-2">Status Pegawai:</span><br>
+                <span class="text-muted data-status_pegawai">{{ atasan.get_status_pegawai_display|default_if_none:'-' }}</span>
               </div>
               {% else %}
               <span class="text-muted">Atasan belum disetting, silahkan pilih pegawai atasan Anda terlebih dahulu sebelum menginputkan data SKP.</span>

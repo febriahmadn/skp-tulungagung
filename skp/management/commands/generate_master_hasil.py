@@ -8,12 +8,13 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         hasil_list = [
-            "Dibawah Ekspetasi",
-            "Sesuai Ekspetasi",
-            "Diatas Ekspetasi",
+            (3, "Dibawah Ekspetasi"),
+            (2, "Sesuai Ekspetasi"),
+            (1, "Diatas Ekspetasi"),
         ]
         self.stdout.write(self.style.NOTICE("PROSES DATA MASTER HASIL"))
         for i in hasil_list:
-            kategori_obj, created = Hasil.objects.get_or_create(nama=i)
+            kategori_obj, created = Hasil.objects.get_or_create(nama=i[1])
+            kategori_obj.keterangan = i[0]
             kategori_obj.save()
         self.stdout.write(self.style.SUCCESS("SELESAI"))

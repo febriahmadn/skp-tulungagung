@@ -1,10 +1,12 @@
 import calendar
+import datetime
 
 import pytz
 import requests
+import xlwt
 from django.contrib import admin, messages
 from django.db.models import Q
-from django.http import Http404, JsonResponse
+from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import path, resolve, reverse_lazy
 from django.utils import timezone
@@ -12,11 +14,11 @@ from django.utils.safestring import mark_safe
 
 from services.models import Configurations
 from skp.forms.sasarankinerja_form import SasaranKinerjaForm
-from skp.models import (DetailSasaranKinerja, Lampiran, PerilakuKerja,
-                        Perspektif, RencanaHasilKerja, RiwayatKeteranganSKP,
-                        SasaranKinerja)
+from skp.models import (DetailSasaranKinerja, Lampiran, PenilaianBawahan,
+                        PerilakuKerja, Perspektif, RencanaHasilKerja,
+                        RiwayatKeteranganSKP, SasaranKinerja)
 from skp.utils import FULL_BULAN
-from usom.models import Account
+from usom.models import Account, UnitKerja
 
 
 def delete_skp(modeladmin, request, queryset):
@@ -839,6 +841,118 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
             respon = {"success": True, "data": data}
         return JsonResponse(respon, safe=False)
 
+    def get_list_skp(self, unitkerja):
+        list_id = []
+        find_skp = SasaranKinerja.objects.filter(
+            unor=unitkerja, status=SasaranKinerja.Status.PERSETUJUAN
+        )
+        list_pegawai = list(find_skp.values_list("pegawai", flat=True).distinct())
+        for i in list_pegawai:
+            obj_skp = find_skp.filter(
+                pegawai__id=i,
+            )
+            # print(obj_skp)
+            if obj_skp.count() > 1:
+                for i in obj_skp:
+                    list_skp = obj_skp.filter(
+                        periode_awal__lte=i.periode_awal,
+                        periode_akhir__gte=i.periode_akhir,
+                    )
+                    if list_skp.exists():
+                        list_id.append(list_skp.last().id)
+            else:
+                list_id.append(obj_skp.last().id)
+        list_id = list(dict.fromkeys(list_id))
+        return SasaranKinerja.objects.filter(pk__in=list_id)
+
+    def rekonsiliasi_skp(self, request):
+        TAHUN = []
+        for i in range(2020, datetime.date.today().year + 2):
+            TAHUN.append({"id": i, "text": i})
+        if request.GET:
+            tahun = request.GET.get("tahun", None)
+            unitkerja = request.user.unitkerja
+            if (
+                request.user.is_superuser
+                or request.user.groups.filter(name="Bupati").exists()
+            ):
+                unitkerja = request.GET.get("unitkerja", None)
+                if unitkerja:
+                    unitkerja = get_object_or_404(UnitKerja, id=unitkerja)
+
+            list_skp_obj = self.get_list_skp(unitkerja)
+
+            filename = "Rekonsiliasi SKP {} {}".format(unitkerja.unitkerja, tahun)
+            response = HttpResponse(content_type="application/ms-excel")
+            response["Content-Disposition"] = (
+                'attachment; filename="' + filename + '.xls"'
+            )
+            wb = xlwt.Workbook(encoding="utf-8")
+            ws = wb.add_sheet("sheet 1")
+            row_num = 0
+
+            font_style = xlwt.XFStyle()
+            font_style.font.bold = True
+            columns = [
+                "PNS_DINILAI_ID",
+                "UNOR_ID",
+                "TAHUN",
+                "HASIL_KERJA",
+                "PERILAKU_KERJA",
+                "PEGAWAI_ATASAN_UNOR_NAMA",
+                "PENILAI_JABATAN_NM",
+                "PENILAI_GOLONGAN_ID",
+                "PENILAI_NAMA",
+                "NIP_NIK_PENILAI",
+                "STATUS_PENILAIAN(ASN/NON_ASN)",
+            ]
+            rows = []
+            for i in list_skp_obj:
+                find_penilaian = PenilaianBawahan.objects.filter(skp=i).order_by(
+                    "periode"
+                )
+                if find_penilaian.exists():
+                    find_penilaian = find_penilaian.last()
+                else:
+                    find_penilaian = None
+
+                isi = (
+                    i.pejabat_penilai.id,
+                    i.unor.id,
+                    tahun,
+                    find_penilaian.rating_hasil.keterangan if find_penilaian else "",
+                    find_penilaian.predikat_perilaku.keterangan
+                    if find_penilaian
+                    else "",
+                    i.detailsasarankinerja.unor_pejabat,
+                    i.detailsasarankinerja.jabatan_pejabat,
+                    i.detailsasarankinerja.get_golongan_pejabat(),
+                    i.detailsasarankinerja.nama_pejabat,
+                    i.detailsasarankinerja.nip_pejabat,
+                    i.detailsasarankinerja.status_pejabat,
+                )
+                rows.append(isi)
+
+            for col_num in range(len(columns)):
+                ws.write(row_num, col_num, columns[col_num], font_style)
+            font_style = xlwt.XFStyle()
+
+            for row in rows:
+                row_num += 1
+                for col_num in range(len(row)):
+                    ws.write(row_num, col_num, row[col_num], font_style)
+            wb.save(response)
+            return response
+
+        extra_context = {
+            "title": "Rekonsiliasi SKP",
+            "tahun": TAHUN,
+            "unit_kerja": UnitKerja.objects.filter(aktif=True),
+        }
+        return render(
+            request, "admin/skp/sasarankinerja/rekonsiliasi.html", extra_context
+        )
+
     def get_urls(self):
         admin_url = super(SasaranKinerjaAdmin, self).get_urls()
         custom_url = [
@@ -911,6 +1025,11 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                 "option",
                 self.admin_site.admin_view(self.load_induk_options),
                 name="skp_sasarankinerja_induk_option",
+            ),
+            path(
+                "rekonsiliasi",
+                self.admin_site.admin_view(self.rekonsiliasi_skp),
+                name="skp_sasarankinerja_rekonsiliasi",
             ),
             # path("skpdata/", self.view_custom, name="list_skp_admin"),
             # path("skpdata/add/", self.add_skp, name="add_skp_admin"),

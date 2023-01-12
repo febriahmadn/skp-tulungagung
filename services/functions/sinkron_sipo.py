@@ -4,7 +4,7 @@ import requests
 from django.contrib.auth.models import Group
 
 from services.models import Configurations
-from usom.models import Account, UnitKerja
+from usom.models import Account, Golongan, UnitKerja
 
 
 class ServiceSipo:
@@ -44,8 +44,7 @@ class ServiceSipo:
                     self.handler_save(results[0])
                 return True
             else:
-                print(response.status_code)
-                if response.status_code == 500:
+                if [500, 401] in response.status_code:
                     self.auth_login()
                     self.sinkron_pegawai_by_nip(nip)
                     return True
@@ -72,7 +71,9 @@ class ServiceSipo:
         golongan = payload.get("gol_ruang", None)
         if golongan:
             if golongan.find("-") < 0:
-                return golongan.upper()
+                find_golongan = Golongan.objects.filter(kode=golongan)
+                if find_golongan.exists():
+                    return find_golongan.last()
         return None
 
     def get_eselon(self, payload):
