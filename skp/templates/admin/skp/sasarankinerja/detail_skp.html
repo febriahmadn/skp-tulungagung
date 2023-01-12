@@ -78,9 +78,11 @@
     <div class="card card-custom" id="card-pegawai">
       <div class="card-header bg-primary">
           <h6 class="card-title text-white m-0">PEGAWAI YANG DINILAI</h6>
+          {% if not penilai_view %}
           <div class="card-toolbar m-0 p-0">
             <button class="btn btn-sm btn-warning" data-jenis="pegawai" data-url="{% url 'admin:skp_sasarankinerja_sync_data_pegawai' obj.pegawai.id %}" data-id="{{obj.pegawai.id}}" onclick="handleSyncPegawai($(this))"><i class="fas fa-sync" ></i> Muat Ulang</button>
           </div>
+          {% endif %}
       </div>
       <div class="card-body p-0">
         <table class="table" id="pegawai">
@@ -117,7 +119,7 @@
     <div class="card card-custom" id="card-penilai">
       <div class="card-header bg-primary">
           <h6 class="card-title text-white m-0">PEJABAT PENILAI KINERJA</h6>
-          {% if obj.pejabat_penilai %}
+          {% if obj.pejabat_penilai and not penilai_view %}
           <div class="card-toolbar m-0 p-0">
             <button class="btn btn-sm btn-warning" data-jenis="atasan_penilai" data-url="{% url 'admin:skp_sasarankinerja_sync_data_pegawai' obj.pejabat_penilai.id %}" data-id="{{obj.pejabat_penilai.id}}" onclick="handleSyncPegawai($(this))"><i class="fas fa-sync" ></i> Muat Ulang</button>
           </div>
@@ -765,9 +767,9 @@
     $("#ekspetasi_id").val(ekspetasi_id)
     $("#ekspetasi").val("")
     if(tambah == "True"){
-      $("#lampiran_modal_ekspetasi").html("Tambah Ekspetasi")
+      $("#lampiran_modal_ekspetasi").html("Tambah Ekspektasi")
     }else{
-      $("#lampiran_modal_ekspetasi").html("Ubah Ekspetasi")
+      $("#lampiran_modal_ekspetasi").html("Ubah Ekspektasi")
       let isi = $("#ekspetasi-"+perilaku_id)
       $("#ekspetasi").val(isi.html())
     }
