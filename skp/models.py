@@ -121,18 +121,14 @@ class DetailSasaranKinerja(models.Model):
     )
 
     def get_golongan_pejabat(self):
-        find_penilai_golongan = Golongan.objects.filter(
-            kode=self.golongan_pejabat
-        )
+        find_penilai_golongan = Golongan.objects.filter(kode=self.golongan_pejabat)
         if find_penilai_golongan.exists():
             return find_penilai_golongan.last().kode_angka
         else:
             return ""
 
     def get_golongan_pegawai(self):
-        find_golongan = Golongan.objects.filter(
-            kode=self.golongan_pegawai
-        )
+        find_golongan = Golongan.objects.filter(kode=self.golongan_pegawai)
         if find_golongan.exists():
             return find_golongan.last().kode_angka
         else:
@@ -407,7 +403,10 @@ def handler_sasarankinerja_save(instance, created, **kwargs):
                 status_pejabat=instance.pejabat_penilai.get_status_pegawai_display(),
             )
         detail.save()
-        if instance.jenis_jabatan != SasaranKinerja.JenisJabatan.JPT:
+        if (
+            instance.jenis_jabatan != SasaranKinerja.JenisJabatan.JPT
+            and not instance.pejabat_penilai.groups.filter(name="Bupati").exists()
+        ):
             for i in range(
                 instance.periode_awal.month, instance.periode_akhir.month + 1
             ):
