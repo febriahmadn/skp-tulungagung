@@ -111,7 +111,24 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
     get_unit_kerja.short_description = "Unit Kerja"
 
     def get_period(self, obj):
-        return str(obj.periode_awal) + " / " + str(obj.periode_akhir)
+        awal = obj.periode_awal
+        akhir = obj.periode_akhir
+        if awal.month == akhir.month:
+            if awal.day == akhir.day:
+                return "{} {} {}".format(
+                    awal.day, FULL_BULAN[awal.month].title(), awal.year
+                )
+            return "{} Sd {} {} {}".format(
+                awal.day, akhir.day, FULL_BULAN[awal.month].title(), awal.year
+            )
+        else:
+            return "{} {} Sd {} {} {}".format(
+                awal.day,
+                FULL_BULAN[awal.month].title(),
+                akhir.day,
+                FULL_BULAN[akhir.month].title(),
+                awal.year,
+            )
 
     get_period.short_description = "Periode"
 

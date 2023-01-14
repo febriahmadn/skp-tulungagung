@@ -33,7 +33,7 @@
             <tr>
               <th>Periode</th>
               <td>:</td>
-              <td>{{obj.periode_awal|date:"d F Y"}} - {{obj.periode_akhir|date:"d F Y"}}</td>
+              <td>{% get_complete_periode obj.periode_awal obj.periode_akhir %}</td>
             </tr>
             <tr>
               <th>Unit Kerja</th>
