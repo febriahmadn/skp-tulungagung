@@ -14,9 +14,16 @@ from django.utils.safestring import mark_safe
 
 from services.models import Configurations
 from skp.forms.sasarankinerja_form import SasaranKinerjaForm
-from skp.models import (DetailSasaranKinerja, Lampiran, PenilaianBawahan,
-                        PerilakuKerja, Perspektif, RencanaHasilKerja,
-                        RiwayatKeteranganSKP, SasaranKinerja)
+from skp.models import (
+    DetailSasaranKinerja,
+    Lampiran,
+    PenilaianBawahan,
+    PerilakuKerja,
+    Perspektif,
+    RencanaHasilKerja,
+    RiwayatKeteranganSKP,
+    SasaranKinerja,
+)
 from skp.utils import FULL_BULAN
 from usom.models import Account, UnitKerja
 
@@ -937,9 +944,11 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                     i.pejabat_penilai.id,
                     i.unor.id,
                     tahun,
-                    find_penilaian.rating_hasil.keterangan if find_penilaian else "",
+                    find_penilaian.rating_hasil.keterangan
+                    if find_penilaian and find_penilaian.rating_hasil
+                    else "",
                     find_penilaian.predikat_perilaku.keterangan
-                    if find_penilaian
+                    if find_penilaian and find_penilaian.predikat_perilaku
                     else "",
                     i.detailsasarankinerja.unor_pejabat,
                     i.detailsasarankinerja.jabatan_pejabat,
