@@ -415,14 +415,14 @@
                         id_umpan.push(item.id)
                         ol_umpan += `<li>${item.nama}</li>`
                       })
+                      
+                    ol_umpan += `<li><span id="umpan-balik-${item_indikator.umpan_balik.id}">${item_indikator.umpan_balik.umpan_balik_tambahan ? item_indikator.umpan_balik.umpan_balik_tambahan : ''}</span></li>`
                     ol_umpan += "</ol>"
                   }
                   
                   umpanbalik = `
                   <td>
                     ${ol_umpan}
-                    <br>
-                    Umpan Balik Tambahan: <br><span id="umpan-balik-${item_indikator.umpan_balik.id}">${item_indikator.umpan_balik.umpan_balik_tambahan ? item_indikator.umpan_balik.umpan_balik_tambahan : ''}</span>
                     <div class="d-flex justify-content-center pt-3">
                       <button class="btn btn-sm btn-warning mr-1" data-id="${item_indikator.umpan_balik.id}" data-indikator_id="${item_indikator.id}" data-edit="true" data-umpan_multiple_id="[${id_umpan}]" data-toggle="modal" data-target="#tambahumpanbalikpegawai">
                         <i class="flaticon2-pen"></i>
@@ -567,14 +567,14 @@
                         id_umpan.push(item.id)
                         ol_umpan += `<li>${item.nama}</li>`
                       })
+                      
+                    ol_umpan += `<li><span id="umpan-balik-${item_indikator.umpan_balik.id}">${item_indikator.umpan_balik.umpan_balik_tambahan ? item_indikator.umpan_balik.umpan_balik_tambahan : ''}</span></li>`
                     ol_umpan += "</ol>"
                   }
                   
                   umpanbalik = `
                   <td>
                     ${ol_umpan}
-                    <br>
-                    Umpan Balik Tambahan: <br><span id="umpan-balik-${item_indikator.umpan_balik.id}">${item_indikator.umpan_balik.umpan_balik_tambahan ? item_indikator.umpan_balik.umpan_balik_tambahan : ''}</span>
                     <div class="d-flex justify-content-center pt-3">
                       <button class="btn btn-sm btn-warning mr-1" data-id="${item_indikator.umpan_balik.id}" data-indikator_id="${item_indikator.id}" data-edit="true" data-umpan_multiple_id="[${id_umpan}]" data-toggle="modal" data-target="#tambahumpanbalikpegawai">
                         <i class="flaticon2-pen"></i>

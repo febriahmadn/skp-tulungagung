@@ -14,16 +14,9 @@ from django.utils.safestring import mark_safe
 
 from services.models import Configurations
 from skp.forms.sasarankinerja_form import SasaranKinerjaForm
-from skp.models import (
-    DetailSasaranKinerja,
-    Lampiran,
-    PenilaianBawahan,
-    PerilakuKerja,
-    Perspektif,
-    RencanaHasilKerja,
-    RiwayatKeteranganSKP,
-    SasaranKinerja,
-)
+from skp.models import (DetailSasaranKinerja, Lampiran, PenilaianBawahan,
+                        PerilakuKerja, Perspektif, RencanaHasilKerja,
+                        RiwayatKeteranganSKP, SasaranKinerja)
 from skp.utils import FULL_BULAN
 from usom.models import Account, UnitKerja
 

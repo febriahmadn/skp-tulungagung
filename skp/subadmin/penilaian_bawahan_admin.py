@@ -5,7 +5,7 @@ import xlwt
 from django.contrib import admin, messages
 from django.db.models import Q
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import path, reverse
 
 from skp.models import Hasil, PenilaianBawahan, PerilakuKerja, SasaranKinerja
@@ -163,16 +163,7 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
         return render(request, "admin/skp/penilaianbawahan/cetak.html", extra_context)
 
     def form_cetak_penilaian(self, request, skp_id, periode, extra_context={}):
-        try:
-            obj = SasaranKinerja.objects.get(pk=skp_id)
-        except PenilaianBawahan.DoesNotExist:
-            messages.error(request, "Sasaran Kinerja Tidak Ditemukan")
-            return redirect(
-                reverse(
-                    "admin:skp_penilaianbawahan",
-                    kwargs={"skp_id": skp_id, "periode": periode},
-                )
-            )
+        obj = get_object_or_404(SasaranKinerja, pk=skp_id)
         try:
             penilaian_bawah_obj = PenilaianBawahan.objects.get(skp=obj, periode=periode)
         except PenilaianBawahan.DoesNotExist:

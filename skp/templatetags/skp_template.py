@@ -173,7 +173,7 @@ def daftar_rencana_aksi(counter, skp_id, rhk_id, periode, cetak="tidak"):
     isi_luar = ""
     if cetak == "ya":
         if rencana_list.count() > 0:
-            html = """<ol style="margin: unset;">"""
+            html = """<ol class="hasil-kerja"">"""
             for i in rencana_list:
                 html += """<li style="margin: unset;">{}</li>""".format(i.rencana_aksi)
             html += "</ol>"
@@ -277,7 +277,7 @@ def get_bukti_dukung(indikator_obj, periode):
     )
     html = ""
     if bukti_dukung_list.exists():
-        html = "<ol>"
+        html = """<ol class="hasil-kerja">"""
         for i in bukti_dukung_list:
             html += """<li>
                             <a href="{}"
@@ -312,10 +312,8 @@ def get_umpan_balik(indikator_obj, periode):
             ol = """<ol style="padding-inline-start: 15px;margin-block-start:unset">"""
             for i in obj.umpan_balik.all():
                 ol += "<li>{}</li>".format(i.nama)
+            ol += "<li>{}</li>".format(obj.umpan_balik_tambahan)
             ol += "</ol>"
-            ol += "<span>Umpan Balik Tambahan:<br>{}</span>".format(
-                obj.umpan_balik_tambahan
-            )
     return mark_safe(ol)
 
 

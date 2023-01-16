@@ -500,6 +500,7 @@
                         id_umpan.push(item.id)
                         ol_umpan += `<li>${item.nama}</li>`
                       })
+                    ol_umpan += `<li><span id="umpan-balik-${item_indikator.umpan_balik.id}">${item_indikator.umpan_balik.umpan_balik_tambahan ? item_indikator.umpan_balik.umpan_balik_tambahan : ''}</span></li>`
                     ol_umpan += "</ol>"
                   }
                   let aksi_umpan_balik = `
@@ -519,7 +520,6 @@
                   <td>
                     ${ol_umpan}
                     <br>
-                    Umpan Balik Tambahan: <br><span id="umpan-balik-${item_indikator.umpan_balik.id}">${item_indikator.umpan_balik.umpan_balik_tambahan ? item_indikator.umpan_balik.umpan_balik_tambahan : ''}</span>
                     ${aksi_umpan_balik}
                 </td>
                   `
@@ -696,6 +696,7 @@
                         id_umpan.push(item.id)
                         ol_umpan += `<li>${item.nama}</li>`
                       })
+                    ol_umpan += `<li><span id="umpan-balik-${item_indikator.umpan_balik.id}">${item_indikator.umpan_balik.umpan_balik_tambahan ? item_indikator.umpan_balik.umpan_balik_tambahan : ''}</span></li>`
                     ol_umpan += "</ol>"
                   }else{
                     html = ""
@@ -717,7 +718,6 @@
                   <td>
                     ${ol_umpan}
                     <br>
-                    Umpan Balik Tambahan: <br><span id="umpan-balik-${item_indikator.umpan_balik.id}">${item_indikator.umpan_balik.umpan_balik_tambahan ? item_indikator.umpan_balik.umpan_balik_tambahan : ''}</span>
                     ${aksi_umpan_balik}
                 </td>
                   `
