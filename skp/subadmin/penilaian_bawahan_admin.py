@@ -104,9 +104,9 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
             penilaian_list = penilaian_list.filter(is_dinilai=False)
 
         status_list = (
-            (0, "Semua"),  # Menunggu Di Proses Oleh Dinas
-            (1, "Belum Dinilai"),  # Di verifikasi
-            (2, "Sudah Dinilai"),  # Di tolak
+            (0, "Semua"),
+            (1, "Belum Dinilai"),
+            (2, "Sudah Dinilai"),
         )
         is_bupati = False
         if request.user.groups.filter(name="Bupati").exists():
