@@ -88,10 +88,16 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
                 | Q(skp__detailsasarankinerja__nama_pegawai__icontains=cari)
             )
 
-        if status == "1":
+        if status == "2":
             penilaian_list = penilaian_list.filter(is_dinilai=True)
-        elif status == "0":
+        elif status == "1":
             penilaian_list = penilaian_list.filter(is_dinilai=False)
+        
+        status_list = (
+            (0,'Semua'), # Menunggu Di Proses Oleh Dinas
+            (1,'Belum Dinilai'), # Di verifikasi
+            (2,'Sudah Dinilai'), # Di tolak
+        )
         extra_context.update(
             {
                 "title": "Penilaian Bawahan",
@@ -101,6 +107,7 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
                 "awal": awal,
                 "akhir": akhir,
                 "periode": periode,
+                "status_choices":status_list
             }
         )
 

@@ -3,24 +3,40 @@
 
 {% block content %}
 <div class="card ">
-    <div class="card-body">
-        <table>
-            <tr>
-                <td>Periode SKP</td>
-                <td>:</td>
-                <td>{% get_complete_periode obj.periode_awal obj.periode_akhir %}</td>
-            </tr>
-            <tr>
-                <td>Periode Penilaian</td>
-                <td>:</td>
-                <td>{% get_complete_periode awal akhir %}</td>
-            </tr>
+    <div class="card-body p-0">
+        <table class="table">
+          <tr>
+            <th style="width: 10%;">SKP</th>
+            <td style="width: 1%;">:</td>
+            <td>Tahun {{obj.periode_awal.year}}</td>
+          </tr>
+          <tr>
+            <th>Periode</th>
+            <td>:</td>
+            <td>{% get_complete_periode obj.periode_awal obj.periode_akhir %}</td>
+          </tr>
+          <tr>
+            <th>Unit Kerja</th>
+            <td>:</td>
+            <td>{{obj.unor.unitkerja}}</td>
+          </tr>
         </table>
-    </div>
+      </div>
 </div>
 <div class="d-flex justify-content-end mt-3">
-    <form action="" method="get">
+    <form action="" method="get" id="form-search">
         <div class="input-group">
+            <select class="form-control select-filter" name="status" id="status_id">
+                {% for item in status_choices %}
+                {% with item.0|stringformat:"i" as selected %}
+                {% if request.GET.status == selected %}
+                <option value="{{item.0}}" selected >{{item.1}}</option>
+                {% else %}
+                <option value="{{item.0}}" >{{item.1}}</option>
+                {% endif %}
+                {% endwith %}
+                {% endfor %}
+              </select>
             <input type="hidden" class="form-control" name="b64" value="{{request.GET.b64}}" placeholder="Cari" aria-label="Cari" aria-describedby="basic-addon2">
             <input type="text" class="form-control" name="cari" value="{{request.GET.cari}}" placeholder="Cari" aria-label="Cari" aria-describedby="basic-addon2">
             <div class="input-group-append">
@@ -28,16 +44,6 @@
             </div>
         </div>
     </form>
-    <div class="btn-group btn-sm p-0 pl-3">
-        <button type="button" class="btn btn-primary btn-sm">{% trans 'Filter' %}</button>
-        <button type="button" class="btn btn-primary btn-sm dropdown-toggle dropdown-icon" data-toggle="dropdown">
-            <div class="dropdown-menu dropdown-menu-right dropdown-menu-lg-left">
-                <a class="dropdown-item "href="?b64={{request.GET.b64}}&cari={{request.GET.cari}}&status=" onclick="window.location.href = window.location.pathname+'?b64={{request.GET.b64}}&cari={{request.GET.cari}}&status='">Semua</a>
-                <a class="dropdown-item "href="?b64={{request.GET.b64}}&cari={{request.GET.cari}}&status=0" onclick="window.location.href = window.location.pathname+'?b64={{request.GET.b64}}&cari={{request.GET.cari}}&status=0'">Belum Dinilai</a>
-                <a class="dropdown-item "href="?b64={{request.GET.b64}}&cari={{request.GET.cari}}&status=1" onclick="window.location.href = window.location.pathname+'?b64={{request.GET.b64}}&cari={{request.GET.cari}}&status=1'">Sudah Dinilai</a>
-            </div>
-        </button>
-    </div>
 </div>
 <div class="card mt-4 p-0 m-0">
     <div class="card-body p-0 m-0">
@@ -74,4 +80,12 @@
     </div>
 </div>
 {% endblock content %}
-item.sub? : 0
+
+{% block custom_js %}
+{{ block.super }}
+<script>
+    $(".select-filter").on('change', function(){
+        $("#form-search").submit()
+      })
+</script>
+{% endblock custom_js %}
