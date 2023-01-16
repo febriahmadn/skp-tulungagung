@@ -134,7 +134,7 @@
 
 <div class="d-flex justify-content-between mt-3 pr-4" style="padding: unset;">
   <h4 style="margin: unset;">Periode: {{periode|get_bulan|upper}}</h4>
-  <h4 style="margin: unset;">Periode Penilaian: {{obj.get_periode}}</h4>
+  <h4 style="margin: unset;">Periode Penilaian: {% get_complete_periode obj.periode_awal obj.periode_akhir %}</h4>
 </div>
 
 <div class="row">

@@ -15,7 +15,7 @@ def admin_menus(user=None):
         dict(
             title="Dashboard",
             icon="fa fa-home",
-            url="/",
+            url=reverse("admin_dashboard"),
         ),
     ]
     if user:
@@ -23,7 +23,7 @@ def admin_menus(user=None):
             dict(
                 title="Profil",
                 icon="fa fa-user",
-                url=reverse('admin:usom_account_profile'),
+                url=reverse("admin:usom_account_profile"),
             ),
             dict(
                 title="SKP",
@@ -31,6 +31,18 @@ def admin_menus(user=None):
                 url=reverse("admin:skp_sasarankinerja_changelist"),
             ),
         ]
+        if (
+            user.is_superuser
+            or user.jenis_jabatan == "JPT"
+            or user.groups.filter(name="Bupati").exists()
+        ):
+            menus += [
+                dict(
+                    title="Rekonsiliasi SKP",
+                    icon="fa fa-copy",
+                    url=reverse("admin:skp_sasarankinerja_rekonsiliasi"),
+                ),
+            ]
         if user.is_superuser:
             menus += [
                 dict(
@@ -59,19 +71,19 @@ def admin_menus(user=None):
                         dict(
                             title="Perilaku Kerja",
                             icon="fa fa-home",
-                            url=reverse("admin:skp_perilakukerja_changelist")
+                            url=reverse("admin:skp_perilakukerja_changelist"),
                         ),
                         dict(
                             title="Perspektif",
                             icon="fa fa-home",
-                            url=reverse("admin:skp_perspektif_changelist")
+                            url=reverse("admin:skp_perspektif_changelist"),
                         ),
                         dict(
                             title="Lampiran",
                             icon="fa fa-home",
-                            url=reverse("admin:skp_lampiran_changelist")
+                            url=reverse("admin:skp_lampiran_changelist"),
                         ),
-                    ]
+                    ],
                 ),
                 dict(
                     title="Daftar Lampiran",
@@ -143,7 +155,7 @@ def menu_pengguna(request):
             dict(
                 title="Profil",
                 icon="fa fa-user",
-                url=reverse('admin:usom_account_profile'),
+                url=reverse("admin:usom_account_profile"),
             ),
             dict(
                 title="SKP",
@@ -179,19 +191,19 @@ def menu_pengguna(request):
                         dict(
                             title="Perilaku Kerja",
                             icon="fa fa-home",
-                            url=reverse("admin:skp_perilakukerja_changelist")
+                            url=reverse("admin:skp_perilakukerja_changelist"),
                         ),
                         dict(
                             title="Perspektif",
                             icon="fa fa-home",
-                            url=reverse("admin:skp_perspektif_changelist")
+                            url=reverse("admin:skp_perspektif_changelist"),
                         ),
                         dict(
                             title="Lampiran",
                             icon="fa fa-home",
-                            url=reverse("admin:skp_lampiran_changelist")
+                            url=reverse("admin:skp_lampiran_changelist"),
                         ),
-                    ]
+                    ],
                 ),
                 dict(
                     title="Daftar Lampiran",

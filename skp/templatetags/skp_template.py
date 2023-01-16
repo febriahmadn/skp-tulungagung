@@ -85,32 +85,33 @@ def daftar_ekspetasi(perilaku_id, skp, cetak, user=None):
     else:
         tambah = False
         isi = find_ekspetasi.isi
+        ol = """<table class="table table-borderless">"""
+        index = 0
         if find_ekspetasi.ekspetasi_tambahan.count() > 0:
             ekspetasi_list = list(
                 find_ekspetasi.ekspetasi_tambahan.all().values_list("id", flat=True)
             )
-            ol = """<table class="table table-borderless">"""
-            index = 0
             for i in find_ekspetasi.ekspetasi_tambahan.all():
                 index += 1
                 ol += """
                     <tr>
-                        <td style="vertical-align: top">{}.</td>
+                        <td style="vertical-align: top; width: 5%"">{}.</td>
                         <td>{}</td>
                     </tr>
                 """.format(
                     index,
                     i.ekspetasi
                 )
+        if isi and isi != "":
             ol += """
                 <tr>
-                    <td style="vertical-align: top">{}.</td>
+                    <td style="vertical-align: top; width: 5%">{}.</td>
                     <td>{}</td>
                 </tr>
             """.format(
                 index + 1, isi
             )
-            ol += "</table>"
+        ol += "</table>"
     if cetak == "tidak":
         aksi = ""
         if skp.jenis_jabatan == 1 or user == skp.pejabat_penilai:

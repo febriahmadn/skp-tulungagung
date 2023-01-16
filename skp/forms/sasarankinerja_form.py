@@ -76,14 +76,14 @@ class SasaranKinerjaForm(forms.ModelForm):
         else:
             self.fields["induk"].required = True
 
-        if user.jenis_jabatan:
-            self.fields["jenis_jabatan"].initial = string_to_int(
-                SasaranKinerja.JenisJabatan, user.get_jenis_jabatan_display()
-            )
-        else:
-            messages.add_message(
-                request, messages.ERROR, "Jenis Jabatan Kosong".title()
-            )
+            if user.jenis_jabatan:
+                self.fields["jenis_jabatan"].initial = string_to_int(
+                    SasaranKinerja.JenisJabatan, user.get_jenis_jabatan_display()
+                )
+            else:
+                messages.add_message(
+                    request, messages.ERROR, "Jenis Jabatan Kosong".title()
+                )
         self.fields["nama"].initial = user.get_complete_name()
         if user.jabatan:
             self.fields["jabatan"].initial = user.jabatan if user.jabatan else "---"
@@ -171,8 +171,12 @@ class SasaranKinerjaForm(forms.ModelForm):
             raise forms.ValidationError(
                 "periode akhir lebih dahulu dari pada tanggal awal".title()
             )
-        if jenis_jabatan != "JPT" and induk == 0 or induk == "0":
-            raise forms.ValidationError("skp atasan tidak boleh kosong".title())
+        if not pegawai.groups.filter(name="Bupati").exists():
+            if induk == 0 or induk == "0":
+                raise forms.ValidationError("skp atasan tidak boleh kosong".title())
+        else:
+            if jenis_jabatan == "":
+                self.cleaned_data['jenis_jabatan'] = None
 
         return self.cleaned_data
 

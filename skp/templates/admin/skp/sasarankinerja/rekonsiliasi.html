@@ -1,0 +1,62 @@
+{% extends 'admin/base_site.html' %}
+{% load widgets skp_template access %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title m-0">
+            Export Rekonsiliasi SKP
+        </h3>
+    </div>
+    <div class="card-body">
+        <form action="" method="get">
+            {% if request.user.is_superuser or request.user|has_group:"Bupati" %}
+            <div class="form-group">
+                    <label for="exampleFormControlInput1">Unit Kerja</label>
+                <select name="unitkerja" class="form-control" id="unitkerja_id"></select>
+            </div>
+            {% endif %}
+            <div class="form-group">
+                <label for="exampleFormControlInput1">Tahun SKP</label>
+                <select name="tahun" class="form-control" id="id_tahun">
+                    {% for item in tahun %}
+                    <option value="{{item.id}}" >{{item.text}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-success" ><i class="fas fa-file-export"></i> Export</button>
+        </form>
+    </div>
+</div>
+{% endblock content %}
+
+{% block custom_js %}
+<script>
+    const handleLoadUnitkerja = async (id=null) => {
+        await $.ajax({
+          url: `${BASE_URL}/admin/usom/unitkerja/load-data`,
+          type: 'GET',
+          success: function(response){
+            if(response.length > 0){
+              html = `<option value="" readonly >---- Pilih Unit Kerja ----</option>`
+              response.map((value, idx)=>{
+                selected = "selected"
+                if(value.id != id){
+                  selected = ""
+                }
+                html += `<option ${selected} value="${value.id}" >${value.text}</option>`
+              })
+            }else{
+              html = "<option readonly >Unit Kerja Kosong</option>"
+            }
+            $('#unitkerja_id').html(html).select2({
+              width: "resolve"
+            })
+          }
+        })
+      }
+      $(function(){
+        handleLoadUnitkerja()
+      })
+</script>
+{% endblock custom_js %}

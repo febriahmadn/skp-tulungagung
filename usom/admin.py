@@ -2,13 +2,13 @@ from django.contrib import admin, messages
 from django.contrib.auth.admin import UserAdmin
 from django.db.models import Q
 from django.http import Http404, JsonResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.urls import path, reverse
 from django.utils.safestring import mark_safe
 
 from services.functions.sinkron_sipo import ServiceSipo
 from usom.forms import AccountForm, EditProfilPegawai, UploadFotoPegawai
-from usom.models import Account, UnitKerja
+from usom.models import Account, Golongan, UnitKerja
 
 
 class UnitKerjaAdmin(admin.ModelAdmin):
@@ -42,6 +42,7 @@ class UnitKerjaAdmin(admin.ModelAdmin):
 
 
 admin.site.register(UnitKerja, UnitKerjaAdmin)
+admin.site.register(Golongan)
 
 
 class AccountAdmin(UserAdmin):
@@ -73,6 +74,7 @@ class AccountAdmin(UserAdmin):
                     "golongan",
                     "eselon",
                     "jenis_pegawai",
+                    "status_pegawai",
                 ),
             },
         ),
@@ -180,6 +182,7 @@ class AccountAdmin(UserAdmin):
                 messages.success(
                     request, "Berhasil merubah {}".format(obj.get_complete_name())
                 )
+                return redirect(reverse('admin:usom_account_profile'))
             else:
                 messages.error(request, form.errors)
 
@@ -249,7 +252,7 @@ class AccountAdmin(UserAdmin):
                         else "-",
                         "jabatan": pegawai.jabatan,
                         "jenis_jabatan": pegawai.jenis_jabatan,
-                        "golongan": pegawai.golongan,
+                        "golongan": pegawai.golongan.__str__(),
                         "eselon": pegawai.eselon,
                     }
                     respon = {"success": True, "data": data}
