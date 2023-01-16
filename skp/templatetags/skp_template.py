@@ -381,7 +381,6 @@ def get_predikat_kerja(predikat_obj):
     predikat_choices = PenilaianBawahan.PredikatKerja.choices
     html = []
     for i in predikat_choices:
-        print(i[0])
         if i[0] == predikat_obj:
             html.append(i[1].upper())
         else:
