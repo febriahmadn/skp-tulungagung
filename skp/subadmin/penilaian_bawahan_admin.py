@@ -54,6 +54,22 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
         respon = {"success": True, "pesan": "Berhasil Menambah Hasil"}
         return JsonResponse(respon, safe=False)
 
+    def return_awal_akhir(self, request, b64, skp_id):
+        awal = None
+        akhir = None
+        b64_decode = None
+        try:
+            b64_decode = base64.b64decode(b64).decode("UTF-8")
+            text = b64_decode.split("/")
+            awal = datetime.datetime.strptime(text[0].strip(), "%Y-%m-%d")
+            akhir = datetime.datetime.strptime(text[1].strip(), "%Y-%m-%d")
+        except Exception as e:
+            messages.error(request, str(e))
+            return redirect(
+                reverse("admin:skp_sasarankinerja_penilaian", kwargs={"id": skp_id})
+            )
+        return awal, akhir, b64_decode
+
     def page_penilaian_bawahan(self, request, skp_id, periode, extra_context={}):
         try:
             obj = SasaranKinerja.objects.get(pk=skp_id)
@@ -66,19 +82,11 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
         b64 = request.GET.get("b64", None)
         cari = request.GET.get("cari", None)
         status = request.GET.get("status", None)
+        unit_kerja = request.GET.get("unit_kerja", None)
         awal = None
         akhir = None
         if b64 and b64 != "":
-            try:
-                b64_decode = base64.b64decode(b64).decode("UTF-8")
-                text = b64_decode.split("/")
-                awal = datetime.datetime.strptime(text[0].strip(), "%Y-%m-%d")
-                akhir = datetime.datetime.strptime(text[1].strip(), "%Y-%m-%d")
-            except Exception as e:
-                messages.error(request, str(e))
-                return redirect(
-                    reverse("admin:skp_sasarankinerja_penilaian", kwargs={"id": skp_id})
-                )
+            awal, akhir, b64_decode = self.return_awal_akhir(request, b64, skp_id)
         penilaian_list = PenilaianBawahan.objects.filter(
             skp__induk=obj, periode=periode
         )
@@ -87,17 +95,22 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
                 Q(skp__detailsasarankinerja__nip_pegawai__icontains=cari)
                 | Q(skp__detailsasarankinerja__nama_pegawai__icontains=cari)
             )
+        if unit_kerja:
+            penilaian_list = penilaian_list.filter(skp__unor__id=unit_kerja)
 
         if status == "2":
             penilaian_list = penilaian_list.filter(is_dinilai=True)
         elif status == "1":
             penilaian_list = penilaian_list.filter(is_dinilai=False)
-        
+
         status_list = (
-            (0,'Semua'), # Menunggu Di Proses Oleh Dinas
-            (1,'Belum Dinilai'), # Di verifikasi
-            (2,'Sudah Dinilai'), # Di tolak
+            (0, "Semua"),  # Menunggu Di Proses Oleh Dinas
+            (1, "Belum Dinilai"),  # Di verifikasi
+            (2, "Sudah Dinilai"),  # Di tolak
         )
+        is_bupati = False
+        if request.user.groups.filter(name="Bupati").exists():
+            is_bupati = True
         extra_context.update(
             {
                 "title": "Penilaian Bawahan",
@@ -107,7 +120,8 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
                 "awal": awal,
                 "akhir": akhir,
                 "periode": periode,
-                "status_choices":status_list
+                "status_choices": status_list,
+                "is_bupati": is_bupati,
             }
         )
 

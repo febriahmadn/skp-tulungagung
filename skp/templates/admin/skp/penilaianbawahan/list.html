@@ -13,7 +13,7 @@
           <tr>
             <th>Periode</th>
             <td>:</td>
-            <td>{% get_complete_periode obj.periode_awal obj.periode_akhir %}</td>
+            <td>{% get_complete_periode awal akhir %}</td>
           </tr>
           <tr>
             <th>Unit Kerja</th>
@@ -26,6 +26,10 @@
 <div class="d-flex justify-content-end mt-3">
     <form action="" method="get" id="form-search">
         <div class="input-group">
+            {% if is_bupati %}
+            <select class="form-control select-filter form-control-sm"name="unitkerja" id="unitkerja_id">
+            </select>
+            {% endif %}
             <select class="form-control select-filter" name="status" id="status_id">
                 {% for item in status_choices %}
                 {% with item.0|stringformat:"i" as selected %}
@@ -83,9 +87,39 @@
 
 {% block custom_js %}
 {{ block.super }}
-<script>
-    $(".select-filter").on('change', function(){
-        $("#form-search").submit()
+<script type="text/javascript">
+const handleLoadUnitkerja = async (id=null) => {
+  await $.ajax({
+    url: `${BASE_URL}/admin/usom/unitkerja/load-data`,
+    type: 'GET',
+    success: function(response){
+      if(response.length > 0){
+        html = `<option value="" readonly >---- Pilih Unit Kerja ----</option>`
+        response.map((value, idx)=>{
+          selected = "selected"
+          if(value.id != id){
+            selected = ""
+          }
+          html += `<option ${selected} value="${value.id}" >${value.text}</option>`
+        })
+      }else{
+        html = "<option readonly >Unit Kerja Kosong</option>"
+      }
+      $('#unitkerja_id').html(html).select2({
+        width: "resolve"
       })
+    }
+  })
+}
+$(".select-filter").on('change', function(){
+  $("#form-search").submit()
+})
+$(function(){
+  {% if request.GET.unitkerja %}
+  handleLoadUnitkerja("{{request.GET.unitkerja}}")
+  {% else %}
+  handleLoadUnitkerja()
+  {% endif %}
+})
 </script>
-{% endblock custom_js %}
+{% endblock %}

@@ -62,6 +62,7 @@
         <div style="text-align: center; margin: 20px;">
             <h4 class="m-0">EVALUASI KINERJA PEGAWAI</h4>
             <h4 class="m-0">PENDEKATAN HASIL KERJA {{obj.get_pendekatan_display|upper}}</h4>
+            <h4 class="m-0" style="margin-top: 10px">PERIODE: {{periode|get_bulan|upper}}</h4>
         </div>
         <div style="display: flex; padding-top: 10px">
             <div class="w-50">
@@ -266,7 +267,7 @@
                     <td>{{ forloop.counter }}</td>
                     <td>{{ item.perilaku_kerja }}</td>
                     <td>Ekspektasi Khusus Pimpinan:</td>
-                    <td>FEEDBACK:</td>
+                    <!-- <td>FEEDBACK:</td> -->
                 </tr>
                 <tr>
                     <td></td>
@@ -280,9 +281,9 @@
                     <td style="width: 15%;">
                         {% daftar_ekspetasi item.id obj.id "ya" %}
                     </td>
-                    <td>
+                    <!-- <td>
                         
-                    </td>
+                    </td> -->
                 </tr>
                 {% endfor %}
                 <tr class="bg-blue">
