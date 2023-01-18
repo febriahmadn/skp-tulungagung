@@ -503,7 +503,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
         obj = get_object_or_404(SasaranKinerja, pk=id)
         config = Configurations.get_solo()
         is_bupati = False
-        if obj.pegawai.groups.filter(name="Bupati").exists():
+        if request.user.groups.filter(name="Bupati").exists():
             is_bupati = True
         extra_context = {
             "title": "Penilaian SKP",
@@ -865,10 +865,12 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
             respon = {"success": True, "data": data}
         return JsonResponse(respon, safe=False)
 
-    def get_list_skp(self, unitkerja):
+    def get_list_skp(self, unitkerja, tahun):
         list_id = []
         find_skp = SasaranKinerja.objects.filter(
-            unor=unitkerja, status=SasaranKinerja.Status.PERSETUJUAN
+            unor=unitkerja,
+            status=SasaranKinerja.Status.PERSETUJUAN,
+            periode_awal__year=tahun,
         )
         list_pegawai = list(find_skp.values_list("pegawai", flat=True).distinct())
         for i in list_pegawai:
@@ -904,7 +906,7 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                 if unitkerja:
                     unitkerja = get_object_or_404(UnitKerja, id=unitkerja)
 
-            list_skp_obj = self.get_list_skp(unitkerja)
+            list_skp_obj = self.get_list_skp(unitkerja, tahun)
 
             filename = "Rekonsiliasi SKP {} {}".format(unitkerja.unitkerja, tahun)
             response = HttpResponse(content_type="application/ms-excel")

@@ -19,7 +19,7 @@ class UmpanBalikPegawaiAdmin(admin.ModelAdmin):
 
     def get_umpan_balik(self, obj):
         if obj.umpan_balik.count() > 0:
-            html = "<ol>"
+            html = """<ol style="margin: unset; padding-left: 15px;">"""
             for i in obj.umpan_balik.all():
                 html += "<li>{}</li>".format(i.nama)
             html += "</ol>"

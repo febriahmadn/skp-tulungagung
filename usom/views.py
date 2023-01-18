@@ -34,7 +34,6 @@ def admin_menus(user=None):
         if (
             user.is_superuser
             or user.jenis_jabatan == "JPT"
-            or user.groups.filter(name="Bupati").exists()
         ):
             menus += [
                 dict(

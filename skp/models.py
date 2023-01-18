@@ -403,10 +403,8 @@ def handler_sasarankinerja_save(instance, created, **kwargs):
                 status_pejabat=instance.pejabat_penilai.get_status_pegawai_display(),
             )
         detail.save()
-        if (
-            instance.jenis_jabatan != SasaranKinerja.JenisJabatan.JPT
-            and not instance.pejabat_penilai.groups.filter(name="Bupati").exists()
-        ):
+
+        if not instance.pegawai.groups.filter(name="Bupati").exists():
             for i in range(
                 instance.periode_awal.month, instance.periode_akhir.month + 1
             ):

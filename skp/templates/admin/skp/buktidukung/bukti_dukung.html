@@ -70,12 +70,11 @@
     {% endif %}
   </div>
 
-  <div class="col-md-8 d-flex flex-row-reverse">
-    <!-- <a href="{% url 'admin:skp_sasarankinerja_cetak' obj.id %}"> -->
+  <!-- <div class="col-md-8 d-flex flex-row-reverse">
     <a id="btn-cetak" class="btn btn-success mr-1" style="align-self: center" href="{% url 'admin:skp_buktidukung_cetak' obj.id periode %}">
       <i class="fas fa-print"></i> Cetak
     </a>
-  </div>
+  </div> -->
 </div>
 <div class="row">
   <div class="col-md-6">
@@ -500,6 +499,7 @@
                         id_umpan.push(item.id)
                         ol_umpan += `<li>${item.nama}</li>`
                       })
+                    ol_umpan += `<li><span id="umpan-balik-${item_indikator.umpan_balik.id}">${item_indikator.umpan_balik.umpan_balik_tambahan ? item_indikator.umpan_balik.umpan_balik_tambahan : ''}</span></li>`
                     ol_umpan += "</ol>"
                   }
                   let aksi_umpan_balik = `
@@ -519,7 +519,6 @@
                   <td>
                     ${ol_umpan}
                     <br>
-                    Umpan Balik Tambahan: <br><span id="umpan-balik-${item_indikator.umpan_balik.id}">${item_indikator.umpan_balik.umpan_balik_tambahan ? item_indikator.umpan_balik.umpan_balik_tambahan : ''}</span>
                     ${aksi_umpan_balik}
                 </td>
                   `
@@ -696,6 +695,7 @@
                         id_umpan.push(item.id)
                         ol_umpan += `<li>${item.nama}</li>`
                       })
+                    ol_umpan += `<li><span id="umpan-balik-${item_indikator.umpan_balik.id}">${item_indikator.umpan_balik.umpan_balik_tambahan ? item_indikator.umpan_balik.umpan_balik_tambahan : ''}</span></li>`
                     ol_umpan += "</ol>"
                   }else{
                     html = ""
@@ -717,7 +717,6 @@
                   <td>
                     ${ol_umpan}
                     <br>
-                    Umpan Balik Tambahan: <br><span id="umpan-balik-${item_indikator.umpan_balik.id}">${item_indikator.umpan_balik.umpan_balik_tambahan ? item_indikator.umpan_balik.umpan_balik_tambahan : ''}</span>
                     ${aksi_umpan_balik}
                 </td>
                   `
