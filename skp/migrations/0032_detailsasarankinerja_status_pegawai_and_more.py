@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("skp", "0032_lowercase_golongan"),
+        ("skp", "0031_riwayatketeranganskp"),
     ]
 
     operations = [

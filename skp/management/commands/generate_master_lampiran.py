@@ -14,6 +14,6 @@ class Command(BaseCommand):
         ]
         self.stdout.write(self.style.NOTICE("PROSES DATA MASTER LAMPIRAN"))
         for i in hasil_list:
-            lampiran_obj, created = Lampiran.objects.get_or_create(nama=i)
+            lampiran_obj, created = Lampiran.objects.get_or_create(lampiran=i)
             lampiran_obj.save()
         self.stdout.write(self.style.SUCCESS("SELESAI"))

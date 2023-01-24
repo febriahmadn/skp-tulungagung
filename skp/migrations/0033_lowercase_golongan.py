@@ -21,7 +21,7 @@ def reverse_func(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("skp", "0031_riwayatketeranganskp"),
+        ("skp", "0032_detailsasarankinerja_status_pegawai_and_more"),
     ]
 
     operations = [

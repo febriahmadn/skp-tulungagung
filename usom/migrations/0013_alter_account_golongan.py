@@ -38,5 +38,5 @@ class Migration(migrations.Migration):
                 to="usom.golongan",
             ),
         ),
-        migrations.RunPython(forwards_func, reverse_func, elidable=False),
+        # migrations.RunPython(forwards_func, reverse_func, elidable=False),
     ]
