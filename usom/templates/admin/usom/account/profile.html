@@ -102,6 +102,7 @@
   })
 
   const sinkron_data_pegawai = (nip="", type="profile") => {
+    console.log(type)
     if (nip) {
       $.ajax({
         url: `${BASE_URL}/admin/usom/account/sync-data`,
@@ -140,7 +141,8 @@
             }, 1000);
           }
         },
-        error: function(){
+        error: function(error){
+          toastr.error("Terjadi kesalahan saat melakukan sinkron data pegawai.");
           if (type == 'profile') {
             KTApp.unblock(card.getSelf());
           } else {

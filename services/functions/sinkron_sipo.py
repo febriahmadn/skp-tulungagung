@@ -44,7 +44,8 @@ class ServiceSipo:
                     self.handler_save(results[0])
                 return True
             else:
-                if [500, 401] in response.status_code:
+                # print(response.status_code)
+                if response.status_code in [500, 401]:
                     self.auth_login()
                     self.sinkron_pegawai_by_nip(nip)
                     return True

@@ -10,18 +10,18 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        # migrations.AddField(
-        #     model_name="detailsasarankinerja",
-        #     name="status_pegawai",
-        #     field=models.CharField(
-        #         blank=True, max_length=200, null=True, verbose_name="Status Pegawai"
-        #     ),
-        # ),
-        # migrations.AddField(
-        #     model_name="detailsasarankinerja",
-        #     name="status_pejabat",
-        #     field=models.CharField(
-        #         blank=True, max_length=200, null=True, verbose_name="Status Pejabat"
-        #     ),
-        # ),
+        migrations.AddField(
+            model_name="detailsasarankinerja",
+            name="status_pegawai",
+            field=models.CharField(
+                blank=True, max_length=200, null=True, verbose_name="Status Pegawai"
+            ),
+        ),
+        migrations.AddField(
+            model_name="detailsasarankinerja",
+            name="status_pejabat",
+            field=models.CharField(
+                blank=True, max_length=200, null=True, verbose_name="Status Pejabat"
+            ),
+        ),
     ]
