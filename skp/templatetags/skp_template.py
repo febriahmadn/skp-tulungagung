@@ -367,12 +367,13 @@ def get_penilaian_bawahan_status(pegawai, skp_obj, periode):
 def get_hasil(hasil_obj):
     hasil_qs = Hasil.objects.all()
     html = []
-    for i in hasil_qs:
-        if i.id == hasil_obj.id:
-            html.append(i.nama.upper())
-        else:
-            html.append(mark_safe("<del>{}</del>".format(i.nama.upper())))
-    html.reverse()
+    if hasil_obj:
+        for i in hasil_qs:
+            if i.id == hasil_obj.id:
+                html.append(i.nama.upper())
+            else:
+                html.append(mark_safe("<del>{}</del>".format(i.nama.upper())))
+        html.reverse()
     html = mark_safe(" / ".join(html))
     return html
 

@@ -9,8 +9,11 @@ from django.db.models import Q
 from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import path, resolve, reverse_lazy
+from django.contrib.admin.utils import model_ngettext
 from django.utils import timezone
 from django.utils.safestring import mark_safe
+from django.utils.translation import gettext as _
+
 
 from services.models import Configurations
 from skp.forms.sasarankinerja_form import SasaranKinerjaForm
@@ -30,6 +33,26 @@ from usom.models import Account, UnitKerja
 
 def delete_skp(modeladmin, request, queryset):
     count = 0
+    (
+        deletable_objects,
+        model_count,
+        perms_needed,
+        protected,
+    ) = modeladmin.get_deleted_objects(queryset, request)
+    objects_name = model_ngettext(queryset)
+    title = _("Are you sure?")
+    context = {
+        **modeladmin.admin_site.each_context(request),
+        "title": title,
+        "subtitle": None,
+        "objects_name": "Sasaran Kinerja",
+        "subtitle": None,
+        "objects_name": str(objects_name),
+        "deletable_objects": [deletable_objects],
+        "model_count": dict(model_count).items(),
+        "queryset": queryset,
+        "media": modeladmin.media,
+    }
     if queryset.filter(~Q(status=SasaranKinerja.Status.DRAFT)).exists():
         messages.add_message(
             request,
@@ -38,14 +61,22 @@ def delete_skp(modeladmin, request, queryset):
                 "Hanya dokumen SKP yang berstatus <b>Draft</b> yang dapat dihapus!"
             ),
         )
+        return None
     else:
-        count = queryset.count()
-        queryset.delete()
-        messages.add_message(
-            request,
-            messages.SUCCESS,
-            "Berhasil Menghapus {} data Sasaran Kinerja Pegawai".format(count),
-        )
+        count = queryset.count()   
+        if request.POST.get('post'):
+            queryset.delete()
+            messages.add_message(
+                request,
+                messages.SUCCESS,
+                "Berhasil Menghapus {} data Sasaran Kinerja Pegawai".format(count),
+            )
+            return None
+    return render(
+        request,
+        "admin/delete_selected_confirmation.html",
+        context,
+    ) 
 
 
 delete_skp.short_description = "Hapus Sasaran Kinerja Pegawai yang dipilih"
