@@ -61,11 +61,11 @@
     <div class="contents">
         <div style="text-align: center; margin: 20px;">
             <h4 class="m-0">SASARAN KINERJA PEGAWAI</h4>
-            <h4 class="m-0">PENGISIAN FEEDBACK ATASAN UNTUK PERIODE {{periode|get_bulan|upper}} TAHUN {{obj.periode_awal|date:"Y"}} </h4>
+            <h4 class="m-0">PENGISIAN FEEDBACK ATASAN UNTUK PERIODE {% get_periode_month obj.periode_awal obj.periode_akhir %} TAHUN {{obj.periode_awal|date:"Y"}} </h4>
         </div>
         <div style="display: flex; padding-top: 10px">
             <div class="w-50">
-                {% comment %} <h5 class="m-0">PERIODE PENILAIAN: {{periode|get_bulan|upper}}</h5> {% endcomment %}
+                {% comment %} <h5 class="m-0">PERIODE PENILAIAN: {% get_periode_month obj.periode_awal obj.periode_akhir %}</h5> {% endcomment %}
                 <h5 class="m-0">{{obj.unor.unitkerja|upper}}</h5>
             </div>
             <div class="w-50">
@@ -177,8 +177,8 @@
                     <td>{{ indikator.aspek|default:'-' }}</td>
                     <td>{{ indikator.indikator }}</td>
                     <td>{{ indikator.target }}</td>
-                    <td>{% get_bukti_dukung indikator periode %}</td>
-                    {% get_realisasi indikator periode as realisasi %}
+                    <td>{% get_bukti_dukung indikator %}</td>
+                    {% get_realisasi indikator as realisasi %}
                     <td>{% if realisasi %}{{realisasi.realisasi}} berdasarkan {{realisasi.sumber}}{% endif %}</td>
                     <td></td>
                 </tr>
@@ -245,8 +245,8 @@
                 <td>{{ indikator.aspek|default:'-' }}</td>
                 <td>{{ indikator.indikator }}</td>
                 <td>{{ indikator.target }}</td>
-                <td>{% get_bukti_dukung indikator periode %}</td>
-                {% get_realisasi indikator periode as realisasi %}
+                <td>{% get_bukti_dukung indikator %}</td>
+                {% get_realisasi indikator as realisasi %}
                 <td>{% if realisasi %}{{realisasi.realisasi}} berdasarkan {{realisasi.sumber}}{% endif %}</td>
                 <td></td>
             </tr>

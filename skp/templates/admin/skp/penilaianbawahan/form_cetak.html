@@ -62,11 +62,11 @@
         <div style="text-align: center; margin: 20px;">
             <h4 class="m-0">EVALUASI KINERJA PEGAWAI</h4>
             <h4 class="m-0">PENDEKATAN HASIL KERJA {{obj.get_pendekatan_display|upper}}</h4>
-            <h4 class="m-0" style="margin-top: 10px">PERIODE: {{periode|get_bulan|upper}}</h4>
+            <h4 class="m-0" style="margin-top: 10px">PERIODE: {% get_periode_month obj.periode_awal obj.periode_akhir %}</h4>
         </div>
         <div style="display: flex; padding-top: 10px">
             <div class="w-50">
-                {% comment %} <h5 class="m-0">PERIODE PENILAIAN: {{periode|get_bulan|upper}}</h5> {% endcomment %}
+                {% comment %} <h5 class="m-0">PERIODE PENILAIAN: {% get_periode_month obj.periode_awal obj.periode_akhir %}</h5> {% endcomment %}
                 <h5 class="m-0">{{obj.unor.unitkerja|upper}}</h5>
             </div>
             <div class="w-50">
@@ -174,9 +174,9 @@
                     <td>{{ indikator.aspek|default:'-' }}</td>
                     <td>{{ indikator.indikator }}</td>
                     <td>{{ indikator.target }}</td>
-                    {% get_realisasi indikator periode as realisasi %}
+                    {% get_realisasi indikator as realisasi %}
                     <td>{% if realisasi %}{{realisasi.realisasi}} berdasarkan {{realisasi.sumber}}{% endif %}</td>
-                    <td>{% get_umpan_balik indikator periode %}</td>
+                    <td>{% get_umpan_balik indikator %}</td>
                     {% comment %} <td></td> {% endcomment %}
                 </tr>
                 {% endfor %}
@@ -245,9 +245,9 @@
                 <td>{{ indikator.aspek|default:'-' }}</td>
                 <td>{{ indikator.indikator }}</td>
                 <td>{{ indikator.target }}</td>
-                {% get_realisasi indikator periode as realisasi %}
+                {% get_realisasi indikator as realisasi %}
                 <td>{% if realisasi %}{{realisasi.realisasi}} berdasarkan {{realisasi.sumber}}{% endif %}</td>
-                <td>{% get_umpan_balik indikator periode %}</td>
+                <td>{% get_umpan_balik indikator %}</td>
             </tr>
             {% endfor %}
             {% endfor %}

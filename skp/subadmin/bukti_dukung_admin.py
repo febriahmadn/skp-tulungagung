@@ -62,7 +62,7 @@ class BuktiDukungAdmin(admin.ModelAdmin):
                 respon = {"success": True, "pesan": "Berhasil Merubah Bukti Dukung"}
         return JsonResponse(respon, safe=False)
 
-    def view_bukti_dukung_skp(self, request, skp_id, periode):
+    def view_bukti_dukung_skp(self, request, skp_id):
         obj = get_object_or_404(SasaranKinerja, pk=skp_id)
         rhk_list = RencanaHasilKerja.objects.filter(
             skp=obj,
@@ -90,7 +90,6 @@ class BuktiDukungAdmin(admin.ModelAdmin):
             "obj": obj,
             "rhk_list": rhk_list,
             "penilai_view": penilai,
-            "periode": periode,
             "is_allowed": is_allowed,
             "perilaku_kerja_list": PerilakuKerja.objects.filter(is_active=True),
         }
@@ -111,7 +110,7 @@ class BuktiDukungAdmin(admin.ModelAdmin):
             respon = {"success": True, "pesan": "Berhasil Menghapus Bukti Dukung"}
         return JsonResponse(respon, safe=False)
 
-    def view_cetak_bukti_dukung_pegawai(self, request, obj_id, periode):
+    def view_cetak_bukti_dukung_pegawai(self, request, obj_id):
         obj = get_object_or_404(SasaranKinerja, pk=obj_id)
         rhk_list = RencanaHasilKerja.objects.filter(
             skp=obj,
@@ -132,7 +131,6 @@ class BuktiDukungAdmin(admin.ModelAdmin):
             "rhk_list": rhk_list,
             "perilakukerja_list": PerilakuKerja.objects.filter(is_active=True),
             "show_ttd": show_ttd,
-            "periode": periode,
         }
         return render(request, "admin/skp/buktidukung/cetak.html", extra_context)
 
@@ -140,7 +138,7 @@ class BuktiDukungAdmin(admin.ModelAdmin):
         admin_url = super(BuktiDukungAdmin, self).get_urls()
         custom_url = [
             path(
-                "<int:skp_id>/bukti-dukung/<int:periode>",
+                "<int:skp_id>/bukti-dukung",
                 self.admin_site.admin_view(self.view_bukti_dukung_skp),
                 name="bukti-dukung-skp",
             ),
@@ -155,7 +153,7 @@ class BuktiDukungAdmin(admin.ModelAdmin):
                 name="skp_buktidukung_hapus",
             ),
             path(
-                "<int:obj_id>/cetak/<int:periode>",
+                "<int:obj_id>/cetak",
                 self.admin_site.admin_view(self.view_cetak_bukti_dukung_pegawai),
                 name="skp_buktidukung_cetak",
             ),

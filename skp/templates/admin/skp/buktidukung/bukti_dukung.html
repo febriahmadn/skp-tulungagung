@@ -71,7 +71,7 @@
   </div>
 
   <!-- <div class="col-md-8 d-flex flex-row-reverse">
-    <a id="btn-cetak" class="btn btn-success mr-1" style="align-self: center" href="{% url 'admin:skp_buktidukung_cetak' obj.id periode %}">
+    <a id="btn-cetak" class="btn btn-success mr-1" style="align-self: center" href="{% url 'admin:skp_buktidukung_cetak' obj.id %}">
       <i class="fas fa-print"></i> Cetak
     </a>
   </div> -->
@@ -152,7 +152,7 @@
 </div>
 
 <div class="d-flex justify-content-between mt-3 pr-4" style="padding: unset;">
-  <h4 style="margin: unset;">Periode: {{periode|get_bulan|upper}}</h4>
+  <h4 style="margin: unset;">Periode: {% get_periode_month obj.periode_awal obj.periode_akhir %}</h4>
   <h4 style="margin: unset;">Periode Penilaian: {% get_complete_periode obj.periode_awal obj.periode_akhir %}</h4>
 </div>
 
@@ -873,6 +873,7 @@
       error = true
       text = "Bukti Dukung Tidak Boleh Kosong"
     }
+    // periode: periode,
     if(!error){
       $.ajax({
         url: `${BASE_URL}/admin/skp/buktidukung/create`,
@@ -880,7 +881,6 @@
         data: {
           csrfmiddlewaretoken: csrf,
           indikator_id: indikator_id,
-          periode: periode,
           bukti_id: bukti_id,
           nama: bukti_dukung,
           link: link,
@@ -915,6 +915,7 @@
       error = true
       text = "Kolom Sumber Tidak Boleh Kosong"
     }
+    // periode: periode,
     if(!error){
       $.ajax({
         url: `${BASE_URL}/admin/skp/realisasi/create`,
@@ -923,7 +924,6 @@
           csrfmiddlewaretoken: csrf,
           skp_id: skp_id,
           indikator_id: indikator_id,
-          periode: periode,
           realisasi_id: realisasi_id,
           realisasi: realisasi,
           sumber: sumber,
@@ -941,6 +941,7 @@
       toastr.warning(text);
     }
   }
+  {/* periode: periode, */}
   const save_umpan = () => {
     let modal = $("#tambahumpanbalikpegawai")
     let umpan_id = $("#umpan_id").val()
@@ -954,7 +955,6 @@
       data: {
         csrfmiddlewaretoken: csrf,
         indikator_id: indikator_id,
-        periode: periode,
         umpan_id: umpan_id,
         umpan_list: JSON.stringify(umpan_multiple),
         umpan_balik_tambahan: umpan_balik_tambahan,

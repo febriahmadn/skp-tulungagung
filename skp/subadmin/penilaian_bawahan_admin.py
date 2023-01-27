@@ -18,7 +18,6 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
         skp_id = request.POST.get("skp_id", None)
         jenis = request.POST.get("jenis", None)
         penilaianbawahan = request.POST.get("penilaianbawahan", None)
-        periode = request.POST.get("periode", None)
         hasil = request.POST.get("hasil", None)
 
         try:
@@ -36,7 +35,7 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
         try:
             obj = PenilaianBawahan.objects.get(pk=penilaianbawahan)
         except PenilaianBawahan.DoesNotExist:
-            obj = PenilaianBawahan(skp=skp_obj, periode=periode)
+            obj = PenilaianBawahan(skp=skp_obj)
 
         if jenis == "perdikat_perilaku":
             obj.predikat_perilaku = hasil_obj
@@ -70,7 +69,7 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
             )
         return awal, akhir, b64_decode
 
-    def page_penilaian_bawahan(self, request, skp_id, periode, extra_context={}):
+    def page_penilaian_bawahan(self, request, skp_id, extra_context={}):
         try:
             obj = SasaranKinerja.objects.get(pk=skp_id)
         except SasaranKinerja.DoesNotExist:
@@ -88,7 +87,7 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
         if b64 and b64 != "":
             awal, akhir, b64_decode = self.return_awal_akhir(request, b64, skp_id)
         penilaian_list = PenilaianBawahan.objects.filter(
-            skp__induk=obj, periode=periode
+            skp__induk=obj
         )
         if cari:
             penilaian_list = penilaian_list.filter(
@@ -119,7 +118,6 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
                 "penilaian_list": penilaian_list,
                 "awal": awal,
                 "akhir": akhir,
-                "periode": periode,
                 "status_choices": status_list,
                 "is_bupati": is_bupati,
             }
@@ -127,7 +125,7 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
 
         return render(request, "admin/skp/penilaianbawahan/list.html", extra_context)
 
-    def detail_penilaian_bawahan(self, request, skp_id, periode, extra_context={}):
+    def detail_penilaian_bawahan(self, request, skp_id, extra_context={}):
         try:
             obj = SasaranKinerja.objects.get(pk=skp_id)
         except SasaranKinerja.DoesNotExist:
@@ -138,7 +136,7 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
         perilaku_kerja_list = PerilakuKerja.objects.filter(is_active=True)
         hasil_list = Hasil.objects.filter(is_active=True)
         try:
-            penilaian_obj = PenilaianBawahan.objects.get(skp=obj, periode=periode)
+            penilaian_obj = PenilaianBawahan.objects.get(skp=obj)
         except PenilaianBawahan.DoesNotExist:
             penilaian_obj = None
         except Exception as e:
@@ -149,7 +147,6 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
             {
                 "title": "Penilaian Bawahan",
                 "obj": obj,
-                "periode": periode,
                 "perilaku_kerja_list": perilaku_kerja_list,
                 "hasil_list": hasil_list,
                 "penilaian_obj": penilaian_obj,
@@ -157,7 +154,7 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
         )
         return render(request, "admin/skp/penilaianbawahan/detail.html", extra_context)
 
-    def cetak_penilaian_bawahan(self, request, skp_id, periode, extra_context={}):
+    def cetak_penilaian_bawahan(self, request, skp_id, extra_context={}):
         try:
             obj = SasaranKinerja.objects.get(pk=skp_id)
         except SasaranKinerja.DoesNotExist:
@@ -165,17 +162,16 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
             return redirect(
                 reverse(
                     "admin:skp_penilaianbawahan",
-                    kwargs={"skp_id": skp_id, "periode": periode},
+                    kwargs={"skp_id": skp_id},
                 )
             )
         try:
-            penilaian_bawah_obj = PenilaianBawahan.objects.get(skp=obj, periode=periode)
+            penilaian_bawah_obj = PenilaianBawahan.objects.get(skp=obj)
         except PenilaianBawahan.DoesNotExist:
             penilaian_bawah_obj = None
         extra_context.update(
             {
                 "title": "Penilaian Bawahan",
-                "periode": periode,
                 "obj": obj,
                 "penilaianbawah": penilaian_bawah_obj,
                 "perilaku_kerja_list": PerilakuKerja.objects.filter(is_active=True),
@@ -183,16 +179,15 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
         )
         return render(request, "admin/skp/penilaianbawahan/cetak.html", extra_context)
 
-    def form_cetak_penilaian(self, request, skp_id, periode, extra_context={}):
+    def form_cetak_penilaian(self, request, skp_id, extra_context={}):
         obj = get_object_or_404(SasaranKinerja, pk=skp_id)
         try:
-            penilaian_bawah_obj = PenilaianBawahan.objects.get(skp=obj, periode=periode)
+            penilaian_bawah_obj = PenilaianBawahan.objects.get(skp=obj)
         except PenilaianBawahan.DoesNotExist:
             penilaian_bawah_obj = None
         extra_context.update(
             {
                 "title": "Form Penilaian",
-                "periode": periode,
                 "obj": obj,
                 "penilaianbawah": penilaian_bawah_obj,
                 "perilaku_kerja_list": PerilakuKerja.objects.filter(is_active=True),
@@ -203,7 +198,7 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
             request, "admin/skp/penilaianbawahan/form_cetak.html", extra_context
         )
 
-    def export_view(self, request, skp_id, periode, extra_context={}):
+    def export_view(self, request, skp_id, extra_context={}):
         try:
             obj = SasaranKinerja.objects.get(pk=skp_id)
         except Exception as e:
@@ -212,7 +207,7 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
                 reverse("admin:skp_sasarankinerja_penilaian", kwargs={"id": skp_id})
             )
         penilaian_list = PenilaianBawahan.objects.filter(
-            skp__induk=obj, periode=periode
+            skp__induk=obj
         )
         download = request.GET.get("download", None)
         if download == "true":
@@ -264,13 +259,12 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
             {
                 "title": "Rekap Penilaian Bawahan",
                 "obj": obj,
-                "periode": periode,
                 "penilaian_list": penilaian_list,
             }
         )
         return render(request, "admin/skp/penilaianbawahan/export.html", extra_context)
 
-    def kurva_view(self, request, skp_id, periode, extra_context={}):
+    def kurva_view(self, request, skp_id, extra_context={}):
         try:
             obj = SasaranKinerja.objects.get(pk=skp_id)
         except Exception as e:
@@ -279,7 +273,7 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
                 reverse("admin:skp_sasarankinerja_penilaian", kwargs={"id": skp_id})
             )
         penilaian_list = PenilaianBawahan.objects.filter(
-            skp__induk=obj, periode=periode
+            skp__induk=obj
         )
         data = {
             "sangat_kurang": penilaian_list.filter(
@@ -327,7 +321,6 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
             {
                 "title": "Sasaran Kinerja Pegawai",
                 "obj": obj,
-                "periode": periode,
                 "penilaian_list": penilaian_list,
                 "jumlah": data,
             }
@@ -339,32 +332,32 @@ class PenilaianBawahanAdmin(admin.ModelAdmin):
         admin_url = super(PenilaianBawahanAdmin, self).get_urls()
         custom_url = [
             path(
-                "<int:skp_id>/penilaian-bawahan/<int:periode>",
+                "<int:skp_id>/penilaian-bawahan",
                 self.admin_site.admin_view(self.page_penilaian_bawahan),
                 name="skp_penilaianbawahan",
             ),
             path(
-                "<int:skp_id>/penilaian-bawahan/<int:periode>/detail",
+                "<int:skp_id>/penilaian-bawahan/detail",
                 self.admin_site.admin_view(self.detail_penilaian_bawahan),
                 name="skp_penilaianbawahan_detail",
             ),
             path(
-                "<int:skp_id>/penilaian-bawahan/<int:periode>/cetak",
+                "<int:skp_id>/penilaian-bawahan/cetak",
                 self.admin_site.admin_view(self.cetak_penilaian_bawahan),
                 name="skp_penilaianbawahan_cetak",
             ),
             path(
-                "<int:skp_id>/form-penilaian/<int:periode>/cetak",
+                "<int:skp_id>/form-penilaian/cetak",
                 self.admin_site.admin_view(self.form_cetak_penilaian),
                 name="skp_penilaianbawahan_formpenilaiancetak",
             ),
             path(
-                "<int:skp_id>/penilaian-bawahan/<int:periode>/export",
+                "<int:skp_id>/penilaian-bawahan/export",
                 self.admin_site.admin_view(self.export_view),
                 name="skp_penilaianbawahan_export",
             ),
             path(
-                "<int:skp_id>/penilaian-bawahan/<int:periode>/kurva",
+                "<int:skp_id>/penilaian-bawahan/kurva",
                 self.admin_site.admin_view(self.kurva_view),
                 name="skp_penilaianbawahan_kurva",
             ),

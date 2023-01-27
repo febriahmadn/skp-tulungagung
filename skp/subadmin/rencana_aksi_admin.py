@@ -54,7 +54,8 @@ class RencanaAksiAdmin(admin.ModelAdmin):
                 respon = {'success': True, 'pesan': "Berhasil Merubah Rencana Aksi"}
         return JsonResponse(respon, safe=False)
 
-    def view_rencana_aksi_skp(self, request, skp_id, periode):
+    # def view_rencana_aksi_skp(self, request, skp_id, periode):
+    def view_rencana_aksi_skp(self, request, skp_id):
         obj = get_object_or_404(SasaranKinerja, pk=skp_id)
         rhk_list = RencanaHasilKerja.objects.filter(
             skp=obj,
@@ -68,7 +69,7 @@ class RencanaAksiAdmin(admin.ModelAdmin):
             "obj": obj,
             "rhk_list": rhk_list,
             "penilai_view": penilai,
-            "periode": periode,
+            # "periode": periode,
         }
         return render(
             request, "admin/skp/rencanaaksi/rencana_aksi.html", extra_context
@@ -92,7 +93,8 @@ class RencanaAksiAdmin(admin.ModelAdmin):
             }
         return JsonResponse(respon, safe=False)
 
-    def view_cetak_rencana_aksi_pegawai(self, request, obj_id, periode):
+    # def view_cetak_rencana_aksi_pegawai(self, request, obj_id, periode):
+    def view_cetak_rencana_aksi_pegawai(self, request, obj_id):
         obj = get_object_or_404(SasaranKinerja, pk=obj_id)
         rhk_list = RencanaHasilKerja.objects.filter(
             skp=obj,
@@ -107,12 +109,12 @@ class RencanaAksiAdmin(admin.ModelAdmin):
             nama_pegawai = obj.pegawai.get_complete_name()
         extra_context = {
             "obj": obj,
-            "title": "Cetak Rencana Aksi {} [{}]".format(
-                nama_pegawai, obj.get_periode()
+            "title": "Cetak Rencana Aksi {}".format(
+                nama_pegawai
             ),
             "rhk_list": rhk_list,
             "show_ttd": show_ttd,
-            "periode": periode
+            # "periode": periode
         }
         return render(request, "admin/skp/rencanaaksi/cetak.html", extra_context)
 
@@ -120,7 +122,7 @@ class RencanaAksiAdmin(admin.ModelAdmin):
         admin_url = super(RencanaAksiAdmin, self).get_urls()
         custom_url = [
             path(
-                "<int:skp_id>/rencana-aksi/<int:periode>",
+                "<int:skp_id>/rencana-aksi",
                 self.admin_site.admin_view(self.view_rencana_aksi_skp),
                 name="rencana-aksi-skp",
             ),
@@ -135,7 +137,7 @@ class RencanaAksiAdmin(admin.ModelAdmin):
                 name="skp_rencanaaksi_hapus",
             ),
             path(
-                "<int:obj_id>/cetak/<int:periode>",
+                "<int:obj_id>/cetak",
                 self.admin_site.admin_view(self.view_cetak_rencana_aksi_pegawai),
                 name="skp_rencanaaksi_cetak",
             ),

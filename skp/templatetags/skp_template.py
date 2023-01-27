@@ -167,8 +167,8 @@ def daftar_ekspetasi(perilaku_id, skp, cetak, user=None):
 
 
 @register.simple_tag
-def daftar_rencana_aksi(counter, skp_id, rhk_id, periode, cetak="tidak"):
-    rencana_list = RencanaAksi.objects.filter(skp=skp_id, rhk=rhk_id, periode=periode)
+def daftar_rencana_aksi(counter, skp_id, rhk_id, cetak="tidak"):
+    rencana_list = RencanaAksi.objects.filter(skp=skp_id, rhk=rhk_id)
     isi = ""
     isi_luar = ""
     if cetak == "ya":
@@ -268,12 +268,21 @@ def get_complete_periode(awal, akhir):
             FULL_BULAN[akhir.month],
             awal.year,
         )
+@register.simple_tag
+def get_periode_month(awal, akhir):
+    if awal.month != akhir.month:
+        return "{} - {}".format(
+            FULL_BULAN[awal.month].upper(),
+            FULL_BULAN[akhir.month].upper()
+        )
+    else:
+        return FULL_BULAN[awal.month].upper()
 
 
 @register.simple_tag
-def get_bukti_dukung(indikator_obj, periode):
+def get_bukti_dukung(indikator_obj):
     bukti_dukung_list = BuktiDukung.objects.filter(
-        indikator=indikator_obj, periode=periode
+        indikator=indikator_obj
     )
     html = ""
     if bukti_dukung_list.exists():
@@ -293,17 +302,17 @@ def get_bukti_dukung(indikator_obj, periode):
 
 
 @register.simple_tag
-def get_realisasi(indikator_obj, periode):
-    realisasi_list = Realisasi.objects.filter(indikator=indikator_obj, periode=periode)
+def get_realisasi(indikator_obj):
+    realisasi_list = Realisasi.objects.filter(indikator=indikator_obj)
     if realisasi_list.exists():
         return realisasi_list.last()
     return None
 
 
 @register.simple_tag
-def get_umpan_balik(indikator_obj, periode):
+def get_umpan_balik(indikator_obj):
     umpan_balik_list = UmpanBalikPegawai.objects.filter(
-        indikator=indikator_obj, periode=periode
+        indikator=indikator_obj
     )
     ol = ""
     if umpan_balik_list.exists():
