@@ -5,7 +5,7 @@ from django.utils.safestring import mark_safe
 from skp.models import (BuktiDukung, DaftarLampiran,
                         DaftarPerilakuKerjaPegawai, Hasil, PenilaianBawahan,
                         Realisasi, RencanaAksi, RencanaHasilKerja,
-                        SasaranKinerja, UmpanBalikPegawai)
+                        SasaranKinerja, UmpanBalikPegawai, UmpanBalikPerilakuKerja)
 from skp.utils import FULL_BULAN
 
 register = template.Library()
@@ -68,6 +68,107 @@ def daftar_lampiran(lampiran_id, skp_id, cetak):
         return mark_safe(html)
     return ""
 
+
+@register.simple_tag
+def daftar_umpan_balik(skp, perilaku_id, cetak, user=None):
+    # print(skp, perilaku_id, cetak)
+    isi = ""
+    ol = ""
+    html_isi = ""
+    umpan_balik_list = []
+    find_umpan_balik = None
+    try:
+        find_umpan_balik = UmpanBalikPerilakuKerja.objects.get(
+            skp=skp, perilaku_kerja__id=perilaku_id
+        )
+    except UmpanBalikPerilakuKerja.DoesNotExist:
+        tambah = True
+    else:
+        tambah = False
+        isi = find_umpan_balik.umpan_balik_tambahan
+        ol = """<table class="table table-borderless" style="margin: unset;">"""
+        index = 0
+        if find_umpan_balik.umpan_balik.count() > 0:
+            umpan_balik_list = list(
+                find_umpan_balik.umpan_balik.all().values_list("id", flat=True)
+            )
+            for i in find_umpan_balik.umpan_balik.all():
+                index += 1
+                ol += """
+                    <tr>
+                        <td style="vertical-align: top; width: 5%"">{}.</td>
+                        <td>{}</td>
+                    </tr>
+                """.format(
+                    index,
+                    i.nama
+                )
+        if isi and isi != "":
+            ol += """
+                <tr>
+                    <td style="vertical-align: top; width: 5%">{}.</td>
+                    <td>{}</td>
+                </tr>
+            """.format(
+                index + 1, isi
+            )
+        ol += "</table>"
+    if cetak == "tidak":
+        aksi = ""
+        if skp.jenis_jabatan == 1 or user == skp.pejabat_penilai:
+            aksi = """
+                <br>
+                <div class="d-flex justify-content-center">
+                <button style="width: 70%" type="button"
+                data-id="{}" data-umpan_balik="{}" data-edit="{}"
+                data-umpan_multiple_id="{}"
+                data-url={} data-jenis="-perilaku"
+                class="btn btn-{} btn-sm"
+                data-toggle="modal"
+                data-target="#tambahumpanbalikpegawai">
+                    {}
+                </button>
+                </div>
+            """.format(
+                find_umpan_balik.id if find_umpan_balik else "",
+                perilaku_id,
+                tambah,
+                umpan_balik_list,
+                reverse_lazy('admin:umpan-balik-perilaku-kerja-craated'),
+                "primary" if tambah else "warning",
+                "Tambah" if tambah else "Edit",
+            )
+        if isi and isi != "":
+            html_isi = """
+                <span style="display: none" id="umpan-balik-{}-perilaku">{}</span>
+            """.format(
+                perilaku_id,
+                isi,
+            )
+        else:
+            html_isi = ""
+        html = """
+            <span id="umpan-multile-{}">{}</span>
+            {}
+            {}
+        """.format(
+            perilaku_id, ol, html_isi, aksi
+        )
+    else:
+        if isi and isi != "":
+            html_isi = """
+                <span style="display: none">{}</span>
+            """.format(
+                isi
+            )
+        html = """
+            {}
+            <span>{}</span>
+        """.format(
+            html_isi,
+            ol,
+        )
+    return mark_safe(html)
 
 @register.simple_tag
 def daftar_ekspetasi(perilaku_id, skp, cetak, user=None):
@@ -327,7 +428,7 @@ def get_umpan_balik(indikator_obj):
 
 
 @register.simple_tag
-def get_detail_skp(pegawai, skp_obj, periode):
+def get_detail_skp(pegawai, skp_obj):
     list_skp_bawahan = SasaranKinerja.objects.filter(
         pegawai=pegawai,
         status=SasaranKinerja.Status.PERSETUJUAN,
@@ -344,7 +445,7 @@ def get_detail_skp(pegawai, skp_obj, periode):
         """.format(
             reverse_lazy(
                 "admin:skp_penilaianbawahan_detail",
-                kwargs={"skp_id": obj.id, "periode": periode},
+                kwargs={"skp_id": obj.id},
             )
         )
         return mark_safe(button)
@@ -352,7 +453,7 @@ def get_detail_skp(pegawai, skp_obj, periode):
 
 
 @register.simple_tag
-def get_penilaian_bawahan_status(pegawai, skp_obj, periode):
+def get_penilaian_bawahan_status(pegawai, skp_obj):
     text = "Belum Dinilai"
     list_skp_bawahan = SasaranKinerja.objects.filter(
         pegawai=pegawai,
@@ -364,7 +465,7 @@ def get_penilaian_bawahan_status(pegawai, skp_obj, periode):
     if list_skp_bawahan.exists():
         obj = list_skp_bawahan.last()
         find_penilaian_bawahan = PenilaianBawahan.objects.filter(
-            skp=obj, periode=periode
+            skp=obj
         )
         if find_penilaian_bawahan.exists():
             penilaian_obj = find_penilaian_bawahan.last()

@@ -9,7 +9,7 @@ from .models import (BuktiDukung, DaftarEkspetasi, DaftarLampiran,
                      DetailSasaranKinerja, Hasil, IndikatorKinerjaIndividu,
                      Lampiran, PenilaianBawahan, PerilakuKerja, Perspektif,
                      Realisasi, RencanaAksi, RencanaHasilKerja, SasaranKinerja,
-                     UmpanBalik, UmpanBalikPegawai)
+                     UmpanBalik, UmpanBalikPegawai, UmpanBalikPerilakuKerja)
 from .subadmin.bukti_dukung_admin import BuktiDukungAdmin
 from .subadmin.daftarekspetasi_admin import DaftarEkspetasiAdmin
 from .subadmin.daftarlampiran_admin import DaftarlampiranAdmin
@@ -27,6 +27,7 @@ from .subadmin.rencana_aksi_admin import RencanaAksiAdmin
 from .subadmin.rencanahasilkerja_admin import RencanahasilkerjaAdmin
 from .subadmin.umpanbalik_admin import UmpanBalikAdmin
 from .subadmin.umpanbalikpegawai_admin import UmpanBalikPegawaiAdmin
+from .subadmin.umpanbalikperilakukerja_admin import UmpanBalikPerilakuKerjaAdmin
 
 admin.site.register(DetailSasaranKinerja, DetailsasarankerjaAdmin)
 admin.site.register(RencanaHasilKerja, RencanahasilkerjaAdmin)
@@ -45,5 +46,6 @@ admin.site.register(DaftarLampiran, DaftarlampiranAdmin)
 admin.site.register(Hasil)
 admin.site.register(UmpanBalik, UmpanBalikAdmin)
 admin.site.register(UmpanBalikPegawai, UmpanBalikPegawaiAdmin)
+admin.site.register(UmpanBalikPerilakuKerja, UmpanBalikPerilakuKerjaAdmin)
 admin.site.register(DaftarEkspetasi, DaftarEkspetasiAdmin)
 admin.site.register(PenilaianBawahan, PenilaianBawahanAdmin)

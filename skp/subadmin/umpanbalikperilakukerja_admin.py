@@ -3,15 +3,20 @@ import ast
 from django.contrib import admin
 from django.http import JsonResponse
 from django.urls import path
+from django.shortcuts import get_object_or_404
 
-from skp.models import IndikatorKinerjaIndividu, UmpanBalik, UmpanBalikPegawai
+from skp.models import (
+    PerilakuKerja,
+    UmpanBalik,
+    UmpanBalikPerilakuKerja,
+    SasaranKinerja,
+)
 
 
-class UmpanBalikPegawaiAdmin(admin.ModelAdmin):
+class UmpanBalikPerilakuKerjaAdmin(admin.ModelAdmin):
     list_display = (
         "pk",
-        "indikator",
-        "periode",
+        "perilaku_kerja",
         "get_umpan_balik",
         "umpan_balik_tambahan",
         "created",
@@ -30,28 +35,25 @@ class UmpanBalikPegawaiAdmin(admin.ModelAdmin):
 
     def create(self, request):
         respon = {"success": False}
-        indikator = request.POST.get("indikator_id")
+        perilaku_kerja = request.POST.get("perilaku_kerja_id")
         umpan_id = request.POST.get("umpan_id")
+        skp_id = request.POST.get("skp_id")
         umpan_list = request.POST.get("umpan_list", None)
         umpan_balik_tambahan = request.POST.get("umpan_balik_tambahan", None)
 
-        indikator_obj = None
         if umpan_id == "":
             umpan_id = None
 
-        try:
-            indikator_obj = IndikatorKinerjaIndividu.objects.get(pk=indikator)
-        except IndikatorKinerjaIndividu.DoesNotExist:
-            respon = {"success": False, "pesan": "Indikator Kinerja Tidak ditemukan"}
-            return JsonResponse(respon, safe=False)
+        perilaku_obj = get_object_or_404(PerilakuKerja, pk=perilaku_kerja)
+        skp_obj = get_object_or_404(SasaranKinerja, pk=skp_id)
 
-        if indikator_obj:
+        if perilaku_obj:
             tambah = True
             try:
-                obj = UmpanBalikPegawai.objects.get(pk=umpan_id)
+                obj = UmpanBalikPerilakuKerja.objects.get(pk=umpan_id)
                 tambah = False
             except Exception:
-                obj = UmpanBalikPegawai(indikator=indikator_obj)
+                obj = UmpanBalikPerilakuKerja(perilaku_kerja=perilaku_obj, skp=skp_obj)
             obj.umpan_balik_tambahan = umpan_balik_tambahan
             obj.save()
 
@@ -65,20 +67,20 @@ class UmpanBalikPegawaiAdmin(admin.ModelAdmin):
             if tambah:
                 respon = {
                     "success": True,
-                    "pesan": "Berhasil Menambah Umpan Balik Pegawai",
+                    "pesan": "Berhasil Menambah Umpan Balik Perilaku Kerja",
                 }
             else:
                 respon = {
                     "success": True,
-                    "pesan": "Berhasil Merubah Umpan Balik Pegawai",
+                    "pesan": "Berhasil Merubah Umpan Balik Perilaku Kerja",
                 }
         return JsonResponse(respon, safe=False)
 
     def umpan_delete(self, reqeust, id):
         respon = {"success": False, "pesan": "Terjadi kesalahan sistem"}
         try:
-            obj = UmpanBalikPegawai.objects.get(pk=id)
-        except UmpanBalikPegawai.DoesNotExist:
+            obj = UmpanBalikPerilakuKerja.objects.get(pk=id)
+        except UmpanBalikPerilakuKerja.DoesNotExist:
             respon = {"success": False, "pesan": "Umpan Balik Tidak Ditemukan"}
             return JsonResponse(respon, safe=False)
         except Exception as e:
@@ -95,12 +97,12 @@ class UmpanBalikPegawaiAdmin(admin.ModelAdmin):
             path(
                 "create",
                 self.admin_site.admin_view(self.create),
-                name="umpan-balik-pegawai-crated",
+                name="umpan-balik-perilaku-kerja-craated",
             ),
             path(
                 "<int:id>/hapus",
                 self.admin_site.admin_view(self.umpan_delete),
-                name="umpan-balik-pegawai-delete",
+                name="umpan-balik-perilaku-kerja-delete",
             ),
         ]
         return custom_url + admin_url
