@@ -45,8 +45,6 @@ def delete_skp(modeladmin, request, queryset):
         **modeladmin.admin_site.each_context(request),
         "title": title,
         "subtitle": None,
-        "objects_name": "Sasaran Kinerja",
-        "subtitle": None,
         "objects_name": str(objects_name),
         "deletable_objects": [deletable_objects],
         "model_count": dict(model_count).items(),
@@ -63,8 +61,8 @@ def delete_skp(modeladmin, request, queryset):
         )
         return None
     else:
-        count = queryset.count()   
-        if request.POST.get('post'):
+        count = queryset.count()
+        if request.POST.get("post"):
             queryset.delete()
             messages.add_message(
                 request,
@@ -76,7 +74,7 @@ def delete_skp(modeladmin, request, queryset):
         request,
         "admin/delete_selected_confirmation.html",
         context,
-    ) 
+    )
 
 
 delete_skp.short_description = "Hapus Sasaran Kinerja Pegawai yang dipilih"
