@@ -561,10 +561,10 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                     awal.strftime("%Y-%m-%d"),
                     akhir.strftime("%Y-%m-%d"),
                 ),
-                "rencana_aksi_url": reverse_lazy(
-                    "admin:rencana-aksi-skp",
-                    kwargs={"skp_id": sasaran_obj.id},
-                ),
+                # "rencana_aksi_url": reverse_lazy(
+                #     "admin:rencana-aksi-skp",
+                #     kwargs={"skp_id": sasaran_obj.id},
+                # ),
                 "dokumen_evaluasi_url": "#",
                 # reverse_lazy(
                 #     "admin:bukti-dukung-skp",
@@ -572,12 +572,12 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                 # )
                 # if sasaran_obj.status == 3
                 # else
-                # "bukti_dukung_url": reverse_lazy(
-                #     "admin:bukti-dukung-skp",
-                #     kwargs={"skp_id": sasaran_obj.id},
-                # )
-                # if sasaran_obj.status == 3
-                # else "#",
+                "bukti_dukung_url": reverse_lazy(
+                    "admin:bukti-dukung-skp",
+                    kwargs={"skp_id": sasaran_obj.id},
+                )
+                if sasaran_obj.status == 3
+                else "#",
                 "penilaian_bawahan_url": reverse_lazy(
                     "admin:skp_penilaianbawahan",
                     kwargs={"skp_id": sasaran_obj.id},
