@@ -565,7 +565,10 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                 #     "admin:rencana-aksi-skp",
                 #     kwargs={"skp_id": sasaran_obj.id},
                 # ),
-                "dokumen_evaluasi_url": reverse_lazy("admin:skp_sasarankinerja_evaluasi_kinerja",kwargs={"skp_id":sasaran_obj.id}),
+                "dokumen_evaluasi_url": reverse_lazy(
+                    "admin:skp_sasarankinerja_evaluasi_kinerja",
+                    kwargs={"skp_id": sasaran_obj.id},
+                ),
                 # reverse_lazy(
                 #     "admin:bukti-dukung-skp",
                 #     kwargs={"skp_id": sasaran_obj.id},
@@ -1017,17 +1020,21 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
 
     def cetak_evaluasi_kinerja_pegawai(self, request, skp_id, extra_context={}):
         obj = get_object_or_404(SasaranKinerja, pk=skp_id)
-        find_penilaian_bawahan = PenilaianBawahan.objects.filter(skp=obj).order_by("-periode")
+        find_penilaian_bawahan = PenilaianBawahan.objects.filter(skp=obj).order_by(
+            "-periode"
+        )
         obj_penilaian = None
         if find_penilaian_bawahan.exists():
             obj_penilaian = find_penilaian_bawahan.first()
-        extra_context.update({
-            "title":"Evaluasi Kinerja Pegawai",
-            "obj":obj,
-            "obj_penilaian":obj_penilaian
-        })
-        return render(request, "admin/skp/dokumen_evaluasi_kinerja.html",extra_context)
-    
+        extra_context.update(
+            {
+                "title": "Evaluasi Kinerja Pegawai",
+                "obj": obj,
+                "obj_penilaian": obj_penilaian,
+            }
+        )
+        return render(request, "admin/skp/dokumen_evaluasi_kinerja.html", extra_context)
+
     def get_urls(self):
         admin_url = super(SasaranKinerjaAdmin, self).get_urls()
         custom_url = [
