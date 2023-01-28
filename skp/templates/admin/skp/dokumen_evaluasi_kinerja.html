@@ -1,0 +1,402 @@
+{% load static skp_template %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{title}}</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'favicon_io' %}/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon_io' %}/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon_io' %}/favicon-16x16.png">
+  <link rel="manifest" href="{% static 'favicon_io' %}/site.webmanifest">
+  <style>
+    * {
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .no-border td,
+    .no-border th {
+      border: unset !important;
+      padding: 8px;
+    }
+
+    table td,
+    table th {
+      border: 1px solid #ddd;
+      padding: 8px;
+    }
+
+    .t-c {
+      text-align: center;
+    }
+
+    .bg-blue {
+      background-color: #86caff;
+    }
+
+    .m-0 {
+      margin: 0;
+    }
+
+    .contents {
+      padding: 10px 30px 10px 30px;
+    }
+
+    .w-50 {
+      width: 50%;
+    }
+
+    .table-borderless tbody+tbody,
+    .table-borderless td,
+    .table-borderless th,
+    .table-borderless thead th {
+      border: 0;
+    }
+
+    .d-flex {
+      display: flex;
+    }
+
+    .justify-content-center {
+      justify-content: center;
+    }
+
+    hr.style14 {
+      border: 0;
+      height: 1px;
+      background-image: -webkit-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0);
+      background-image: -moz-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0);
+      background-image: -ms-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0);
+      background-image: -o-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0);
+    }
+
+    * {
+      font-family: "Open Sans", Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background-color: #FAFAFA;
+      font: 12pt "Open Sans";
+      font-family: "Open Sans", Helvetica, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      -moz-box-sizing: border-box;
+    }
+
+    .page {
+      width: 22cm;
+      min-height: 36cm;
+      margin: 5mm auto;
+      border: 1px #D3D3D3 solid;
+      border-radius: 5px;
+      background: white;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .subpage {
+      padding-top: 1cm;
+      padding-left: 1.4cm;
+      padding-right: 1.4cm;
+      height: 257mm;
+      line-height: 0.55cm;
+      font-family: "Arial";
+    }
+
+    @-moz-document url-prefix() {
+      .subpage {
+        height: 340mm;
+      }
+    }
+
+    @page {
+      size: Legal;
+      margin: 0;
+    }
+
+    @media print {
+
+      html,
+      body {
+        width: 22cm;
+        height: 36cm;
+        font-family: "Arial";
+      }
+
+      .page {
+        margin: 0;
+        border: initial;
+        border-radius: initial;
+        width: initial;
+        min-height: initial;
+        box-shadow: initial;
+        background: initial;
+        page-break-after: always;
+      }
+    }
+
+    .ceklist {
+      border: 1px solid black;
+    }
+
+    .font {
+      font-size: 11px;
+      font-family: "Open Sans", Helvetica, Arial, sans-serif;
+    }
+
+    #print-modal {
+      margin: 0 0 0 -393px;
+    }
+
+    .style2 {
+      border-top: 3px double #8c8b8b;
+    }
+
+    .button {
+      background-color: #4CAF50;
+      /* Green */
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      border-radius: 8px;
+      box-shadow: 0 12px 16px 0 rgba(0, 0, 0, 0.24), 0 17px 50px 0 rgba(0, 0, 0, 0.19);
+    }
+
+    .button-close {
+      background-color: #f32818;
+      /* Green */
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      border-radius: 8px;
+      box-shadow: 0 12px 16px 0 rgba(0, 0, 0, 0.24), 0 17px 50px 0 rgba(0, 0, 0, 0.19);
+    }
+
+    .sk-justify {
+      text-align: justify;
+      text-justify: inter-word;
+    }
+
+    @media print {
+      .hidden-print {
+        display: none !important;
+      }
+    }
+
+    #qrcodeTable canvas {
+      padding: 2px;
+      border-radius: 3px;
+      border: 3px solid #000;
+      width: 90px;
+      height: 90px;
+    }
+
+    table.tbl-bordered,
+    .tbl-bordered th,
+    .tbl-bordered td {
+      border: 1px solid black;
+      border-collapse: collapse;
+      font-size: 10pt;
+      padding: 2px;
+    }
+    table.min-padding,
+    .min-padding th,
+    .min-padding td {
+      padding: unset;
+    }
+  </style>
+</head>
+<!-- <body onload="window.print();"> -->
+
+<body>
+  <div class="contents">
+    <div class="book">
+      <div class="page">
+        <div class="subpage" style="position: relative; min-height: 400px">
+          <div class="d-flex justify-content-center">
+            <img src="{% static 'img/garuda_pancasila.svg' %}" style="width: 100px;" alt="">
+          </div>
+          <div class="d-flex justify-content-center" style="margin-top: 20px;">
+            <h4 style="margin: unset">DOKUMEN EVALUASI KINERJA PEGAWAI</h4>
+          </div>
+          <div class="d-flex justify-content-center" style="margin-top: 10px;">
+            <h4 style="margin: unset">PERIODE : {% get_periode_month obj.periode_awal obj.periode_akhir %}</h4>
+          </div>
+          <hr>
+          <div class="d-flex">
+            <div class="w-50" style="font-size: 10pt;">{{obj.detailsasarankinerja.unor_pegawai}}</div>
+            <div class="w-50" style="text-align: end; font-size: 10pt;">PERIODE PENILAIAN : {% get_complete_periode obj.periode_awal obj.periode_akhir %}</div>
+          </div>
+          <div style="margin-top: 8px;">
+            <table class="tbl-bordered">
+              <tr>
+                <td rowspan="7" style="vertical-align: top; width: 10px;">1. </td>
+              </tr>
+              <tr>
+                <td colspan="3">PEGAWAI YANG DINILAI</td>
+              </tr>
+              <tr>
+                <td style="width: 30%;vertical-align: top; ">NAMA</td>
+                <td style="width: 10px;vertical-align: top; ">:</td>
+                <td>{{obj.detailsasarankinerja.nama_pegawai}}</td>
+              </tr>
+              <tr>
+                <td style="vertical-align: top;">NIP</td>
+                <td style="vertical-align: top;">:</td>
+                <td>{{obj.detailsasarankinerja.nip_pegawai}}</td>
+              </tr>
+              <tr>
+                <td style="vertical-align: top;">PANGKAT / GOL.RUANG</td>
+                <td style="vertical-align: top;">:</td>
+                <td>{{obj.detailsasarankinerja.golongan_pegawai}}</td>
+              </tr>
+              <tr>
+                <td style="vertical-align: top;">JABATAN</td>
+                <td style="vertical-align: top;">:</td>
+                <td>{{obj.detailsasarankinerja.jabatan_pegawai}}</td>
+              </tr>
+              <tr>
+                <td style="vertical-align: top;">UNIT KERJA</td>
+                <td style="vertical-align: top;">:</td>
+                <td>{{obj.detailsasarankinerja.unor_pegawai}}</td>
+              </tr>
+              <tr>
+                <td rowspan="7" style="vertical-align: top; width: 10px;">2. </td>
+              </tr>
+              <tr>
+                <td colspan="3">PEJABAT PENILAI KINERJA</td>
+              </tr>
+              <tr>
+                <td style="width: 25%;vertical-align: top; ">NAMA</td>
+                <td style="width: 10px;vertical-align: top; ">:</td>
+                <td>{{obj.induk.detailsasarankinerja.nama_pegawai}}</td>
+              </tr>
+              <tr>
+                <td style="vertical-align: top;">NIP</td>
+                <td style="vertical-align: top;">:</td>
+                <td>{{obj.induk.detailsasarankinerja.nip_pegawai}}</td>
+              </tr>
+              <tr>
+                <td style="vertical-align: top;">PANGKAT / GOL.RUANG</td>
+                <td style="vertical-align: top;">:</td>
+                <td>{{obj.induk.detailsasarankinerja.golongan_pegawai}}</td>
+              </tr>
+              <tr>
+                <td style="vertical-align: top;">JABATAN</td>
+                <td style="vertical-align: top;">:</td>
+                <td>{{obj.obj.detailsasarankinerja.jabatan_pegawai}}</td>
+              </tr>
+              <tr>
+                <td style="vertical-align: top;">UNIT KERJA</td>
+                <td style="vertical-align: top;">:</td>
+                <td>{{obj.induk.detailsasarankinerja.unor_pegawai}}</td>
+              </tr>
+              <tr>
+                <td rowspan="7" style="vertical-align: top; width: 10px;">3. </td>
+              </tr>
+              <tr>
+                <td colspan="3">ATASAN PEJABAT PENILAI KINERJA</td>
+              </tr>
+              <tr>
+                <td style="width: 25%;vertical-align: top; ">NAMA</td>
+                <td style="width: 10px;vertical-align: top; ">:</td>
+                <td>{{obj.induk.induk.detailsasarankinerja.nama_pegawai}}</td>
+              </tr>
+              <tr>
+                <td style="vertical-align: top;">NIP</td>
+                <td style="vertical-align: top;">:</td>
+                <td>{% if obj.induk.induk.detailsasarankinerja.nip_pegawai == "bupati" or obj.induk.induk.detailsasarankinerja.nip_pegawai == "" %} {% else %}{{obj.induk.induk.detailsasarankinerja.nip_pegawai}}{% endif %}</td>
+              </tr>
+              <tr>
+                <td style="vertical-align: top;">PANGKAT / GOL.RUANG</td>
+                <td style="vertical-align: top;">:</td>
+                <td>{{obj.induk.induk.detailsasarankinerja.golongan_pegawai}}</td>
+              </tr>
+              <tr>
+                <td style="vertical-align: top;">JABATAN</td>
+                <td style="vertical-align: top;">:</td>
+                <td>{{obj.induk.induk.detailsasarankinerja.jabatan_pegawai|upper}}</td>
+              </tr>
+              <tr>
+                <td style="vertical-align: top;">UNIT KERJA</td>
+                <td style="vertical-align: top;">:</td>
+                <td>{{obj.induk.induk.detailsasarankinerja.unor_pegawai|upper}}</td>
+              </tr>
+              <tr>
+                <td rowspan="4" style="vertical-align: top; width: 10px;">4. </td>
+              </tr>
+              <tr>
+                <td colspan="3">EVALUASI KINERJA</td>
+              </tr>
+              <tr>
+                <td style="width: 25%;vertical-align: top; ">CAPAIAN KINERJA ORGANISASI</td>
+                <td style="width: 10px;vertical-align: top; ">:</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td style="vertical-align: top;">PREDIKAT KINERJA PEGAWAI</td>
+                <td style="vertical-align: top;">:</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td rowspan="3" style="vertical-align: top; width: 10px;">5. </td>
+              </tr>
+              <tr>
+                <td colspan="3">CATATAN/REKOMENDASI</td>
+              </tr>
+              <tr>
+                <td colspan="3" style="vertical-align: top;">-</td>
+              </tr>
+            </table>
+          </div>
+          <div style="margin-top: 10px;">
+            <table class="table-borderless min-padding" style="text-align: center;">
+              <tr>
+                <td>Tulungagung, {% now "d F Y" %}</td>
+                <td>Tulungagung, {% now "d F Y" %}</td>
+              </tr>
+              <tr>
+                <td>Pegawai yang Dinilai</td>
+                <td>Pejabat Penilai Kinerja</td>
+              </tr>
+              <tr>
+                <td style="height: 80px;">&nbsp;</td>
+                <td style="height: 80px;">&nbsp;</td>
+              </tr>
+              <tr>
+                <td>{{obj.detailsasarankinerja.nama_pegawai}}</td>
+                <td>{{obj.detailsasarankinerja.nama_pejabat}}</td>
+              </tr>
+              <tr>
+                <td>{{obj.detailsasarankinerja.nip_pegawai}}</td>
+                <td>{{obj.detailsasarankinerja.nip_pejabat}}</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+</body>
+
+</html>

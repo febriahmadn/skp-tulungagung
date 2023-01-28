@@ -405,10 +405,7 @@ def handler_sasarankinerja_save(instance, created, **kwargs):
         detail.save()
 
         if not instance.pegawai.groups.filter(name="Bupati").exists():
-            for i in range(
-                instance.periode_awal.month, instance.periode_akhir.month + 1
-            ):
-                PenilaianBawahan.objects.create(skp=instance, periode=i)
+            PenilaianBawahan.objects.create(skp=instance)
 
         # if "bupati" in instance.pegawai.jabatan.lower():
         #     pass
