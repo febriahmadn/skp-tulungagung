@@ -60,12 +60,12 @@
   <div class="col-md-4">
     <div class="d-flex">
       <label class="mx-1 py-2" style="min-width: 100px;">Status SKP</label>
-      <input type="text" readonly class="form-control form-control-sm" id="staticEmail" value="{{obj.get_status_display}}">
+      <div class="form-control form-control-sm" style="height: fit-content; background-color: #e4e6ef; color: #7e8299;" >{{obj.get_status_display}}</div>
     </div>
     {% if obj.keterangan %}
     <div class="d-flex">
       <label class="mx-1 py-2" style="min-width: 100px;">Keterangan</label>
-      <input type="text" readonly class="form-control form-control-sm" id="staticEmail" value="{{obj.keterangan|default_if_none:""}}">
+      <div class="form-control form-control-sm" style="height: fit-content; background-color: #e4e6ef; color: #7e8299;" >{{obj.keterangan|default_if_none:""}}</div>
     </div>
     {% endif %}
   </div>
