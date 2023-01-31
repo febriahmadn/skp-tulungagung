@@ -318,6 +318,32 @@
               <tr>
                 <td colspan="3">ATASAN PEJABAT PENILAI KINERJA</td>
               </tr>
+              {% if obj.induk.detailsasarankinerja.nip_pegawai == "bupati" or obj.induk.detailsasarankinerja.nip_pegawai == "" %}
+              <tr>
+                <td style="width: 25%;vertical-align: top; ">NAMA</td>
+                <td style="width: 10px;vertical-align: top; ">:</td>
+                <td>{{obj.induk.detailsasarankinerja.nama_pegawai}}</td>
+              </tr>
+              <tr>
+                <td style="vertical-align: top;">NIP</td>
+                <td style="vertical-align: top;">:</td>
+                <td>{{obj.induk.detailsasarankinerja.nip_pegawai}}</td>
+              </tr>
+              <tr>
+                <td style="vertical-align: top;">PANGKAT / GOL.RUANG</td>
+                <td style="vertical-align: top;">:</td>
+                <td>{{obj.induk.detailsasarankinerja.golongan_pegawai}}</td>
+              </tr>
+              <tr>
+                <td style="vertical-align: top;">JABATAN</td>
+                <td style="vertical-align: top;">:</td>
+                <td>{{obj.obj.detailsasarankinerja.jabatan_pegawai}}</td>
+              </tr>
+              <tr>
+                <td style="vertical-align: top;">UNIT KERJA</td>
+                <td style="vertical-align: top;">:</td>
+                <td>{{obj.induk.detailsasarankinerja.unor_pegawai}}</td>
+              {% else %}
               <tr>
                 <td style="width: 25%;vertical-align: top; ">NAMA</td>
                 <td style="width: 10px;vertical-align: top; ">:</td>
@@ -343,6 +369,7 @@
                 <td style="vertical-align: top;">:</td>
                 <td>{{obj.induk.induk.detailsasarankinerja.unor_pegawai|upper}}</td>
               </tr>
+              {% endif %}
               <tr>
                 <td rowspan="4" style="vertical-align: top; width: 10px;">4. </td>
               </tr>
@@ -390,7 +417,7 @@
               </tr>
               <tr>
                 <td>{{obj.detailsasarankinerja.nip_pegawai}}</td>
-                <td>{{obj.detailsasarankinerja.nip_pejabat}}</td>
+                <td>{% if obj.induk.induk.detailsasarankinerja.nip_pegawai == "bupati" or obj.induk.induk.detailsasarankinerja.nip_pegawai == "" %} {% else %}{{obj.induk.induk.detailsasarankinerja.nip_pegawai}}{% endif %}</td>
               </tr>
             </table>
           </div>
