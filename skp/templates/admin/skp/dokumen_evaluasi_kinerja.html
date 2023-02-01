@@ -244,10 +244,8 @@
             <h4 style="margin: unset">PERIODE : {% get_periode_month obj.periode_awal obj.periode_akhir %}</h4>
           </div>
           <hr>
-          <div class="d-flex">
-            <div class="w-50" style="font-size: 10pt;">{{obj.detailsasarankinerja.unor_pegawai}}</div>
-            <div class="w-50" style="text-align: end; font-size: 10pt;">PERIODE PENILAIAN : {% get_complete_periode obj.periode_awal obj.periode_akhir %}</div>
-          </div>
+          <div style="font-size: 10pt;">UNIT KERJA : {{obj.detailsasarankinerja.unor_pegawai}}</div>
+          <div style="font-size: 10pt;">PERIODE PENILAIAN : {% get_complete_periode obj.periode_awal obj.periode_akhir %}</div>
           <div style="margin-top: 8px;">
             <table class="tbl-bordered">
               <tr>
@@ -384,7 +382,7 @@
               <tr>
                 <td style="vertical-align: top;">PREDIKAT KINERJA PEGAWAI</td>
                 <td style="vertical-align: top;">:</td>
-                <td>-</td>
+                <td>{{obj_penilaian.get_predikat_kerja_display|upper}}</td>
               </tr>
               <tr>
                 <td rowspan="3" style="vertical-align: top; width: 10px;">5. </td>

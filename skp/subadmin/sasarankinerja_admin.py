@@ -552,6 +552,16 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
 
         awal = sasaran_obj.periode_awal
         akhir = sasaran_obj.periode_akhir
+        penilaian_bawahan = None
+        try:
+            penilaian_bawahan = PenilaianBawahan.objects.get(skp=sasaran_obj)
+        except PenilaianBawahan.DoesNotExist:
+            pass
+        except PenilaianBawahan.MultipleObjectsReturned:
+            penilaian_bawahan = PenilaianBawahan.objects.filter(skp=sasaran_obj).order_by('-periode')
+            if penilaian_bawahan.exists():
+                penilaian_bawahan = penilaian_bawahan.first()
+
         bulan_list = []
         # if awal.month == akhir.month:
         bulan_list.append(
@@ -561,6 +571,9 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                     awal.strftime("%Y-%m-%d"),
                     akhir.strftime("%Y-%m-%d"),
                 ),
+                "hasil":penilaian_bawahan.rating_hasil.nama.upper() if penilaian_bawahan else "-",
+                "perilaku":penilaian_bawahan.predikat_perilaku.nama.upper() if penilaian_bawahan else "-",
+                "nilai":penilaian_bawahan.get_predikat_kerja_display().upper() if penilaian_bawahan else "-",
                 # "rencana_aksi_url": reverse_lazy(
                 #     "admin:rencana-aksi-skp",
                 #     kwargs={"skp_id": sasaran_obj.id},
