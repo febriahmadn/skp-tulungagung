@@ -266,7 +266,9 @@
                 <tr>
                     <td>{{ forloop.counter }}</td>
                     <td>{{ item.perilaku_kerja }}</td>
-                    <td>Ekspektasi Khusus Pimpinan:</td>
+                    <td>Ekspektasi Khusus Pimpinan</td>
+                    <td>Umpan Balik Berkelanjutan berdasarkan Bukti Dukung</td>
+
                     <!-- <td>FEEDBACK:</td> -->
                 </tr>
                 <tr>
@@ -281,9 +283,9 @@
                     <td style="width: 15%;">
                         {% daftar_ekspetasi item.id obj.id "ya" %}
                     </td>
-                    <!-- <td>
-                        
-                    </td> -->
+                    <td>
+                        {% get_umpan_balik_hasil_kerja obj item %}</td>
+                    </td>
                 </tr>
                 {% endfor %}
                 <tr class="bg-blue">

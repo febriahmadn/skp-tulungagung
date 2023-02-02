@@ -426,6 +426,23 @@ def get_umpan_balik(indikator_obj):
             ol += "</ol>"
     return mark_safe(ol)
 
+@register.simple_tag
+def get_umpan_balik_hasil_kerja(skp_obj, hasil_obj):
+    umpan_balik_list = UmpanBalikPerilakuKerja.objects.filter(
+        skp=skp_obj, perilaku_kerja=hasil_obj
+    )
+    ol = ""
+    # print(umpan_balik_list)
+    if umpan_balik_list.exists():
+        obj = umpan_balik_list.last()
+        if obj.umpan_balik.count() > 0:
+            ol = """<ol style="padding-inline-start: 15px;margin-block-start:unset">"""
+            for i in obj.umpan_balik.all():
+                ol += "<li>{}</li>".format(i.nama)
+            ol += "<li>{}</li>".format(obj.umpan_balik_tambahan)
+            ol += "</ol>"
+    return mark_safe(ol)
+
 
 @register.simple_tag
 def get_detail_skp(pegawai, skp_obj):

@@ -212,6 +212,7 @@
               <td rowspan="2" style="vertical-align : middle;text-align:center; width: 5%;">{{ forloop.counter }}</td>
               <th>{{ item.perilaku_kerja }}</th>
               <th style="width: 20%;">Ekspektasi Khusus Pimpinan</th>
+              <th style="width: 20%;">Umpan Balik Berkelanjutan Berdasarkan Bukti Dukung</th>
             </tr>
             <tr>
               <td>
@@ -235,6 +236,9 @@
                 {% daftar_ekspetasi item.id obj.id "ya" %}
                 {% endif %}
                 {% endif %}
+              </td>
+              <td>
+                {% daftar_umpan_balik obj item.id "tidak" request.user %}
               </td>
             </tr>
             {% endfor %}
@@ -328,6 +332,10 @@
           <input type="text" class="form-control" id="umpan_balik_tambahan">
           <span class="text-muted" >Jika pilihan pada umpan balik tidak tersedia, maka bisa menginputkan secara manual melalui field umpan balik lainnya</span>
         </div>
+        <div class="form-group mt-1">
+          <button class="btn btn-primary btn-sm" onclick="addValue($(this))" data-value="👍" >👍</button>
+          <button class="btn btn-primary btn-sm" onclick="addValue($(this))" data-value="👎" >👎</button>
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" onclick="save_umpan()">Submit</button>
@@ -357,6 +365,11 @@
         return false;
     }
   };
+  const addValue = (elem) =>{
+    umpan_elem = $("#umpan_balik_tambahan")
+    current_value = umpan_elem.val()
+    umpan_elem.val(current_value+elem.data('value'))
+  }
   const handleLoadUmpanBalik = (selected=null) => {
     $.ajax({
       url:`${BASE_URL}/admin/skp/umpanbalik/load`,

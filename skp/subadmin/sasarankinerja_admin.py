@@ -574,13 +574,13 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                     akhir.strftime("%Y-%m-%d"),
                 ),
                 "hasil": penilaian_bawahan.rating_hasil.nama.upper()
-                if penilaian_bawahan
+                if penilaian_bawahan and penilaian_bawahan.rating_hasil
                 else "-",
                 "perilaku": penilaian_bawahan.predikat_perilaku.nama.upper()
-                if penilaian_bawahan
+                if penilaian_bawahan and penilaian_bawahan.predikat_perilaku
                 else "-",
                 "nilai": penilaian_bawahan.get_predikat_kerja_display().upper()
-                if penilaian_bawahan
+                if penilaian_bawahan and penilaian_bawahan.predikat_kerja
                 else "-",
                 # "rencana_aksi_url": reverse_lazy(
                 #     "admin:rencana-aksi-skp",
