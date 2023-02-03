@@ -57,7 +57,7 @@
     <div class="contents">
         <div style="text-align: center; margin: 20px;">
             <h4 class="m-0">SASARAN KINERJA PEGAWAI</h4>
-            <h5 style="margin: unset; margin-top: 0.5rem;">PERIODE: {{periode|get_bulan|upper}}</h5>
+            <h5 style="margin: unset; margin-top: 0.5rem;">PERIODE: {% get_periode_month obj.periode_awal obj.periode_akhir %}</h5>
         </div>
         <div style="display: flex;">
             <div class="w-50">

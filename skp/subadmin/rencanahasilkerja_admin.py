@@ -7,75 +7,75 @@ from skp.models import (BuktiDukung, IndikatorKinerjaIndividu, Realisasi,
                         UmpanBalikPegawai)
 
 
-def rencana_aksi_list(skp_obj, rhk_obj, periode):
+def rencana_aksi_list(skp_obj, rhk_obj):
     rencana_aksi = []
-    if periode and periode != "":
-        rencana_aksi_list = RencanaAksi.objects.filter(
-            skp=skp_obj, rhk=rhk_obj, periode=int(periode)
-        )
-        for rencana_item in rencana_aksi_list:
-            rencana_aksi.append(rencana_item.rencana_aksi)
+    # if periode and periode != "":
+    rencana_aksi_list = RencanaAksi.objects.filter(
+        skp=skp_obj, rhk=rhk_obj
+    )
+    for rencana_item in rencana_aksi_list:
+        rencana_aksi.append(rencana_item.rencana_aksi)
     return rencana_aksi
 
 
-def bukti_dukung_list(indikator_obj, periode):
+def bukti_dukung_list(indikator_obj):
     bukti_dukung = None
-    if periode and periode != "":
-        bukti_dukung_list = BuktiDukung.objects.filter(
-            indikator=indikator_obj, periode=int(periode)
-        )
-        if bukti_dukung_list.exists():
-            bukti_item = bukti_dukung_list.last()
-            bukti_dukung = {
-                "delete_url": reverse_lazy(
-                    "admin:skp_buktidukung_hapus", kwargs={"id": bukti_item.id}
-                ),
-                "id": bukti_item.id,
-                "nama": bukti_item.nama_bukti_dukung,
-                "link": bukti_item.link,
-            }
+    # if periode and periode != "":
+    bukti_dukung_list = BuktiDukung.objects.filter(
+        indikator=indikator_obj
+    )
+    if bukti_dukung_list.exists():
+        bukti_item = bukti_dukung_list.last()
+        bukti_dukung = {
+            "delete_url": reverse_lazy(
+                "admin:skp_buktidukung_hapus", kwargs={"id": bukti_item.id}
+            ),
+            "id": bukti_item.id,
+            "nama": bukti_item.nama_bukti_dukung,
+            "link": bukti_item.link,
+        }
     return bukti_dukung
 
 
-def realisasi_list(indikator_obj, periode):
+def realisasi_list(indikator_obj):
     realisasi = None
-    if periode and periode != "":
-        realisasi_list = Realisasi.objects.filter(
-            indikator=indikator_obj, periode=int(periode)
-        )
-        if realisasi_list.exists():
-            realisasi_item = realisasi_list.last()
-            realisasi = {
-                "delete_url": reverse_lazy(
-                    "admin:skp_realisasi_hapus", kwargs={"id": realisasi_item.id}
-                ),
-                "id": realisasi_item.id,
-                "realisasi": realisasi_item.realisasi,
-                "sumber": realisasi_item.sumber,
-            }
+    # if periode and periode != "":
+    realisasi_list = Realisasi.objects.filter(
+        indikator=indikator_obj
+    )
+    if realisasi_list.exists():
+        realisasi_item = realisasi_list.last()
+        realisasi = {
+            "delete_url": reverse_lazy(
+                "admin:skp_realisasi_hapus", kwargs={"id": realisasi_item.id}
+            ),
+            "id": realisasi_item.id,
+            "realisasi": realisasi_item.realisasi,
+            "sumber": realisasi_item.sumber,
+        }
     return realisasi
 
 
-def umpan_list(indikator_obj, periode):
+def umpan_list(indikator_obj):
     umpan = None
-    if periode and periode != "":
-        umpan_balik_list = UmpanBalikPegawai.objects.filter(
-            indikator=indikator_obj, periode=int(periode)
-        )
-        if umpan_balik_list.exists():
-            umpan_balik_obj = umpan_balik_list.last()
-            data = []
-            for i in umpan_balik_obj.umpan_balik.all():
-                data.append({"id": i.id, "nama": i.nama})
-            umpan = {
-                "delete_url": reverse_lazy(
-                    "admin:umpan-balik-pegawai-delete",
-                    kwargs={"id": umpan_balik_obj.id},
-                ),
-                "id": umpan_balik_obj.id,
-                "umpan_balik": data,
-                "umpan_balik_tambahan": umpan_balik_obj.umpan_balik_tambahan,
-            }
+    # if periode and periode != "":
+    umpan_balik_list = UmpanBalikPegawai.objects.filter(
+        indikator=indikator_obj
+    )
+    if umpan_balik_list.exists():
+        umpan_balik_obj = umpan_balik_list.last()
+        data = []
+        for i in umpan_balik_obj.umpan_balik.all():
+            data.append({"id": i.id, "nama": i.nama})
+        umpan = {
+            "delete_url": reverse_lazy(
+                "admin:umpan-balik-pegawai-delete",
+                kwargs={"id": umpan_balik_obj.id},
+            ),
+            "id": umpan_balik_obj.id,
+            "umpan_balik": data,
+            "umpan_balik_tambahan": umpan_balik_obj.umpan_balik_tambahan,
+        }
     return umpan
 
 
@@ -140,7 +140,7 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
         # kalau bisa nanti diubah ke rest api lebih bagus
         respon = []
         jenis = request.GET.get("jenis", None)
-        periode = request.GET.get("periode", None)
+        # periode = request.GET.get("periode", None)
         try:
             obj = SasaranKinerja.objects.get(pk=obj_id)
         except SasaranKinerja.DoesNotExist:
@@ -172,12 +172,12 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
                                     "target": item_indikator.target,
                                     "aspek": item_indikator.aspek,
                                     "realisasi": realisasi_list(
-                                        item_indikator, periode
+                                        item_indikator
                                     ),
                                     "bukti_dukung": bukti_dukung_list(
-                                        item_indikator, periode
+                                        item_indikator
                                     ),
-                                    "umpan_balik": umpan_list(item_indikator, periode),
+                                    "umpan_balik": umpan_list(item_indikator),
                                     "perspektif": item_indikator.perspektif.__str__()
                                     if item_indikator.perspektif
                                     else None,
@@ -200,7 +200,7 @@ class RencanahasilkerjaAdmin(admin.ModelAdmin):
                             "penugasan_dari": item.penugasan_dari,
                             "klasifikasi_rhk": item.get_klasifikasi_display(),
                             "indikator": indikator,
-                            "rencana_aksi": rencana_aksi_list(obj, item, periode),
+                            "rencana_aksi": rencana_aksi_list(obj, item),
                         }
                     )
 

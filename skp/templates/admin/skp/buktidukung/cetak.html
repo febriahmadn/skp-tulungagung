@@ -58,11 +58,11 @@
         <div style="text-align: center; margin: 20px;">
             <h4 class="m-0">EVALUASI KINERJA PEGAWAI</h4>
             <h4 class="m-0">PENDEKATAN HASIL KERJA {{obj.get_pendekatan_display|upper}}</h4>
-            <h4 class="m-0">PERIODE: {{periode|get_bulan|upper}}</h4>
+            <h4 class="m-0">PERIODE: {% get_periode_month obj.periode_awal obj.periode_akhir %}</h4>
         </div>
         <div style="display: flex; padding-top: 10px">
             <div class="w-50">
-                <h5 class="m-0">PERIODE PENILAIAN: {{periode|get_bulan|upper}}</h5>
+                <h5 class="m-0">PERIODE PENILAIAN: {% get_periode_month obj.periode_awal obj.periode_akhir %}</h5>
             </div>
             <div class="w-50">
                 <h5 class="m-0" style="text-align: end;">
@@ -241,7 +241,7 @@
             <tr>
                 <td>{{ indikator.aspek|default:'-' }}</td>
                 <td>{{ indikator.indikator }}</td>
-                {% get_realisasi indikator periode as realisasi %}
+                {% get_realisasi indikator as realisasi %}
                 <td>{{realisasi.realisasi}}</td>
                 <td>{{realisasi.realisasi}} berdasarkan {{realisasi.sumber}}</td>
                 <td></td>
@@ -317,10 +317,10 @@
             <tr>
                 <td>{{ indikator.aspek|default:'-' }}</td>
                 <td>{{ indikator.indikator }}</td>
-                {% get_realisasi indikator periode as realisasi %}
+                {% get_realisasi indikator as realisasi %}
                 <td>{{realisasi.realisasi}}</td>
                 <td>{{realisasi.realisasi}} berdasarkan {{realisasi.sumber}}</td>
-                {% get_umpan_balik indikator periode as umpan_balik %}
+                {% get_umpan_balik indikator as umpan_balik %}
                 <td>{{ umpan_balik }}</td>
                 {% comment %} <td>{{ indikator.perspektif|default:'-' }}</td>
                 {% if obj.jenis_jabatan != 1 %}

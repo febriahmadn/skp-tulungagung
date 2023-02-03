@@ -58,7 +58,11 @@
         <div style="text-align: center; margin: 20px;">
             <h4 class="m-0">SASARAN KINERJA PEGAWAI</h4>
             <h4 class="m-0">PENDEKATAN HASIL KERJA KUANTITATIF</h4>
+            {% if obj.jenis_jabatan == 1 %}
             <h4 class="m-0">BAGI PEJABAT PIMPINAN TINGGI DAN PIMIPINAN UNIT KERJA MANDIRI</h4>
+            {% else %}
+            <h4 class="m-0">BAGI PEJABAT ADMINISTRASI DAN PEJABAT FUNGSIONAL</h4>
+            {% endif %}
         </div>
         <div style="display: flex;">
             <div class="w-50">
@@ -137,9 +141,9 @@
                 <th>NO</th>
                 <th>RENCANA HASIL KERJA PIMPINAN YANG DIINTERVENSI</th>
                 <th>RENCANA HASIL KERJA</th>
+                <th>ASPEK</th>
                 <th>INDIKATOR KINERJA INDIVIDU</th>
                 <th>TARGET</th>
-                <th>PERSPEKTIF</th>
             </tr>
             {% else %}
             <tr class="bg-blue">
@@ -147,7 +151,7 @@
                 <th>RENCANA HASIL KERJA</th>
                 <th>INDIKATOR KINERJA INDIVIDU</th>
                 <th>TARGET</th>
-                <th>ASPEK</th>
+                <th>PERSPEKTIF</th>
             </tr>
             {% endif %}
             <tr class="bg-blue">
@@ -184,13 +188,9 @@
                 {% if utama.indikatorkinerjaindividu_set.all.count > 0 %}
                     {% for indikator in utama.indikatorkinerjaindividu_set.all %}
                         <tr>
+                            <td>{{ indikator.perspektif|default:'-' }}</td>
                             <td>{{ indikator.indikator }}</td>
                             <td>{{ indikator.target }}</td>
-                            {% if obj.jenis_jabatan != 1 %}
-                            <td>{{ indikator.aspek|default:'-' }}</td>
-                            {% else %}
-                            <td>{{ indikator.perspektif|default:'-' }}</td>
-                            {% endif %}
                         </tr>
                     {% endfor %}
                 {% else %}
@@ -209,10 +209,10 @@
                     {% if obj.jenis_jabatan != 1 %}
                     <td rowspan="{{count_indikator}}" style="vertical-align: top;">
                         {% if utama.induk %}
-                        {% is_fisrt_parent obj.id utama.id utama.induk.id as fisrt_parent %}
-                        {% if fisrt_parent %}
                         {{ utama.induk.rencana_kerja }}
-                        {% endif %}
+                        {% comment %} {% is_fisrt_parent obj.id utama.id utama.induk.id as fisrt_parent %}
+                        {% if fisrt_parent %}
+                        {% endif %} {% endcomment %}
                         {% else %}
                         -
                         {% endif %}
@@ -224,13 +224,9 @@
                 {% if utama.indikatorkinerjaindividu_set.all.count > 0 %}
                 {% for indikator in utama.indikatorkinerjaindividu_set.all %}
                 <tr>
+                    <td>{{ indikator.aspek|default:'-' }}</td>
                     <td>{{ indikator.indikator }}</td>
                     <td>{{ indikator.target }}</td>
-                    {% if obj.jenis_jabatan != 1 %}
-                    <td>{{ indikator.aspek|default:'-' }}</td>
-                    {% else %}
-                    <td>{{ indikator.perspektif|default:'-' }}</td>
-                    {% endif %}
                 </tr>
                 {% endfor %}
                 {% else %}
@@ -259,10 +255,10 @@
                 {% if obj.jenis_jabatan != 1 %}
                 <td rowspan="{{count_indikator}}" style="vertical-align: top;">
                     {% if tambahan.induk %}
-                    {% is_fisrt_parent obj.id tambahan.id tambahan.induk.id as fisrt_parent %}
-                    {% if fisrt_parent %}
                     {{ tambahan.induk.rencana_kerja }}
-                    {% endif %}
+                    {% comment %} {% is_fisrt_parent obj.id tambahan.id tambahan.induk.id as fisrt_parent %}
+                    {% if fisrt_parent %}
+                    {% endif %} {% endcomment %}
                     {% else %}
                     -
                     {% endif %}
@@ -274,10 +270,10 @@
                 {% if obj.jenis_jabatan != 1 %}
                 <td rowspan="{{count_indikator|add:"1"}}" style="vertical-align: top;">
                     {% if tambahan.induk %}
-                    {% is_fisrt_parent obj.id tambahan.id tambahan.induk.id as fisrt_parent %}
-                    {% if fisrt_parent %}
                     {{ tambahan.induk.rencana_kerja }}
-                    {% endif %}
+                    {% comment %} {% is_fisrt_parent obj.id tambahan.id tambahan.induk.id as fisrt_parent %}
+                    {% if fisrt_parent %}
+                    {% endif %} {% endcomment %}
                     {% else %}
                     -
                     {% endif %}
@@ -290,12 +286,14 @@
             {% if tambahan.indikatorkinerjaindividu_set.all.count > 0 %}
             {% for indikator in tambahan.indikatorkinerjaindividu_set.all %}
             <tr>
-                <td>{{ indikator.indikator }}</td>
-                <td>{{ indikator.target }}</td>
                 {% if obj.jenis_jabatan != 1 %}
                 <td>{{ indikator.aspek|default:'-' }}</td>
+                <td>{{ indikator.indikator }}</td>
+                <td>{{ indikator.target }}</td>
                 {% else %}
                 <td>{{ indikator.perspektif|default:'-' }}</td>
+                <td>{{ indikator.indikator }}</td>
+                <td>{{ indikator.target }}</td>
                 {% endif %}
             </tr>
             {% endfor %}

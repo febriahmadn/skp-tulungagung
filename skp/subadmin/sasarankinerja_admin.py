@@ -1,4 +1,3 @@
-import calendar
 import datetime
 
 import pytz
@@ -9,8 +8,11 @@ from django.db.models import Q
 from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import path, resolve, reverse_lazy
+from django.contrib.admin.utils import model_ngettext
 from django.utils import timezone
 from django.utils.safestring import mark_safe
+from django.utils.translation import gettext as _
+
 
 from services.models import Configurations
 from skp.forms.sasarankinerja_form import SasaranKinerjaForm
@@ -30,6 +32,24 @@ from usom.models import Account, UnitKerja
 
 def delete_skp(modeladmin, request, queryset):
     count = 0
+    (
+        deletable_objects,
+        model_count,
+        perms_needed,
+        protected,
+    ) = modeladmin.get_deleted_objects(queryset, request)
+    objects_name = model_ngettext(queryset)
+    title = _("Are you sure?")
+    context = {
+        **modeladmin.admin_site.each_context(request),
+        "title": title,
+        "subtitle": None,
+        "objects_name": str(objects_name),
+        "deletable_objects": [deletable_objects],
+        "model_count": dict(model_count).items(),
+        "queryset": queryset,
+        "media": modeladmin.media,
+    }
     if queryset.filter(~Q(status=SasaranKinerja.Status.DRAFT)).exists():
         messages.add_message(
             request,
@@ -38,14 +58,22 @@ def delete_skp(modeladmin, request, queryset):
                 "Hanya dokumen SKP yang berstatus <b>Draft</b> yang dapat dihapus!"
             ),
         )
+        return None
     else:
         count = queryset.count()
-        queryset.delete()
-        messages.add_message(
-            request,
-            messages.SUCCESS,
-            "Berhasil Menghapus {} data Sasaran Kinerja Pegawai".format(count),
-        )
+        if request.POST.get("post"):
+            queryset.delete()
+            messages.add_message(
+                request,
+                messages.SUCCESS,
+                "Berhasil Menghapus {} data Sasaran Kinerja Pegawai".format(count),
+            )
+            return None
+    return render(
+        request,
+        "admin/delete_selected_confirmation.html",
+        context,
+    )
 
 
 delete_skp.short_description = "Hapus Sasaran Kinerja Pegawai yang dipilih"
@@ -524,221 +552,251 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
 
         awal = sasaran_obj.periode_awal
         akhir = sasaran_obj.periode_akhir
+        penilaian_bawahan = None
+        try:
+            penilaian_bawahan = PenilaianBawahan.objects.get(skp=sasaran_obj)
+        except PenilaianBawahan.DoesNotExist:
+            pass
+        except PenilaianBawahan.MultipleObjectsReturned:
+            penilaian_bawahan = PenilaianBawahan.objects.filter(
+                skp=sasaran_obj
+            ).order_by("-periode")
+            if penilaian_bawahan.exists():
+                penilaian_bawahan = penilaian_bawahan.first()
+
         bulan_list = []
-        if awal.month == akhir.month:
-            bulan_list.append(
-                {
-                    "bulan": FULL_BULAN[awal.month],
-                    "range": "{} / {}".format(
-                        awal.strftime("%Y-%m-%d"),
-                        akhir.strftime("%Y-%m-%d"),
-                    ),
-                    "rencana_aksi_url": reverse_lazy(
-                        "admin:rencana-aksi-skp",
-                        kwargs={"skp_id": sasaran_obj.id, "periode": awal.month},
-                    ),
-                    "bukti_dukung_url": reverse_lazy(
-                        "admin:bukti-dukung-skp",
-                        kwargs={"skp_id": sasaran_obj.id, "periode": awal.month},
-                    )
-                    if sasaran_obj.status == 3
-                    else "#",
-                    "penilaian_bawahan_url": reverse_lazy(
-                        "admin:skp_penilaianbawahan",
-                        kwargs={"skp_id": sasaran_obj.id, "periode": awal.month},
-                    )
-                    if sasaran_obj.status == 3
-                    else "#",
-                    "export_penilaian_bawahan_url": reverse_lazy(
-                        "admin:skp_penilaianbawahan_export",
-                        kwargs={"skp_id": sasaran_obj.id, "periode": awal.month},
-                    )
-                    if sasaran_obj.status == 3
-                    else "#",
-                    "kurva_penilaian_bawahan_url": reverse_lazy(
-                        "admin:skp_penilaianbawahan_kurva",
-                        kwargs={"skp_id": sasaran_obj.id, "periode": awal.month},
-                    )
-                    if sasaran_obj.status == 3
-                    else "#",
-                    "cetak_form_penilaian_url": reverse_lazy(
-                        "admin:skp_penilaianbawahan_formpenilaiancetak",
-                        kwargs={
-                            "skp_id": sasaran_obj.id,
-                            "periode": awal.month,
-                        },
-                    ),
-                }
-            )
-        else:
-            for i in range(awal.month, akhir.month + 1):
-                if i == awal.month:
-                    num_days = calendar.monthrange(awal.year, awal.month)[1]
-                    bulan_list.append(
-                        {
-                            "bulan": FULL_BULAN[i],
-                            "range": "{} / {}-{}-{}".format(
-                                awal.strftime("%Y-%m-%d"),
-                                awal.year,
-                                awal.month
-                                if awal.month > 9
-                                else "0{}".format(awal.month),
-                                num_days,
-                            ),
-                            "rencana_aksi_url": reverse_lazy(
-                                "admin:rencana-aksi-skp",
-                                kwargs={"skp_id": sasaran_obj.id, "periode": i},
-                            ),
-                            "bukti_dukung_url": reverse_lazy(
-                                "admin:bukti-dukung-skp",
-                                kwargs={"skp_id": sasaran_obj.id, "periode": i},
-                            )
-                            if sasaran_obj.status == 3
-                            else "#",
-                            "penilaian_bawahan_url": reverse_lazy(
-                                "admin:skp_penilaianbawahan",
-                                kwargs={"skp_id": sasaran_obj.id, "periode": i},
-                            )
-                            if sasaran_obj.status == 3
-                            else "#",
-                            "export_penilaian_bawahan_url": reverse_lazy(
-                                "admin:skp_penilaianbawahan_export",
-                                kwargs={
-                                    "skp_id": sasaran_obj.id,
-                                    "periode": awal.month,
-                                },
-                            )
-                            if sasaran_obj.status == 3
-                            else "#",
-                            "kurva_penilaian_bawahan_url": reverse_lazy(
-                                "admin:skp_penilaianbawahan_kurva",
-                                kwargs={
-                                    "skp_id": sasaran_obj.id,
-                                    "periode": awal.month,
-                                },
-                            )
-                            if sasaran_obj.status == 3
-                            else "#",
-                            "cetak_form_penilaian_url": reverse_lazy(
-                                "admin:skp_penilaianbawahan_formpenilaiancetak",
-                                kwargs={
-                                    "skp_id": sasaran_obj.id,
-                                    "periode": awal.month,
-                                },
-                            ),
-                        }
-                    )
-                elif i == akhir.month:
-                    bulan_list.append(
-                        {
-                            "bulan": FULL_BULAN[i],
-                            "range": "{}-{}-{} / {}".format(
-                                akhir.year,
-                                akhir.month
-                                if akhir.month > 9
-                                else "0{}".format(awal.month),
-                                "01",
-                                akhir.strftime("%Y-%m-%d"),
-                            ),
-                            "rencana_aksi_url": reverse_lazy(
-                                "admin:rencana-aksi-skp",
-                                kwargs={"skp_id": sasaran_obj.id, "periode": i},
-                            ),
-                            "bukti_dukung_url": reverse_lazy(
-                                "admin:bukti-dukung-skp",
-                                kwargs={"skp_id": sasaran_obj.id, "periode": i},
-                            )
-                            if sasaran_obj.status == 3
-                            else "#",
-                            "penilaian_bawahan_url": reverse_lazy(
-                                "admin:skp_penilaianbawahan",
-                                kwargs={"skp_id": sasaran_obj.id, "periode": i},
-                            )
-                            if sasaran_obj.status == 3
-                            else "#",
-                            "export_penilaian_bawahan_url": reverse_lazy(
-                                "admin:skp_penilaianbawahan_export",
-                                kwargs={
-                                    "skp_id": sasaran_obj.id,
-                                    "periode": awal.month,
-                                },
-                            )
-                            if sasaran_obj.status == 3
-                            else "#",
-                            "kurva_penilaian_bawahan_url": reverse_lazy(
-                                "admin:skp_penilaianbawahan_kurva",
-                                kwargs={
-                                    "skp_id": sasaran_obj.id,
-                                    "periode": awal.month,
-                                },
-                            )
-                            if sasaran_obj.status == 3
-                            else "#",
-                            "cetak_form_penilaian_url": reverse_lazy(
-                                "admin:skp_penilaianbawahan_formpenilaiancetak",
-                                kwargs={
-                                    "skp_id": sasaran_obj.id,
-                                    "periode": awal.month,
-                                },
-                            ),
-                        }
-                    )
-                else:
-                    num_days = calendar.monthrange(awal.year, awal.month)[1]
-                    bulan_list.append(
-                        {
-                            "bulan": FULL_BULAN[i],
-                            "range": "{}-{}-{} / {}-{}-{}".format(
-                                akhir.year,
-                                i if i > 9 else "0{}".format(i),
-                                "01",
-                                akhir.year,
-                                i if i > 9 else "0{}".format(i),
-                                num_days,
-                            ),
-                            "rencana_aksi_url": reverse_lazy(
-                                "admin:rencana-aksi-skp",
-                                kwargs={"skp_id": sasaran_obj.id, "periode": i},
-                            ),
-                            "bukti_dukung_url": reverse_lazy(
-                                "admin:bukti-dukung-skp",
-                                kwargs={"skp_id": sasaran_obj.id, "periode": i},
-                            )
-                            if sasaran_obj.status == 3
-                            else "#",
-                            "penilaian_bawahan_url": reverse_lazy(
-                                "admin:skp_penilaianbawahan",
-                                kwargs={"skp_id": sasaran_obj.id, "periode": i},
-                            )
-                            if sasaran_obj.status == 3
-                            else "#",
-                            "export_penilaian_bawahan_url": reverse_lazy(
-                                "admin:skp_penilaianbawahan_export",
-                                kwargs={
-                                    "skp_id": sasaran_obj.id,
-                                    "periode": awal.month,
-                                },
-                            )
-                            if sasaran_obj.status == 3
-                            else "#",
-                            "kurva_penilaian_bawahan_url": reverse_lazy(
-                                "admin:skp_penilaianbawahan_kurva",
-                                kwargs={
-                                    "skp_id": sasaran_obj.id,
-                                    "periode": awal.month,
-                                },
-                            )
-                            if sasaran_obj.status == 3
-                            else "#",
-                            "cetak_form_penilaian_url": reverse_lazy(
-                                "admin:skp_penilaianbawahan_formpenilaiancetak",
-                                kwargs={
-                                    "skp_id": sasaran_obj.id,
-                                    "periode": awal.month,
-                                },
-                            ),
-                        }
-                    )
+        # if awal.month == akhir.month:
+        bulan_list.append(
+            {
+                "bulan": "Tahunan",
+                "range": "{} / {}".format(
+                    awal.strftime("%Y-%m-%d"),
+                    akhir.strftime("%Y-%m-%d"),
+                ),
+                "hasil": penilaian_bawahan.rating_hasil.nama.upper()
+                if penilaian_bawahan and penilaian_bawahan.rating_hasil
+                else "-",
+                "perilaku": penilaian_bawahan.predikat_perilaku.nama.upper()
+                if penilaian_bawahan and penilaian_bawahan.predikat_perilaku
+                else "-",
+                "nilai": penilaian_bawahan.get_predikat_kerja_display().upper()
+                if penilaian_bawahan and penilaian_bawahan.predikat_kerja
+                else "-",
+                # "rencana_aksi_url": reverse_lazy(
+                #     "admin:rencana-aksi-skp",
+                #     kwargs={"skp_id": sasaran_obj.id},
+                # ),
+                "dokumen_evaluasi_url": reverse_lazy(
+                    "admin:skp_sasarankinerja_evaluasi_kinerja",
+                    kwargs={"skp_id": sasaran_obj.id},
+                ),
+                # reverse_lazy(
+                #     "admin:bukti-dukung-skp",
+                #     kwargs={"skp_id": sasaran_obj.id},
+                # )
+                # if sasaran_obj.status == 3
+                # else
+                "bukti_dukung_url": reverse_lazy(
+                    "admin:bukti-dukung-skp",
+                    kwargs={"skp_id": sasaran_obj.id},
+                )
+                if sasaran_obj.status == 3
+                else "#",
+                "penilaian_bawahan_url": reverse_lazy(
+                    "admin:skp_penilaianbawahan",
+                    kwargs={"skp_id": sasaran_obj.id},
+                )
+                if sasaran_obj.status == 3
+                else "#",
+                "export_penilaian_bawahan_url": reverse_lazy(
+                    "admin:skp_penilaianbawahan_export",
+                    kwargs={"skp_id": sasaran_obj.id},
+                )
+                if sasaran_obj.status == 3
+                else "#",
+                "kurva_penilaian_bawahan_url": reverse_lazy(
+                    "admin:skp_penilaianbawahan_kurva",
+                    kwargs={"skp_id": sasaran_obj.id},
+                )
+                if sasaran_obj.status == 3
+                else "#",
+                "cetak_form_penilaian_url": reverse_lazy(
+                    "admin:skp_penilaianbawahan_formpenilaiancetak",
+                    kwargs={
+                        "skp_id": sasaran_obj.id,
+                    },
+                ),
+            }
+        )
+        # else:
+        #     for i in range(awal.month, akhir.month + 1):
+        #         if i == awal.month:
+        #             num_days = calendar.monthrange(awal.year, awal.month)[1]
+        #             bulan_list.append(
+        #                 {
+        #                     "bulan": FULL_BULAN[i],
+        #                     "range": "{} / {}-{}-{}".format(
+        #                         awal.strftime("%Y-%m-%d"),
+        #                         awal.year,
+        #                         awal.month
+        #                         if awal.month > 9
+        #                         else "0{}".format(awal.month),
+        #                         num_days,
+        #                     ),
+        #                     "rencana_aksi_url": reverse_lazy(
+        #                         "admin:rencana-aksi-skp",
+        #                         kwargs={"skp_id": sasaran_obj.id, "periode": i},
+        #                     ),
+        #                     "bukti_dukung_url": reverse_lazy(
+        #                         "admin:bukti-dukung-skp",
+        #                         kwargs={"skp_id": sasaran_obj.id, "periode": i},
+        #                     )
+        #                     if sasaran_obj.status == 3
+        #                     else "#",
+        #                     "penilaian_bawahan_url": reverse_lazy(
+        #                         "admin:skp_penilaianbawahan",
+        #                         kwargs={"skp_id": sasaran_obj.id, "periode": i},
+        #                     )
+        #                     if sasaran_obj.status == 3
+        #                     else "#",
+        #                     "export_penilaian_bawahan_url": reverse_lazy(
+        #                         "admin:skp_penilaianbawahan_export",
+        #                         kwargs={
+        #                             "skp_id": sasaran_obj.id,
+        #                             "periode": awal.month,
+        #                         },
+        #                     )
+        #                     if sasaran_obj.status == 3
+        #                     else "#",
+        #                     "kurva_penilaian_bawahan_url": reverse_lazy(
+        #                         "admin:skp_penilaianbawahan_kurva",
+        #                         kwargs={
+        #                             "skp_id": sasaran_obj.id,
+        #                             "periode": awal.month,
+        #                         },
+        #                     )
+        #                     if sasaran_obj.status == 3
+        #                     else "#",
+        #                     "cetak_form_penilaian_url": reverse_lazy(
+        #                         "admin:skp_penilaianbawahan_formpenilaiancetak",
+        #                         kwargs={
+        #                             "skp_id": sasaran_obj.id,
+        #                             "periode": awal.month,
+        #                         },
+        #                     ),
+        #                 }
+        #             )
+        #         elif i == akhir.month:
+        #             bulan_list.append(
+        #                 {
+        #                     "bulan": FULL_BULAN[i],
+        #                     "range": "{}-{}-{} / {}".format(
+        #                         akhir.year,
+        #                         akhir.month
+        #                         if akhir.month > 9
+        #                         else "0{}".format(awal.month),
+        #                         "01",
+        #                         akhir.strftime("%Y-%m-%d"),
+        #                     ),
+        #                     "rencana_aksi_url": reverse_lazy(
+        #                         "admin:rencana-aksi-skp",
+        #                         kwargs={"skp_id": sasaran_obj.id, "periode": i},
+        #                     ),
+        #                     "bukti_dukung_url": reverse_lazy(
+        #                         "admin:bukti-dukung-skp",
+        #                         kwargs={"skp_id": sasaran_obj.id, "periode": i},
+        #                     )
+        #                     if sasaran_obj.status == 3
+        #                     else "#",
+        #                     "penilaian_bawahan_url": reverse_lazy(
+        #                         "admin:skp_penilaianbawahan",
+        #                         kwargs={"skp_id": sasaran_obj.id, "periode": i},
+        #                     )
+        #                     if sasaran_obj.status == 3
+        #                     else "#",
+        #                     "export_penilaian_bawahan_url": reverse_lazy(
+        #                         "admin:skp_penilaianbawahan_export",
+        #                         kwargs={
+        #                             "skp_id": sasaran_obj.id,
+        #                             "periode": awal.month,
+        #                         },
+        #                     )
+        #                     if sasaran_obj.status == 3
+        #                     else "#",
+        #                     "kurva_penilaian_bawahan_url": reverse_lazy(
+        #                         "admin:skp_penilaianbawahan_kurva",
+        #                         kwargs={
+        #                             "skp_id": sasaran_obj.id,
+        #                             "periode": awal.month,
+        #                         },
+        #                     )
+        #                     if sasaran_obj.status == 3
+        #                     else "#",
+        #                     "cetak_form_penilaian_url": reverse_lazy(
+        #                         "admin:skp_penilaianbawahan_formpenilaiancetak",
+        #                         kwargs={
+        #                             "skp_id": sasaran_obj.id,
+        #                             "periode": awal.month,
+        #                         },
+        #                     ),
+        #                 }
+        #             )
+        #         else:
+        #             num_days = calendar.monthrange(awal.year, awal.month)[1]
+        #             bulan_list.append(
+        #                 {
+        #                     "bulan": FULL_BULAN[i],
+        #                     "range": "{}-{}-{} / {}-{}-{}".format(
+        #                         akhir.year,
+        #                         i if i > 9 else "0{}".format(i),
+        #                         "01",
+        #                         akhir.year,
+        #                         i if i > 9 else "0{}".format(i),
+        #                         num_days,
+        #                     ),
+        #                     "rencana_aksi_url": reverse_lazy(
+        #                         "admin:rencana-aksi-skp",
+        #                         kwargs={"skp_id": sasaran_obj.id, "periode": i},
+        #                     ),
+        #                     "bukti_dukung_url": reverse_lazy(
+        #                         "admin:bukti-dukung-skp",
+        #                         kwargs={"skp_id": sasaran_obj.id, "periode": i},
+        #                     )
+        #                     if sasaran_obj.status == 3
+        #                     else "#",
+        #                     "penilaian_bawahan_url": reverse_lazy(
+        #                         "admin:skp_penilaianbawahan",
+        #                         kwargs={"skp_id": sasaran_obj.id, "periode": i},
+        #                     )
+        #                     if sasaran_obj.status == 3
+        #                     else "#",
+        #                     "export_penilaian_bawahan_url": reverse_lazy(
+        #                         "admin:skp_penilaianbawahan_export",
+        #                         kwargs={
+        #                             "skp_id": sasaran_obj.id,
+        #                             "periode": awal.month,
+        #                         },
+        #                     )
+        #                     if sasaran_obj.status == 3
+        #                     else "#",
+        #                     "kurva_penilaian_bawahan_url": reverse_lazy(
+        #                         "admin:skp_penilaianbawahan_kurva",
+        #                         kwargs={
+        #                             "skp_id": sasaran_obj.id,
+        #                             "periode": awal.month,
+        #                         },
+        #                     )
+        #                     if sasaran_obj.status == 3
+        #                     else "#",
+        #                     "cetak_form_penilaian_url": reverse_lazy(
+        #                         "admin:skp_penilaianbawahan_formpenilaiancetak",
+        #                         kwargs={
+        #                             "skp_id": sasaran_obj.id,
+        #                             "periode": awal.month,
+        #                         },
+        #                     ),
+        #                 }
+        #             )
         respon = {"success": True, "data": bulan_list}
         return JsonResponse(respon, safe=False)
 
@@ -981,6 +1039,23 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
             request, "admin/skp/sasarankinerja/rekonsiliasi.html", extra_context
         )
 
+    def cetak_evaluasi_kinerja_pegawai(self, request, skp_id, extra_context={}):
+        obj = get_object_or_404(SasaranKinerja, pk=skp_id)
+        find_penilaian_bawahan = PenilaianBawahan.objects.filter(skp=obj).order_by(
+            "-periode"
+        )
+        obj_penilaian = None
+        if find_penilaian_bawahan.exists():
+            obj_penilaian = find_penilaian_bawahan.first()
+        extra_context.update(
+            {
+                "title": "Evaluasi Kinerja Pegawai",
+                "obj": obj,
+                "obj_penilaian": obj_penilaian,
+            }
+        )
+        return render(request, "admin/skp/dokumen_evaluasi_kinerja.html", extra_context)
+
     def get_urls(self):
         admin_url = super(SasaranKinerjaAdmin, self).get_urls()
         custom_url = [
@@ -1048,6 +1123,11 @@ class SasaranKinerjaAdmin(admin.ModelAdmin):
                 "<int:id>/view",
                 self.admin_site.admin_view(self.view_changeform_skp),
                 name="skp_sasarankinerja_view",
+            ),
+            path(
+                "<int:skp_id>/evaluasi-kinerja",
+                self.admin_site.admin_view(self.cetak_evaluasi_kinerja_pegawai),
+                name="skp_sasarankinerja_evaluasi_kinerja",
             ),
             path(
                 "option",

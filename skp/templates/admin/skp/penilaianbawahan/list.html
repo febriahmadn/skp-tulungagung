@@ -70,8 +70,8 @@
                     <td>{{item.skp.detailsasarankinerja.nama_pegawai}}</td>
                     <td>{{item.skp.detailsasarankinerja.jabatan_pegawai}}</td>
                     <td>{{item.skp.detailsasarankinerja.unor_pegawai}}</td>
-                    <td>{% get_penilaian_bawahan_status item.skp.pegawai obj periode %}</td>
-                    <td>{% get_detail_skp item.skp.pegawai obj periode %}</td>
+                    <td>{% get_penilaian_bawahan_status item.skp.pegawai obj %}</td>
+                    <td>{% get_detail_skp item.skp.pegawai obj %}</td>
                 </tr>
                 {% endfor %}
                 {% else %}

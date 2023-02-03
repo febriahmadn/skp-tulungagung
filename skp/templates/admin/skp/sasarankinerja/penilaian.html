@@ -127,17 +127,18 @@
                 if(respon.success){
                     data = respon.data
                     var html = ""
+                    // <a href="${val.rencana_aksi_url}" class="btn btn-sm btn-primary btn-block" >Rencana Aksi</a>
                     data.map((val, idx)=>{
                         html += `
                             <tr>
                                 <td>${val.bulan}<br>${val.range}<br>Batas: ${batas_input}</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
+                                <td>${val.hasil}</td>
+                                <td>${val.perilaku}</td>
+                                <td>${val.nilai}</td>
                                 <td>
-                                    <a href="${val.rencana_aksi_url}" class="btn btn-sm btn-primary btn-block" >Rencana Aksi</a>
-                                    <a href="${val.bukti_dukung_url}" class="btn btn-sm btn-success btn-block" >Bukti Dukung</a>
-                                    <a target="_blank" href="${val.cetak_form_penilaian_url}" class="btn btn-sm btn-info btn-block" >Cetak Form Penilaian</a>
+                                <a href="${val.bukti_dukung_url}" class="btn btn-sm btn-primary btn-block" >Bukti Dukung</a>
+                                <a target="_blank" href="${val.cetak_form_penilaian_url}" class="btn btn-sm btn-info btn-block" >Cetak Form Penilaian</a>
+                                <a target="_blank" href="${val.dokumen_evaluasi_url}" class="btn btn-sm btn-success btn-block" >Cetak Dokumen Evaluasi Kinerja</a>
                                 </td>
                             </tr>
                         `

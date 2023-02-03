@@ -405,10 +405,7 @@ def handler_sasarankinerja_save(instance, created, **kwargs):
         detail.save()
 
         if not instance.pegawai.groups.filter(name="Bupati").exists():
-            for i in range(
-                instance.periode_awal.month, instance.periode_akhir.month + 1
-            ):
-                PenilaianBawahan.objects.create(skp=instance, periode=i)
+            PenilaianBawahan.objects.create(skp=instance)
 
         # if "bupati" in instance.pegawai.jabatan.lower():
         #     pass
@@ -512,6 +509,29 @@ class UmpanBalikPegawai(models.Model):
     class Meta:
         verbose_name = "Umpan Balik Tambahan"
         verbose_name_plural = "Umpan Balik Tambahan"
+
+class UmpanBalikPerilakuKerja(models.Model):
+    perilaku_kerja = models.ForeignKey(
+        PerilakuKerja, on_delete=models.CASCADE, verbose_name="Perilaku Kerja"
+    )
+    skp = models.ForeignKey(
+        SasaranKinerja,
+        on_delete=models.CASCADE,
+        verbose_name="Sasaran Kinerja Pegawai",
+        null=True,
+    )
+    umpan_balik = models.ManyToManyField(UmpanBalik, blank=True)
+    umpan_balik_tambahan = models.CharField(
+        "Umpan Balik Tambahan", max_length=255, null=True, blank=True
+    )
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return "{}".format(str(self.id))
+
+    class Meta:
+        verbose_name = "Umpan Balik Perilaku Kerja"
+        verbose_name_plural = "Umpan Balik Perilaku Kerja"
 
 
 class Hasil(models.Model):

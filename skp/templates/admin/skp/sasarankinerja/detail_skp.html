@@ -46,12 +46,12 @@
   <div class="col-md-4">
     <div class="d-flex">
       <label class="mx-1 py-2" style="min-width: 100px;">Status SKP</label>
-      <input type="text" readonly class="form-control form-control-sm" id="staticEmail" value="{{obj.get_status_display}}">
+      <div class="form-control form-control-sm" style="height: fit-content; background-color: #e4e6ef; color: #7e8299;" >{{obj.get_status_display}}</div>
     </div>
     {% if obj.keterangan %}
     <div class="d-flex">
       <label class="mx-1 py-2" style="min-width: 100px;">Keterangan</label>
-      <input type="text" readonly class="form-control form-control-sm" id="staticEmail" value="{{obj.keterangan|default_if_none:"-"}}">
+      <div class="form-control form-control-sm" style="height: fit-content; background-color: #e4e6ef; color: #7e8299;" >{{obj.keterangan|default_if_none:""}}</div>
     </div>
     {% endif %}
   </div>
@@ -182,15 +182,15 @@
                 <th valign="center">No</th>
                 {% if obj.jenis_jabatan == 1 %}
                 <th valign="center" style="width: 40%;">Rencana Hasil Kerja</th>
+                <th valign="center">Perspektif</th>
                 <th valign="center">Indikator Kinerja Individu</th>
                 <th valign="center">Target Tahunan</th>
-                <th valign="center">Perspektif</th>
                 {% else %}
                 <th valign="center" style="min-width: 250px;">Rencana Hasil Kerja Pimpinan<br>yang Diintervensi</th>
                 <th valign="center" style="min-width: 250px;">Rencana Hasil Kerja</th>
+                <th valign="center">Aspek</th>
                 <th valign="center">Indikator Kinerja Individu</th>
                 <th valign="center">Target Tahunan</th>
-                <th valign="center">Aspek</th>
                 {% endif %}
               </tr>
             </thead>
@@ -791,7 +791,7 @@
         }else{
           html = "<option readonly >Unit Kerja Kosong</option>"
         }
-        $('#unitkerja_id').html(html)
+        $('#unitkerja_id').html(html).select2()
       }
     })
   }
@@ -990,12 +990,12 @@
 
                 indikator += `
                 <tr>
+                  ${indikator_isi}
                   <td>
                     <span id="indikator-${item_indikator.id}" >${item_indikator.indikator}</span>
                     ${aksi}
                   </td>
                   <td id="target-${item_indikator.id}">${item_indikator.target}</td>
-                  ${indikator_isi}
                 </tr>
                 `
               })
@@ -1156,12 +1156,12 @@
 
                 indikator += `
                 <tr>
+                  ${indikator_isi}
                   <td>
                     <span id="indikator-${item_indikator.id}" >${item_indikator.indikator}</span>
                     ${aksi}
                   </td>
                   <td id="target-${item_indikator.id}">${item_indikator.target}</td>
-                  ${indikator_isi}
                 </tr>
                 `
               })

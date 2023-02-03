@@ -60,18 +60,18 @@
   <div class="col-md-4">
     <div class="d-flex">
       <label class="mx-1 py-2" style="min-width: 100px;">Status SKP</label>
-      <input type="text" readonly class="form-control form-control-sm" id="staticEmail" value="{{obj.get_status_display}}">
+      <div class="form-control form-control-sm" style="height: fit-content; background-color: #e4e6ef; color: #7e8299;" >{{obj.get_status_display}}</div>
     </div>
     {% if obj.keterangan %}
     <div class="d-flex">
       <label class="mx-1 py-2" style="min-width: 100px;">Keterangan</label>
-      <input type="text" readonly class="form-control form-control-sm" id="staticEmail" value="{{obj.keterangan|default_if_none:""}}">
+      <div class="form-control form-control-sm" style="height: fit-content; background-color: #e4e6ef; color: #7e8299;" >{{obj.keterangan|default_if_none:""}}</div>
     </div>
     {% endif %}
   </div>
 
   <!-- <div class="col-md-8 d-flex flex-row-reverse">
-    <a id="btn-cetak" class="btn btn-success mr-1" style="align-self: center" href="{% url 'admin:skp_buktidukung_cetak' obj.id periode %}">
+    <a id="btn-cetak" class="btn btn-success mr-1" style="align-self: center" href="{% url 'admin:skp_buktidukung_cetak' obj.id %}">
       <i class="fas fa-print"></i> Cetak
     </a>
   </div> -->
@@ -152,7 +152,7 @@
 </div>
 
 <div class="d-flex justify-content-between mt-3 pr-4" style="padding: unset;">
-  <h4 style="margin: unset;">Periode: {{periode|get_bulan|upper}}</h4>
+  <h4 style="margin: unset;">Periode: {% get_periode_month obj.periode_awal obj.periode_akhir %}</h4>
   <h4 style="margin: unset;">Periode Penilaian: {% get_complete_periode obj.periode_awal obj.periode_akhir %}</h4>
 </div>
 
@@ -212,6 +212,7 @@
               <td rowspan="2" style="vertical-align : middle;text-align:center; width: 5%;">{{ forloop.counter }}</td>
               <th>{{ item.perilaku_kerja }}</th>
               <th style="width: 20%;">Ekspektasi Khusus Pimpinan</th>
+              <th style="width: 20%;">Umpan Balik Berkelanjutan Berdasarkan Bukti Dukung</th>
             </tr>
             <tr>
               <td>
@@ -235,6 +236,9 @@
                 {% daftar_ekspetasi item.id obj.id "ya" %}
                 {% endif %}
                 {% endif %}
+              </td>
+              <td>
+                {% daftar_umpan_balik obj item.id "tidak" request.user %}
               </td>
             </tr>
             {% endfor %}
@@ -328,6 +332,10 @@
           <input type="text" class="form-control" id="umpan_balik_tambahan">
           <span class="text-muted" >Jika pilihan pada umpan balik tidak tersedia, maka bisa menginputkan secara manual melalui field umpan balik lainnya</span>
         </div>
+        <div class="form-group mt-1">
+          <button class="btn btn-primary btn-sm" onclick="addValue($(this))" data-value="👍" >👍</button>
+          <button class="btn btn-primary btn-sm" onclick="addValue($(this))" data-value="👎" >👎</button>
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" onclick="save_umpan()">Submit</button>
@@ -357,6 +365,11 @@
         return false;
     }
   };
+  const addValue = (elem) =>{
+    umpan_elem = $("#umpan_balik_tambahan")
+    current_value = umpan_elem.val()
+    umpan_elem.val(current_value+elem.data('value'))
+  }
   const handleLoadUmpanBalik = (selected=null) => {
     $.ajax({
       url:`${BASE_URL}/admin/skp/umpanbalik/load`,
@@ -873,6 +886,7 @@
       error = true
       text = "Bukti Dukung Tidak Boleh Kosong"
     }
+    // periode: periode,
     if(!error){
       $.ajax({
         url: `${BASE_URL}/admin/skp/buktidukung/create`,
@@ -880,7 +894,6 @@
         data: {
           csrfmiddlewaretoken: csrf,
           indikator_id: indikator_id,
-          periode: periode,
           bukti_id: bukti_id,
           nama: bukti_dukung,
           link: link,
@@ -915,6 +928,7 @@
       error = true
       text = "Kolom Sumber Tidak Boleh Kosong"
     }
+    // periode: periode,
     if(!error){
       $.ajax({
         url: `${BASE_URL}/admin/skp/realisasi/create`,
@@ -923,7 +937,6 @@
           csrfmiddlewaretoken: csrf,
           skp_id: skp_id,
           indikator_id: indikator_id,
-          periode: periode,
           realisasi_id: realisasi_id,
           realisasi: realisasi,
           sumber: sumber,
@@ -941,6 +954,7 @@
       toastr.warning(text);
     }
   }
+  {/* periode: periode, */}
   const save_umpan = () => {
     let modal = $("#tambahumpanbalikpegawai")
     let umpan_id = $("#umpan_id").val()
@@ -954,7 +968,6 @@
       data: {
         csrfmiddlewaretoken: csrf,
         indikator_id: indikator_id,
-        periode: periode,
         umpan_id: umpan_id,
         umpan_list: JSON.stringify(umpan_multiple),
         umpan_balik_tambahan: umpan_balik_tambahan,
